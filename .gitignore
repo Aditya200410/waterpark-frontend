@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 PAYMENT_INTEGRATION.md
 .env
+src/config/config.js
+src/config/config.js
+src/config/config.js
