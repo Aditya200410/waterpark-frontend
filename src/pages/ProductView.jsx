@@ -185,7 +185,7 @@ const ProductView = () => {
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
       <h2 className="text-2xl font-bold text-red-600 mb-2">Product Not Found</h2>
       <p className="text-gray-700 mb-4">{error}</p>
-      <button onClick={() => window.location.href = '/shop'} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Back to Shop</button>
+      <button onClick={() => window.location.href = '/shop'} className="px-4 py-2 bg-blue text-white rounded hover:bg-blue">Back to Shop</button>
     </div>
   );
   if (!product) return null;
