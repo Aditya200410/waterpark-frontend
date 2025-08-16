@@ -27,10 +27,10 @@ const itemVariants = {
 
 // Static category images mapping
 const categoryImages = {
-  "Wooden Craft": "/images/categories/wooden-craft.jpg",
-  "Terracotta Items": "/images/categories/terracotta.jpg", 
-  "Dokra Art": "/images/categories/dokra-art.jpg",
-  "Handmade Jewellery": "/images/categories/jewellery.jpg"
+  "water park mumbai": "/images/categories/wooden-craft.jpg",
+  "water park pune": "/images/categories/terracotta.jpg", 
+  "water park banglore": "/images/categories/dokra-art.jpg",
+  "water park delhi": "/images/categories/jewellery.jpg"
 };
 
 const Categories = () => {

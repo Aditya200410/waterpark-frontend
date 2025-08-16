@@ -58,11 +58,8 @@ const Hero = () => {
       const response = await fetch(`${config.API_BASE_URL}/api/hero-carousel/active`);
       if (!response.ok) throw new Error('Failed to fetch carousel data');
       const data = await response.json();
-      const filteredData = data.filter(item => {
-        if (isMobile()) return item.isMobile === true;
-        return item.isMobile === false;
-      });
-      setCarouselData(filteredData);
+     
+      setCarouselData(data);
     } catch (err) {
       console.error('Error fetching carousel data:', err);
       setError('Failed to load carousel content');
