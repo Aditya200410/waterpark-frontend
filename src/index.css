@@ -6,6 +6,16 @@
   --primary-color: #8f3a61;
   --secondary-color: #8f3a61;
 }
+@keyframes ripple {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-ripple {
+  animation: ripple 6s infinite linear;
+}
+
 
 @layer base {
   body {

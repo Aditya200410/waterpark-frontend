@@ -45,28 +45,23 @@ const Categories = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(config.API_URLS.CATEGORIES);
-      // The response data is in the format { categories: [...] }
       const apiCategories = response.data.categories || [];
       
-      // Process categories to handle both image and video fields
       const processedCategories = apiCategories.map(category => ({
         id: category._id || category.id,
         name: category.name,
         description: category.description,
-        // Prioritize video over image, fallback to static images
         image: category.video || category.image || categoryImages[category.name] || '/images/categories/default.jpg',
         isVideo: !!category.video,
         sortOrder: category.sortOrder || 0
       }));
       
-      // Sort by sortOrder if available
       processedCategories.sort((a, b) => a.sortOrder - b.sortOrder);
       
       setCategories(processedCategories);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching categories:', error);
-      // Fallback to static categories
       const fallbackCategories = staticCategories.map(category => ({
         id: category.name.toLowerCase().replace(/\s+/g, '-'),
         name: category.name,
@@ -81,7 +76,7 @@ const Categories = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8 md:py-16">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-#0077B6-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0077B6]"></div>
       </div>
     );
   }
@@ -109,7 +104,8 @@ const Categories = () => {
               <span className="font-serif italic">Location Available</span>
             </h2>
             <p className="text-gray-600 text-sm md:text-base lg:text-lg leading-relaxed mb-4 md:mb-6 max-w-2xl mx-auto">
-Explore our wave of exciting locations — from thrilling slides to relaxing pools, fun awaits everywhere            </p>
+              Explore our wave of exciting locations — from thrilling slides to relaxing pools, fun awaits everywhere
+            </p>
             <div className="w-16 md:w-20 h-0.5 bg-[#0077B6] mx-auto"></div>
           </div>
         </motion.div>
@@ -131,70 +127,45 @@ Explore our wave of exciting locations — from thrilling slides to relaxing poo
             >
               <motion.div
                 variants={itemVariants}
-                whileHover={{ 
-                  scale: 1.05,
-                  transition: { duration: 0.2 }
-                }}
-                className="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 aspect-square"
+                whileHover={{ scale: 1.05, y: -4 }}
+                className="relative rounded-2xl overflow-hidden shadow-lg bg-gradient-to-b from-[#E6F9FF] to-[#B3ECFF] border border-[#B3ECFF] transition-all duration-500"
               >
-                {/* Category Title - Above Image */}
-                <div className="absolute top-0 left-0 right-0 z-10 p-3 bg-gradient-to-b from-black/80 to-transparent">
-                  <h3 className="text-sm font-semibold text-white text-center line-clamp-2 leading-tight">
-                    {category.name}
-                  </h3>
-                </div>
-
-                {/* Image/Video Container */}
-                <div className="relative w-full h-full overflow-hidden">
+                {/* Media */}
+                <div className="relative h-40 w-full overflow-hidden">
                   {category.isVideo ? (
                     <video
                       src={config.fixImageUrl(category.image)}
-                      alt={category.name}
-                      className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-500"
+                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                       autoPlay
                       muted
                       loop
                       playsInline
-                      onError={e => {
-                        e.target.onerror = null;
-                        e.target.src = 'https://placehold.co/400x400/e2e8f0/475569?text=' + encodeURIComponent(category.name);
-                      }}
                     />
                   ) : (
                     <img
                       src={config.fixImageUrl(category.image)}
                       alt={category.name}
-                      className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-500"
+                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                       onError={e => {
                         e.target.onerror = null;
                         e.target.src = 'https://placehold.co/400x400/e2e8f0/475569?text=' + encodeURIComponent(category.name);
                       }}
                     />
                   )}
-                  
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                  {/* Bottom Overlay with Explore Text */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                    <div className="flex items-center justify-center gap-1">
-                      <span className="text-xs text-white font-medium">
-                        Explore
-                      </span>
-                      <svg 
-                        className="w-3 h-3 text-white group-hover:translate-x-0.5 transition-transform duration-200" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </div>
                 </div>
 
-                {/* Hover Effect Border */}
-                <div className="absolute inset-0 border-2 border-transparent group-hover:border-#0077B6-200 rounded-2xl transition-colors duration-300 pointer-events-none" />
+                {/* Content */}
+                <div className="p-4 text-center">
+                  <h3 className="text-lg font-semibold text-[#023E8A] mb-2">
+                    {category.name}
+                  </h3>
+                  <p className="text-sm text-[#0077B6] font-medium mb-3">
+                    Starting from ₹799
+                  </p>
+                  <span className="inline-block w-full py-2 rounded-lg bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white font-medium text-sm shadow-md hover:shadow-xl transition">
+                    Explore
+                  </span>
+                </div>
               </motion.div>
             </Link>
           ))}
@@ -213,7 +184,7 @@ Explore our wave of exciting locations — from thrilling slides to relaxing poo
             </p>
             <Link
               to="/shop"
-              className="inline-flex items-center px-6 md:px-8 py-3 md:py-4 bg-[#0077B6] text-white font-medium rounded-lg hover:bg-#0077B6-700 transition-all duration-300 group shadow-lg hover:shadow-xl"
+              className="inline-flex items-center px-6 md:px-8 py-3 md:py-4 bg-[#0077B6] text-white font-medium rounded-lg hover:bg-[#005f8a] transition-all duration-300 group shadow-lg hover:shadow-xl"
             >
               View All Products
               <svg 
