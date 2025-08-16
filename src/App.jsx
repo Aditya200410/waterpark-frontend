@@ -31,7 +31,7 @@ import Toast from './components/Toast/Toast';
 import ForgotPassword from './pages/ForgotPassword';
 import AboutUs from './pages/AboutUs';
 import OrderConfirmation from './pages/OrderConfirmation';
-import Becomeseller from './pages/Becomeseller';
+import Becomeseller from './pages/BecomeSeller';
 import SellerAuth from './pages/SellerAuth';
 import SellerProfile from './pages/SellerProfile';
 import Policies from './pages/Policies';
