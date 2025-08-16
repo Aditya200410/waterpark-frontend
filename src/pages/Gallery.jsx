@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import config from '../config/config';
 
-const isMobile = () => window.innerWidth <= 768;
+
 
 const Gallery = () => {
   const [carouselData, setCarouselData] = useState([]);
@@ -14,7 +14,7 @@ const Gallery = () => {
       const response = await fetch(`${config.API_BASE_URL}/api/hero-carousel/active`);
       if (!response.ok) throw new Error('Failed to fetch carousel data');
       const data = await response.json();
-      const filteredData = data.filter(item => (isMobile() ? item.isMobile === true : item.isMobile === false));
+      const filteredData = data.filter(item => ( item.isMobile === true));
       setCarouselData(filteredData);
     } catch (err) {
       console.error('Error fetching carousel data:', err);
