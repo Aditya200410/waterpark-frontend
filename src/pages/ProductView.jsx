@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   HeartIcon, ShoppingCartIcon, ShareIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon, XMarkIcon,
@@ -259,10 +260,15 @@ const ProductView = () => {
     setSelectedImage((prev) => (prev === productImages.length - 1 ? 0 : prev + 1));
   };
 
-  const handleAddToCart = async () => {
+  const   handleAddToCart = async () => {
     try {
-      await addToCart(product, quantity);
-      toast.success('Added to cart successfully!');
+          // Navigate to checkout page with product data
+     navigate('/checkout', {
+      state: {
+        product,
+        quantity
+      }
+    });
     } catch (error) {
       toast.error('Failed to add to cart');
     }

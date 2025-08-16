@@ -178,7 +178,7 @@ const Account = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'processing':
-        return 'bg-pink-50 text-pink-700 border-pink-200';
+        return 'bg-blue-50 text-blue-700 border-blue-200';
       case 'confirmed':
         return 'bg-blue-50 text-blue-700 border-blue-200';
       case 'manufacturing':
@@ -270,8 +270,8 @@ const Account = () => {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: UserCircleIcon },
     { id: 'profile', label: 'Profile', icon: PencilSquareIcon },
-    { id: 'cart', label: 'Cart', icon: ShoppingCartIcon },
-    { id: 'orders', label: 'Orders', icon: GiftIcon },
+   
+    { id: 'orders', label: 'Ticket', icon: GiftIcon },
     
   ];
 
@@ -285,7 +285,7 @@ const Account = () => {
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Orders</option>
               <option value="processing">Processing</option>
@@ -299,19 +299,19 @@ const Account = () => {
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-pink-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="text-center py-12">
             <ShoppingCartIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No orders found</h3>
-            <p className="mt-1 text-sm text-gray-500">Start shopping to create your first order.</p>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">Not found</h3>
+            <p className="mt-1 text-sm text-gray-500">Start buying to create your first order.</p>
             <div className="mt-6">
               <Link
                 to="/shop"
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                Browse Shop
+               explore 
               </Link>
             </div>
           </div>
@@ -390,7 +390,7 @@ const Account = () => {
                       </div>
                       <button
                         onClick={() => setSelectedOrderId(order._id)}
-                        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
                         <EyeIcon className="h-4 w-4" />
                         View Details
@@ -487,7 +487,7 @@ const Account = () => {
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-medium text-gray-600">Total Orders</p>
+                            <p className="text-sm font-medium text-gray-600">Total Tickets</p>
                             <p className="text-2xl font-bold text-gray-900">{orders.length}</p>
                           </div>
                           <div className="p-3 bg-primary rounded-xl">
@@ -496,20 +496,7 @@ const Account = () => {
                         </div>
                       </motion.div>
 
-                      <motion.div
-                        whileHover={{ y: -4 }}
-                        className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600">Cart Items</p>
-                            <p className="text-2xl font-bold text-gray-900">{cartItems.length}</p>
-                          </div>
-                          <div className="p-3 bg-primary rounded-xl">
-                            <ShoppingCartIcon className="h-6 w-6 text-primary-dark" />
-                          </div>
-                        </div>
-                      </motion.div>
+                      
 
                       <motion.div
                         whileHover={{ y: -4 }}
@@ -538,7 +525,7 @@ const Account = () => {
                           className="flex items-center space-x-3 p-4 bg-[#8f3a61]-300 rounded-xl hover:bg-primary-50 hover:text-white transition-colors"
                         >
                           <ShoppingCartIcon className="h-6 w-6 text-primary-dark" />
-                          <span className="font-medium text-gray-900">View Cart</span>
+                          <span className="font-medium text-gray-900">View Ticket</span>
                         </motion.button>
                         
                         <motion.button
@@ -548,7 +535,7 @@ const Account = () => {
                           className="flex items-center space-x-3 p-4 bg-secondary rounded-xl hover:bg-primary transition-colors"
                         >
                           <GiftIcon className="h-6 w-6 text-primary-dark" />
-                          <span className="font-medium text-gray-900">View Orders</span>
+                          <span className="font-medium text-gray-900">View Ticket</span>
                         </motion.button>
                         
                         
@@ -746,20 +733,20 @@ const Account = () => {
                     exit={{ opacity: 0, y: -20 }}
                     className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6"
                   >
-                    <h3 className="text-xl font-semibold text-gray-900 mb-6">Shopping Cart</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-6">Shopping Ticket</h3>
                     
                     {cartItems.length === 0 ? (
                       <div className="text-center py-12">
                         <ShoppingCartIcon className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
-                        <p className="text-gray-500 mb-6">Start shopping to add items to your cart.</p>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">Your Ticket is empty</h3>
+                        <p className="text-gray-500 mb-6">Start shopping to add items to your Ticket.</p>
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => navigate('/shop')}
                           className="px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors"
                         >
-                          Browse Products
+                         explore 
                         </motion.button>
                       </div>
                     ) : (
@@ -895,7 +882,7 @@ const Account = () => {
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                           >
                             Enable 2FA
                           </motion.button>
