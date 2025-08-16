@@ -1,127 +1,136 @@
-import { Link } from 'react-router-dom';
-import { FaFacebookF, FaWhatsapp, FaInstagram, FaYoutube } from 'react-icons/fa';
-import { Phone, Mail, MapPin } from 'lucide-react';
-import { motion } from 'framer-motion';
-import React from 'react';
+import { FaFacebookF, FaWhatsapp, FaInstagram, FaYoutube } from "react-icons/fa";
+import { Phone, Mail, MapPin } from "lucide-react";
+import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="relative text-white w-full bg-gradient-to-r from-blue-500 to-blue-700 overflow-hidden py-12 md:py-16">
+    <footer className="relative w-full text-white bg-gradient-to-r from-blue-500 to-blue-700 overflow-hidden">
       {/* Decorative SVG waves */}
-      <svg
-        className="absolute top-0 left-0 w-full h-20 text-white/10"
-        preserveAspectRatio="none"
-        viewBox="0 0 1440 320"
-      >
-        <path
-          fill="currentColor"
-          fillOpacity="0.1"
-          d="M0,96L1440,32L1440,0L0,0Z"
-        ></path>
-      </svg>
-
-      <div className="container mx-auto px-6 relative z-10 grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 items-start text-center md:text-left">
-        {/* Left Column - Logo & About */}
-        <div className="flex flex-col items-center md:items-start space-y-6">
-          <motion.img
-            src="/logo.png"
-            alt="Water Park Chalo"
-            className="h-28 md:h-36 w-auto rounded-2xl drop-shadow-lg bg-white/10 p-3"
-            animate={{ y: [0, -10, 0] }}
-            transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+      <div className="absolute top-0 left-0 w-full h-20">
+        <svg
+          className="w-full h-full"
+          viewBox="0 0 1440 320"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill="rgba(255,255,255,0.2)"
+            d="M0,160L48,176C96,192,192,224,288,224C384,224,480,192,576,160C672,128,768,96,864,112C960,128,1056,192,1152,192C1248,192,1344,128,1392,96L1440,64V0H0Z"
           />
-          <p className="text-gray-200 leading-relaxed text-sm md:text-base max-w-xs">
-            Water Park Chalo is your go-to destination for booking tickets to the
-            best water parks in India. Enjoy a seamless experience with trusted
-            partners and exclusive offers.
-          </p>
-          {/* Social Links */}
-          <div className="flex justify-center md:justify-start space-x-4 mt-3">
-            <a
-              href="https://www.facebook.com/people/Waterpark-chalo/61568891087635"
-              className="p-2 md:p-3 bg-white/20 rounded-full hover:bg-blue-600 transition-all duration-200"
-            >
-              <FaFacebookF className="text-white text-sm md:text-base" />
-            </a>
-            <a
-              href="https://wa.me/9146869202"
-              className="p-2 md:p-3 bg-white/20 rounded-full hover:bg-green-500 transition-all duration-200"
-            >
-              <FaWhatsapp className="text-white text-sm md:text-base" />
-            </a>
-            <a
-              href="https://www.instagram.com/waterpark_chalo/"
-              className="p-2 md:p-3 bg-white/20 rounded-full hover:bg-pink-500 transition-all duration-200"
-            >
-              <FaInstagram className="text-white text-sm md:text-base" />
-            </a>
-            <a
-              href="https://www.youtube.com/@Waterparkchalo"
-              className="p-2 md:p-3 bg-white/20 rounded-full hover:bg-red-500 transition-all duration-200"
-            >
-              <FaYoutube className="text-white text-sm md:text-base" />
-            </a>
-          </div>
-        </div>
+        </svg>
+      </div>
 
-        {/* Center Column - Useful Links */}
-        <div className="flex flex-col items-center md:items-start space-y-4">
-          <h4 className="text-lg md:text-xl font-bold">Useful Links</h4>
-          <ul className="space-y-2 text-gray-200 text-sm md:text-base">
-            {['about', 'contact', 'policies'].map((link, i) => (
-              <li key={i}>
-                <Link
-                  to={`/${link}`}
-                  className="relative after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  {link.charAt(0).toUpperCase() + link.slice(1).replace('-', ' ')}
-                </Link>
+      <div className="relative z-10 px-6 py-12 md:py-16 lg:px-20">
+        {/* Desktop Layout */}
+        <div className="hidden md:grid grid-cols-4 gap-8">
+          {/* Logo */}
+          <div>
+            <h2 className="text-2xl font-extrabold tracking-wide">Water Park Chalo</h2>
+            <p className="mt-3 text-sm opacity-80">
+              Dive into fun with endless rides, pools & adventures. 🌊
+            </p>
+          </div>
+
+          {/* Useful Links */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Useful Links</h3>
+            <ul className="space-y-2 text-sm opacity-90">
+              <li>Home</li>
+              <li>About Us</li>
+              <li>Tickets</li>
+              <li>Attractions</li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Contact</h3>
+            <ul className="space-y-2 text-sm opacity-90">
+              <li className="flex items-center gap-2">
+                <Phone size={16} /> +91 98765 43210
               </li>
-            ))}
-          </ul>
+              <li className="flex items-center gap-2">
+                <Mail size={16} /> info@waterparkchalo.com
+              </li>
+              <li className="flex items-center gap-2">
+                <MapPin size={16} /> Patna, Bihar
+              </li>
+            </ul>
+          </div>
+
+          {/* Socials */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Follow Us</h3>
+            <div className="flex gap-4">
+              <FaFacebookF className="cursor-pointer hover:text-blue-200" />
+              <FaInstagram className="cursor-pointer hover:text-pink-200" />
+              <FaWhatsapp className="cursor-pointer hover:text-green-200" />
+              <FaYoutube className="cursor-pointer hover:text-red-300" />
+            </div>
+          </div>
         </div>
 
-        {/* Right Column - Contact Info */}
-        <div className="flex flex-col items-center md:items-start space-y-4">
-          <h4 className="text-lg md:text-xl font-bold">Contact & Location</h4>
-          <div className="flex items-center space-x-3 group">
-            <Phone className="w-5 h-5 md:w-6 md:h-6 text-white" />
-            <a
-              href="tel:+918847714464"
-              className="relative text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200 font-medium after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 group-hover:after:w-full"
-            >
-              +91 88477 14464
-            </a>
+        {/* Mobile Layout */}
+        <div className="md:hidden flex flex-col items-center text-center gap-6">
+          {/* Logo */}
+          <div>
+            <h2 className="text-3xl font-extrabold">🌊 Water Park Chalo</h2>
           </div>
-          <div className="flex items-center space-x-3 group">
-            <Mail className="w-5 h-5 md:w-6 md:h-6 text-white" />
-            <a
-              href="mailto:wpc@waterparkchalo.com"
-              className="relative text-gray-200 text-sm md:text-base hover:text-white transition-colors duration-200 font-medium after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 group-hover:after:w-full"
-            >
-              wpc@waterparkchalo.com
-            </a>
+
+          {/* Contact + Links side by side */}
+          <div className="flex justify-center gap-12 w-full">
+            {/* Contact */}
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Contact</h3>
+              <ul className="space-y-2 text-sm opacity-90">
+                <li className="flex items-center gap-2 justify-center">
+                  <Phone size={14} /> +91 98765 43210
+                </li>
+                <li className="flex items-center gap-2 justify-center">
+                  <Mail size={14} /> info@waterparkchalo.com
+                </li>
+                <li className="flex items-center gap-2 justify-center">
+                  <MapPin size={14} /> Patna, Bihar
+                </li>
+              </ul>
+            </div>
+
+            {/* Links */}
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Links</h3>
+              <ul className="space-y-2 text-sm opacity-90">
+                <li>Home</li>
+                <li>About</li>
+                <li>Tickets</li>
+                <li>Attractions</li>
+              </ul>
+            </div>
           </div>
-          <div className="flex items-start space-x-3 group text-center md:text-left">
-            <MapPin className="w-5 h-5 md:w-6 md:h-6 text-white mt-1" />
-            <span className="relative text-gray-200 text-sm md:text-base font-medium after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 group-hover:after:w-full">
-              110, Lakshmi Apt 1, Alkapuri, Nallasopara 401209
-            </span>
+
+          {/* Socials at bottom */}
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Follow Us</h3>
+            <div className="flex gap-6 justify-center">
+              <FaFacebookF className="cursor-pointer hover:text-blue-200" />
+              <FaInstagram className="cursor-pointer hover:text-pink-200" />
+              <FaWhatsapp className="cursor-pointer hover:text-green-200" />
+              <FaYoutube className="cursor-pointer hover:text-red-300" />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-white/20 mt-10 pt-5 text-center text-gray-300 text-xs md:text-sm">
-        © 2025 All Rights Reserved by Water Park Chalo. Made by{' '}
-        <a
-          href="https://www.appzeto.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-white font-medium hover:text-blue-300"
+      {/* Bottom Wave */}
+      <div className="absolute bottom-0 left-0 w-full h-20">
+        <svg
+          className="w-full h-full"
+          viewBox="0 0 1440 320"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          Appzeto
-        </a>
+          <path
+            fill="rgba(255,255,255,0.15)"
+            d="M0,64L48,96C96,128,192,192,288,197.3C384,203,480,149,576,144C672,139,768,181,864,176C960,171,1056,117,1152,101.3C1248,85,1344,107,1392,117.3L1440,128V320H0Z"
+          />
+        </svg>
       </div>
     </footer>
   );
