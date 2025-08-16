@@ -8,7 +8,7 @@ const config = {
   ...env,
   
   // Backend API URL - Change this to switch between environments
-    API_BASE_URL:  'https://water-backend-fe1c.onrender.com',
+    API_BASE_URL:  'http://localhost:5175',
   
   // API endpoints
   API_ENDPOINTS: {
