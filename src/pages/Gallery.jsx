@@ -1,0 +1,94 @@
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import config from '../config/config';
+
+const isMobile = () => window.innerWidth <= 768;
+
+const Gallery = () => {
+  const [carouselData, setCarouselData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const fetchCarouselData = async () => {
+    try {
+      const response = await fetch(`${config.API_BASE_URL}/api/hero-carousel/active`);
+      if (!response.ok) throw new Error('Failed to fetch carousel data');
+      const data = await response.json();
+      const filteredData = data.filter(item => (isMobile() ? item.isMobile === true : item.isMobile === false));
+      setCarouselData(filteredData);
+    } catch (err) {
+      console.error('Error fetching carousel data:', err);
+      setError('Failed to load gallery content');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCarouselData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-blue-100">
+        <div className="w-12 h-12 border-4 border-blue-200 border-l-blue-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !carouselData.length) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-blue-100">
+        <p className="text-red-500 text-lg">{error || 'No gallery items available'}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-200 via-blue-400 to-blue-600 p-6 relative overflow-hidden">
+      <h1 className="text-4xl font-bold text-blue-900 text-center mb-8">Water Park Gallery</h1>
+
+      {/* Floating bubbles */}
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          animate={{ y: [0, -30, 0], x: [0, 20, -20, 0] }}
+          transition={{ repeat: Infinity, duration: 6 + i, ease: 'easeInOut' }}
+          className="absolute w-10 h-10 bg-blue-300/70 rounded-full opacity-90"
+          style={{ left: `${i * 15}%`, top: `${10 + i * 12}%` }}
+        />
+      ))}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-auto">
+        {carouselData.map((item, idx) => (
+          <motion.div
+            key={idx}
+            className="relative rounded-xl overflow-hidden shadow-lg cursor-pointer"
+            whileHover={{ scale: 1.05, rotate: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: idx * 0.05 }}
+          >
+            <img
+              src={item.image} // <--- FIXED field name
+              alt={item.title || 'Gallery Image'}
+              className="w-full h-auto object-cover rounded-xl"
+              onError={(e) => { e.target.src = '/fallback.png'; }}
+            />
+            {item.title && (
+              <motion.div
+                className="absolute bottom-2 left-2 bg-blue-500/60 text-white px-2 py-1 rounded text-sm backdrop-blur-sm"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+              >
+                {item.title}
+              </motion.div>
+            )}
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Gallery;
