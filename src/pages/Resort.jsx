@@ -15,9 +15,11 @@ import { MapPin } from "lucide-react";
 import config from '../config/config.js';
 import { toast } from 'react-hot-toast';
 import Loader from '../components/Loader';
+
 import ReviewForm from '../components/ReviewForm';
 import ReviewList from '../components/ReviewList';
 import ReviewService from '../services/reviewService';
+
 import SEO from '../components/SEO/SEO';
 import { seoConfig } from '../config/seo';
 
@@ -26,8 +28,7 @@ const ProductView = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const [selectedImage, setSelectedImage] = useState(0);
-  const [adultquantity, setadultQuantity] = useState(1);
-    const [childquantity, setchildQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [modalSelectedImage, setModalSelectedImage] = useState(0);
@@ -221,14 +222,9 @@ const ProductView = () => {
     return [fallbackImage];
   })();
 
-  const handleadultQuantityChange = (value) => {
+  const handleQuantityChange = (value) => {
     if (value >= 1) {
-      setadultQuantity(value);
-    }
-  }
-     const handlechildQuantityChange = (value) => {
-    if (value >= 1) {
-      setchildQuantity(value);
+      setQuantity(value);
     }
   };
 
@@ -272,8 +268,8 @@ const ProductView = () => {
      navigate('/checkout', {
       state: {
         product,
-        adultquantity,
-        childquantity      }
+        quantity
+      }
     });
     } catch (error) {
       toast.error('Failed to add to cart');
@@ -348,542 +344,476 @@ const ProductView = () => {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
- className=" w-full h-full bg-[#00B4D8]">
-
+      className="min-h-screen bg-gradient-to-b from-white to-gray-50"
+    >
       <SEO {...productSEO} />
       {/* Breadcrumb */}
-  
+      <div className="border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex items-center space-x-2 text-xs text-gray-500">
+            <a href="/" className="hover:text-blue-800 transition-colors">Home</a>
+            <span>/</span>
+            <a href="/shop" className="hover:text-blue-800 transition-colors">Shop</a>
+            <span>/</span>
+            <span className="text-gray-900 font-medium">{product.name}</span>
+          </div>
+        </div>
+      </div>
 
       <div className="container mx-auto px-4 py-4 sm:py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
           {/* Product Images - Left Side */}
-        <motion.div 
-  initial={{ opacity: 0, x: -20 }}
-  animate={{ opacity: 1, x: 0 }}
-  transition={{ duration: 0.5 }}
-  className="lg:col-span-5 space-y-4 flex flex-col"
->
-  {/* Main Image Display */}
-  <div className="relative w-full flex items-center justify-center rounded-2xl overflow-hidden bg-gradient-to-br from-[#CAF0F8] via-[#ADE8F4] to-[#90E0EF] group shadow-xl border border-[#0077B6]/20" style={{ maxHeight: '60vh' }}>
-    
-    <img
-      src={productImages[selectedImage]}
-      alt={product.name}
-      className="max-w-full max-h-[60vh] object-contain cursor-pointer"
-      onClick={handleImageClick}
-      onError={e => {
-        e.target.onerror = null;
-        if (productImages[selectedImage] !== config.fixImageUrl(product.image)) {
-          e.target.src = config.fixImageUrl(product.image);
-        } else {
-          e.target.src = 'https://placehold.co/600x600/e0f7fa/006d77?text=No+Image';
-        }
-      }}
-    />
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="lg:col-span-5 space-y-3 lg:space-y-4 flex flex-col"
+          >
+            <div className="relative w-full flex items-center justify-center rounded-xl overflow-hidden bg-gray-50 group shadow-lg" style={{ maxHeight: '60vh' }}>
+              <img
+                src={productImages[selectedImage]}
+                alt={product.name}
+                className="max-w-full max-h-[60vh] object-contain"
+                onClick={handleImageClick}
+                onError={e => {
+                  e.target.onerror = null;
+                  if (productImages[selectedImage] !== config.fixImageUrl(product.image)) {
+                    e.target.src = config.fixImageUrl(product.image);
+                  } else {
+                    e.target.src = 'https://placehold.co/600x600/e2e8f0/475569?text=Product+Image';
+                  }
+                }}
+              />
+              
+              {/* Gallery indicator overlay */}
+              {productImages.length > 1 && (
+                <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium">
+                  <span className="flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                    </svg>
+                    {productImages.length} photos
+                  </span>
+                </div>
+              )}
+            
+              
+              {/* Navigation Arrows - Always Visible */}
+              {productImages.length > 1 && (
+                <>
+                  <motion.button
+                    initial={{ opacity: 0, x: -10 }}
+                    whileHover={{ x: -5, scale: 1.1 }}
+                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-[#0077B6] p-3 sm:p-4 rounded-full shadow-lg transition-all opacity-100 focus:opacity-100 z-10 border-2 border-[#0077B6]/30 backdrop-blur-sm"
+                    onClick={handlePreviousImage}
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeftIcon className="h-6 w-6 sm:h-7 sm:w-7" />
+                  </motion.button>
+                  <motion.button
+                    initial={{ opacity: 0, x: 10 }}
+                    whileHover={{ x: 5, scale: 1.1 }}
+                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-[#0077B6] p-3 sm:p-4 rounded-full shadow-lg transition-all opacity-100 focus:opacity-100 z-10 border-2 border-[#0077B6]/30 backdrop-blur-sm"
+                    onClick={handleNextImage}
+                    aria-label="Next image"
+                  >
+                    <ChevronRightIcon className="h-6 w-6 sm:h-7 sm:w-7" />
+                  </motion.button>
+                </>
+              )}
 
-    {/* Gallery Badge */}
-    {productImages.length > 1 && (
-      <div className="absolute top-3 right-3 bg-[#03045E]/70 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
-        📷 {productImages.length} Photos
-      </div>
-    )}
-
-    {/* Navigation Arrows */}
-    {productImages.length > 1 && (
-      <>
-        <motion.button
-          initial={{ opacity: 0, x: -10 }}
-          whileHover={{ x: -5, scale: 1.1 }}
-          className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-[#90E0EF] text-[#0077B6] p-3 rounded-full shadow-lg border-2 border-[#0077B6]/30 transition-all"
-          onClick={handlePreviousImage}
-          aria-label="Previous image"
-        >
-          <ChevronLeftIcon className="h-6 w-6" />
-        </motion.button>
-
-        <motion.button
-          initial={{ opacity: 0, x: 10 }}
-          whileHover={{ x: 5, scale: 1.1 }}
-          className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-[#90E0EF] text-[#0077B6] p-3 rounded-full shadow-lg border-2 border-[#0077B6]/30 transition-all"
-          onClick={handleNextImage}
-          aria-label="Next image"
-        >
-          <ChevronRightIcon className="h-6 w-6" />
-        </motion.button>
-      </>
-    )}
-
-    {/* Counter */}
-    {productImages.length > 1 && (
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#023E8A]/80 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md"
-      >
-        {selectedImage + 1} / {productImages.length}
-      </motion.div>
-    )}
-  </div>
-
-  {/* Thumbnails */}
-  {productImages.length > 1 && (
-    <div className="grid grid-cols-4 gap-3">
-      {productImages.map((image, index) => (
-        <motion.button
-          key={index}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setSelectedImage(index)}
-          className={`aspect-square rounded-xl overflow-hidden border-2 transition-all relative shadow-sm ${
-            selectedImage === index 
-              ? 'border-[#0077B6] shadow-lg' 
-              : 'border-transparent hover:border-[#0077B6]/30'
-          }`}
-        >
-          <img 
-            src={image} 
-            alt={`${product.name} - Image ${index + 1}`}
-            className="w-full h-full object-cover bg-white" 
-            onError={e => {
-              e.target.onerror = null;
-              e.target.src = 'https://placehold.co/150x150/e0f7fa/006d77?text=Image';
-            }}
-          />
-          {selectedImage === index && (
-            <div className="absolute inset-0 bg-[#0077B6]/20 flex items-center justify-center">
-              <div className="w-3 h-3 bg-[#0077B6] rounded-full"></div>
+              {/* Image Counter */}
+              {productImages.length > 1 && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute bottom-2 sm:bottom-3 left-0 right-0 mx-auto w-fit bg-black/50 backdrop-blur-sm text-white px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-medium shadow-lg"
+                >
+                  {selectedImage + 1} / {productImages.length}
+                </motion.div>
+              )}
             </div>
-          )}
-        </motion.button>
-      ))}
-    </div>
-  )}
-</motion.div>
-
+            
+            {productImages.length > 1 && (
+              <div className="grid grid-cols-4 gap-2 sm:gap-3">
+                {productImages.map((image, index) => (
+                  <motion.button
+                    key={index}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setSelectedImage(index)}
+                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-all relative ${
+                      selectedImage === index 
+                        ? 'border-[#0077B6] shadow-lg' 
+                        : 'border-transparent hover:border-[#0077B6]/30'
+                    }`}
+                  >
+                    <img 
+                      src={image} 
+                      alt={`${product.name} - Image ${index + 1}`}
+                      className="w-full h-full object-fit bg-white" 
+                      onError={e => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://placehold.co/150x150/e2e8f0/475569?text=Image';
+                      }}
+                    />
+                    {selectedImage === index && (
+                      <div className="absolute inset-0 bg-[#0077B6]/20 flex items-center justify-center">
+                        <div className="w-2 h-2 bg-[#0077B6] rounded-full"></div>
+                      </div>
+                    )}
+                  </motion.button>
+                ))}
+              </div>
+            )}
+          </motion.div>
 
           {/* Product Details - Right Side */}
           <motion.div 
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-      className="lg:col-span-7 space-y-6 flex flex-col justify-start bg-gradient-to-br from-[#E0F7FA] to-[#B2EBF2] p-6 rounded-2xl shadow-lg relative overflow-hidden"
-    >
-      {/* Decorative Wave Background */}
-      <div className="absolute top-0 left-0 w-full h-24 bg-[#00B4D8] rounded-b-[50%] opacity-20 pointer-events-none"></div>
-
-      {/* Product Header */}
-      <div className="space-y-3 relative z-10">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <MapPin size={14} className="text-blue-800" />
-          <span className="px-2 py-1 bg-[#CAF0F8] text-[#023E8A] text-xs font-medium rounded-full">
-            {product.category}
-          </span>
-          {product.isNew && (
-            <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-              🌊 New Splash!
-            </span>
-          )}
-        </div>
-
-        <h1 className="text-2xl font-bold text-[#03045E] leading-tight">
-          {product.name}
-        </h1>
-        
-        <div className="flex items-center gap-2">
-          {/* Rating Display */}
-          <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, index) => (
-              <StarIcon
-                key={index}
-                className={`h-4 w-4 ${
-                  index < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'
-                }`}
-              />
-            ))}
-            <span className="text-xs text-gray-600">
-              {averageRating > 0 ? `${averageRating.toFixed(1)} (${reviews.length} reviews)` : 'No reviews yet'}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Price Section */}
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-baseline gap-2">
-          <span className="text-3xl font-extrabold text-[#0077B6]">
-            ₹{product.price.toFixed(2)}
-      
-      
-          </span>
-        </div>
-        
-     
-      </div>
-
-      {/* Product Description */}
-      <div>
-        <p className="text-sm text-gray-700 leading-relaxed">
-          {product.description}
-        </p>
-      </div>
-
-      {/* Quantity + Actions */}
-      <div className="flex flex-wrap items-center gap-3">
-        {/* Adult Qty */}
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-gray-700">👨 Adult:</label>
-          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-            <button
-              onClick={() => handleadultQuantityChange(adultquantity - 1)}
-              className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
-              disabled={adultquantity <= 1}
-            >
-              -
-            </button>
-            <span className="px-3 py-2 border-x border-gray-300 text-sm">
-              {adultquantity}
-            </span>
-            <button
-              onClick={() => handleadultQuantityChange(adultquantity + 1)}
-              className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        {/* Child Qty */}
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-gray-700">👧 Child:</label>
-          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-            <button
-              onClick={() => handlechildQuantityChange(childquantity - 1)}
-              className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
-              disabled={childquantity <= 1}
-            >
-              -
-            </button>
-            <span className="px-3 py-2 border-x border-gray-300 text-sm">
-              {childquantity}
-            </span>
-            <button
-              onClick={() => handlechildQuantityChange(childquantity + 1)}
-              className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        {/* Book Button */}
-        <motion.button 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleAddToCart}
-          disabled={typeof product.stock === 'number' ? product.stock <= 0 : isOutOfStock}
-          className={`flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold transition-all text-sm shadow-lg ${
-            typeof product.stock === 'number'
-              ? (product.stock <= 0
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-[#00B4D8] text-white hover:bg-[#0096C7]')
-              : (isOutOfStock
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-[#00B4D8] text-white hover:bg-[#0096C7]')
-          }`}
-        >
-      
-          BOOK NOW
-        </motion.button>
-
-        {/* Share Button */}
-        <motion.button 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="p-3 border border-gray-300 rounded-full hover:bg-[#CAF0F8] transition-colors"
-          onClick={handleShare}
-        >
-          <ShareIcon className="h-4 w-4 text-gray-600" />
-        </motion.button>
-      </div>
-
-      {/* Ticket Summary */}
-      <div className="mt-6 w-full flex justify-center relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-lg bg-gradient-to-br from-[#00B4D8] via-[#0096C7] to-[#0077B6] rounded-2xl shadow-xl overflow-hidden"
-        >
-          {/* Header */}
-          <div className="bg-[#023E8A] text-white text-center py-3 text-lg font-bold tracking-wide flex items-center justify-center gap-2">
-            🎟️ Ticket Summary
-          </div>
-
-          {/* Table */}
-          <table className="w-full text-sm text-white">
-            <thead className="bg-[#03045E]/80">
-              <tr>
-                <th className="px-4 py-3 text-left">Ticket Type</th>
-                <th className="px-4 py-3 text-center">Qty</th>
-                <th className="px-4 py-3 text-right">Price</th>
-                <th className="px-4 py-3 text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Adult */}
-              <motion.tr 
-                className="border-t border-white/30 hover:bg-white/10 transition"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <td className="px-4 py-3 font-medium">👨 Adult</td>
-                <td className="px-4 py-3 text-center">{adultquantity}</td>
-                <td className="px-4 py-3 text-right">₹{product.regularPrice}</td>
-                <td className="px-4 py-3 text-right">₹{adultquantity * product.regularPrice}</td>
-              </motion.tr>
-
-              {/* Child */}
-              <motion.tr 
-                className="border-t border-white/30 hover:bg-white/10 transition"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <td className="px-4 py-3 font-medium">👧 Child</td>
-                <td className="px-4 py-3 text-center">{childquantity}</td>
-                <td className="px-4 py-3 text-right">₹{product.price}</td>
-                <td className="px-4 py-3 text-right">₹{childquantity * product.price}</td>
-              </motion.tr>
-            </tbody>
-
-            {/* Footer */}
-            <tfoot>
-              <motion.tr 
-                className="bg-[#48CAE4] text-[#03045E] font-bold text-base"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.6 }}
-              >
-                <td className="px-4 py-3 text-left" colSpan={3}>💰 Grand Total</td>
-                <td className="px-4 py-3 text-right">
-                  ₹{adultquantity * product.regularPrice + childquantity * product.price}
-                </td>
-              </motion.tr>
-            </tfoot>
-          </table>
-        </motion.div>
-      </div>
-    </motion.div>
-        </div>
-
-     {/* Product Tabs - Water Park Theme */}
-<div className="mt-10 font-['Baloo_2',cursive]">
-  {/* Tab Navigation */}
-  <div className="border-b-2 border-blue-200">
-    <nav className="flex space-x-6">
-      {tabs.map((tab) => (
-        <motion.button
-          key={tab.id}
-          onClick={() => setActiveTab(tab.id)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className={`relative py-3 px-4 text-lg rounded-t-xl font-semibold transition-all duration-300 
-            ${activeTab === tab.id
-              ? 'bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white shadow-md'
-              : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'}`}
-        >
-          {tab.label}
-          {activeTab === tab.id && (
-            <motion.div
-              layoutId="tab-underline"
-              className="absolute left-0 right-0 bottom-0 h-1 bg-[#90E0EF] rounded-full"
-            />
-          )}
-        </motion.button>
-      ))}
-    </nav>
-  </div>
-
-  {/* Tab Content */}
-  <div className="py-8">
-    <AnimatePresence mode="wait">
-      {/* --- Description Tab --- */}
-      {activeTab === 'description' && (
-        <motion.div
-          key="description"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -30 }}
-          transition={{ duration: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          {/* Features */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">💡 Features</h4>
-            <div className="space-y-2 text-sm text-[#023E8A]">
-              {product.utility
-                ? product.utility.split(/\r?\n/).map((line, index) => (
-                    <p key={index} className="font-medium">
-                      {line.trim()}
-                    </p>
-                  ))
-                : <p>N/A</p>}
-            </div>
-          </div>
-
-          {/* Facilities */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">🏝️ Facility</h4>
-            <p className="text-sm text-[#023E8A] whitespace-pre-line">
-              {product.care || 'Care instructions not available'}
-            </p>
-          </div>
-        </motion.div>
-      )}
-
-      {/* --- Specifications Tab --- */}
-      {activeTab === 'specifications' && (
-        <motion.div 
-          key="specifications"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -30 }}
-          transition={{ duration: 0.4 }}
-          className="space-y-6"
-        >
-          {/* Basic Info */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">ℹ️ Basic Information</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <span className="text-xs text-gray-600">Product Name</span>
-                <p className="text-base font-semibold text-[#023E8A]">{product.name}</p>
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="lg:col-span-7 space-y-4 lg:space-y-6 flex flex-col justify-start"
+          >
+            {/* Product Header */}
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                 <MapPin size={14} className="text-blue-800" />
+                <span className="px-2 py-1 bg-blue text-blue-800 text-xs font-medium rounded-full">
+                 
+                  {product.category}
+                </span>
+                {product.isNew && (
+                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                    New Arrival
+                  </span>
+                )}
+               
               </div>
-              <div>
-                <span className="text-xs text-gray-600">Location</span>
-                <p className="text-base font-semibold text-[#023E8A]">{product.category}</p>
-              </div>
-            </div>
-          </div>
 
-          {/* Pricing Info */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">💵 Pricing</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <span className="text-xs text-gray-600">Adult Ticket</span>
-                <p className="font-bold text-xl text-[#0077B6]">₹{product.price?.toFixed(2) || 'N/A'}</p>
-              </div>
-              <div>
-                <span className="text-xs text-gray-600">Child Ticket</span>
-                <p className="font-bold text-xl text-[#0077B6]">₹{product.regularPrice?.toFixed(2) || 'N/A'}</p>
-              </div>
-              {product.regularPrice && product.regularPrice > product.price && (
-                <div>
-                  <span className="text-xs text-gray-600">Discount</span>
-                  <p className="text-lg font-semibold text-red-600">
-                    {Math.round(((product.regularPrice - product.price) / product.regularPrice) * 100)}% OFF 🎉
-                  </p>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+                {product.name}
+              </h1>
+              
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* Rating Display */}
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, index) => (
+                    <StarIcon
+                      key={index}
+                      className={`h-4 w-4 ${
+                        index < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'
+                      }`}
+                    />
+                  ))}
+                  <span className="text-xs text-gray-600">
+                    {averageRating > 0 ? `${averageRating.toFixed(1)} (${reviews.length} reviews)` : 'No reviews yet'}
+                  </span>
                 </div>
+
+              
+              </div>
+            </div>
+
+            {/* Price Section */}
+            <div className="space-y-2 sm:space-y-3">
+              <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
+                <span className="text-2xl sm:text-3xl font-bold text-gray-900">
+                  ₹{product.price.toFixed(2)}
+                </span>
+                {product.regularPrice && product.regularPrice > product.price && (
+                  <>
+                    <span className="text-lg sm:text-xl text-gray-400 line-through">
+                      ₹{product.regularPrice.toFixed(2)}
+                    </span>
+                    <span className="px-2 py-1 bg-red-100 text-red-600 text-xs font-medium rounded-full">
+                      {Math.round(((product.regularPrice - product.price) / product.regularPrice) * 100)}% OFF
+                    </span>
+                  </>
+                )}
+              </div>
+              
+              {product.regularPrice && product.regularPrice > product.price && (
+                <p className="text-xs text-gray-600">
+                  You save ₹{(product.regularPrice - product.price).toFixed(2)}
+                </p>
               )}
             </div>
-          </div>
 
-          {/* Description */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">📖 Description</h4>
-            <p className="text-base text-[#023E8A] leading-relaxed">{product.description || 'No description available.'}</p>
-          </div>
-        </motion.div>
-      )}
-
-      {/* --- FAQ Tab --- */}
-      {activeTab === 'FAQ' && (
-        <motion.div
-          key="FAQ"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -30 }}
-          transition={{ duration: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          {/* Info */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">🌞 Park Information</h4>
-            <ul className="space-y-2 text-[#023E8A]">
-              <li>• Opening Hours: 10:00 AM – 7:00 PM</li>
-              <li>• Tickets available online & gate</li>
-              <li>• Free entry for kids below 3 yrs</li>
-              <li>• Lockers & changing rooms</li>
-              <li>• Food courts inside park</li>
-            </ul>
-          </div>
-          
-          {/* Safety */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">🛟 Safety & Policies</h4>
-            <ul className="space-y-2 text-[#023E8A]">
-              <li>• Swimwear is mandatory</li>
-              <li>• Outside food not allowed</li>
-              <li>• Follow lifeguards at all times</li>
-              <li>• Pregnant women avoid rides</li>
-              <li>• First aid available on-site</li>
-            </ul>
-          </div>
-        </motion.div>
-      )}
-
-      {/* --- Reviews Tab --- */}
-      {activeTab === 'reviews' && (
-        <motion.div
-          key="reviews"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -30 }}
-          transition={{ duration: 0.4 }}
-          className="space-y-6"
-        >
-          {reviewsLoading ? (
-            <div className="flex items-center justify-center py-10 text-blue-600 font-medium">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-3">Loading reviews...</span>
+            {/* Product Description */}
+            <div className="space-y-3">
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {product.description}
+              </p>
             </div>
-          ) : (
-            <>
-              <ReviewForm
-                productId={product._id}
-                existingReview={userReview}
-                isEditing={isEditingReview}
-                onStartEdit={() => setIsEditingReview(true)}
-                onCancelEdit={() => setIsEditingReview(false)}
-                onReviewSubmitted={(review) => {
-                  handleReviewSubmitted(review);
-                  setIsEditingReview(false);
-                }}
-                onReviewUpdated={(review) => {
-                  handleReviewUpdated(review);
-                  setIsEditingReview(false);
-                }}
-                onReviewDeleted={() => {
-                  handleReviewDeleted();
-                  setIsEditingReview(false);
-                }}
-              />
 
-              <ReviewList
-                reviews={reviews}
-                averageRating={averageRating}
-                totalReviews={reviews.length}
-              />
-            </>
-          )}
-        </motion.div>
-      )}
-    </AnimatePresence>
+            {/* Quantity, Add to Cart, and Share in One Line */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-medium text-gray-700"> ticekt Qty:</label>
+                <div className="flex items-center border border-gray-300 rounded-lg">
+                  <button
+                    onClick={() => handleQuantityChange(quantity - 1)}
+                    className="px-2 py-2 hover:bg-gray-100 transition-colors"
+                    disabled={quantity <= 1}
+                  >
+                    -
+                  </button>
+                  <span className="px-3 py-2 border-x border-gray-300 text-sm">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => handleQuantityChange(quantity + 1)}
+                    className="px-2 py-2 hover:bg-gray-100 transition-colors"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <motion.button 
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleAddToCart}
+                disabled={typeof product.stock === 'number' ? product.stock <= 0 : isOutOfStock}
+                className={`w-36 sm:w-36 flex items-center justify-center gap-2 px-4 py-4 rounded-full font-semibold transition-all text-sm ${
+                  typeof product.stock === 'number'
+                    ? (product.stock <= 0
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-[#0077B6] text-white hover:bg-[#0077B6] shadow-lg hover:shadow-xl')
+                    : (isOutOfStock
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-[#0077B6] text-white hover:bg-[#0077B6] shadow-lg hover:shadow-xl')
+                }`}
+              >
+                <ShoppingCartIcon className="h-4 w-6 sm:h-5 sm:w-5" />
+               BOOK NOW
+              </motion.button>
+              
+              <motion.button 
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="p-3 border border-gray-300 rounded-full hover:bg-gray-50 transition-colors"
+                onClick={handleShare}
+              >
+                <ShareIcon className="h-4 w-4 text-gray-600" />
+              </motion.button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Product Tabs */}
+        <div className="mt-8">
+          <div className="border-b border-gray-200">
+            <nav className="flex space-x-6">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-blue-600 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          <div className="py-6">
+            <AnimatePresence mode="wait">
+              {activeTab === 'description' && (
+                <motion.div
+                  key="description"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="prose max-w-none"
+                >
+                 
+                  
+<div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div className="bg-gray-50 p-4 rounded-lg">
+    <h4 className="font-semibold text-gray-900 mb-2 text-sm">Features</h4>
+    <ul className="space-y-1 text-xs text-gray-700">
+      <div>
+        <span className="text-xs text-gray-500">Utility</span>
+        {product.utility
+          ? product.utility
+              .split(/\r?\n/) // ✅ Only split at actual newlines
+              .map((line, index) => (
+                <p
+                  key={index}
+                  className="text-sm font-medium text-gray-900"
+                >
+                  {line.trim()}
+                </p>
+              ))
+          : <p className="text-sm font-medium text-gray-900">N/A</p>
+        }
+      </div>
+    </ul>
   </div>
-</div>
 
+
+                    
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-gray-900 mb-2 text-sm">Facility</h4>
+                      <p className="text-xs text-gray-700 whitespace-pre-line">
+                        {product.care || 'Care instructions not available'}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'specifications' && (
+                <motion.div 
+                  key="specifications"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-4"
+                >
+                  {/* Basic Information */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-3 text-sm">Basic Information</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <span className="text-xs text-gray-500">Product Name</span>
+                        <p className="text-sm font-medium text-gray-900">{product.name}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-500">Location</span>
+                        <p className="text-sm font-medium text-gray-900">{product.category}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Pricing Information */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-3 text-sm">Pricing Information</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div>
+                        <span className="text-xs text-gray-500">Current Price</span>
+                        <p className="font-bold text-lg text-gray-900">₹{product.price?.toFixed(2) || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-500">Regular Price</span>
+                        <p className="font-medium text-base text-gray-600 line-through">₹{product.regularPrice?.toFixed(2) || 'N/A'}</p>
+                      </div>
+                      {product.regularPrice && product.regularPrice > product.price && (
+                        <div>
+                          <span className="text-xs text-gray-500">Discount</span>
+                          <p className="font-medium text-base text-red-600">
+                            {Math.round(((product.regularPrice - product.price) / product.regularPrice) * 100)}% OFF
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                
+
+               
+
+             
+
+                  {/* Product Description */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-3 text-sm">Product Description</h4>
+                    <p className="text-sm text-gray-700 leading-relaxed">{product.description || 'No description available.'}</p>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'FAQ' && (
+                <motion.div
+                  key="FAQ"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                >
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3 text-sm">Information</h4>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li>• Free shipping on orders above ₹2000</li>
+                      <li>• Standard delivery: 3-5 business days</li>
+                      <li>• Express delivery: 1-2 business days</li>
+                      <li>• International shipping available</li>
+                      <li>• Tracking number provided</li>
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3 text-sm">Return Policy</h4>
+                    <ul className="space-y-2 text-sm text-gray-700">
+                      <li>• 30-day return policy</li>
+                      <li>• Must be in original condition</li>
+                      <li>• Return shipping costs apply</li>
+                      <li>• Refund processed within 5-7 days</li>
+                      <li>• Contact customer service for returns</li>
+                    </ul>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'reviews' && (
+                <motion.div
+                  key="reviews"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-6"
+                >
+                  {reviewsLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                      <span className="ml-2 text-gray-600">Loading reviews...</span>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Review Form */}
+                      <ReviewForm
+                        productId={product._id}
+                        existingReview={userReview}
+                        isEditing={isEditingReview}
+                        onStartEdit={() => setIsEditingReview(true)}
+                        onCancelEdit={() => setIsEditingReview(false)}
+                        onReviewSubmitted={(review) => {
+                          handleReviewSubmitted(review);
+                          setIsEditingReview(false);
+                        }}
+                        onReviewUpdated={(review) => {
+                          handleReviewUpdated(review);
+                          setIsEditingReview(false);
+                        }}
+                        onReviewDeleted={() => {
+                          handleReviewDeleted();
+                          setIsEditingReview(false);
+                        }}
+                      />
+
+                      {/* Review List */}
+                      <ReviewList
+                        reviews={reviews}
+                        averageRating={averageRating}
+                        totalReviews={reviews.length}
+                      />
+                    </>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
 
         {/* Related Products */}
         <div className="mt-8">
