@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { 
-  UserCircleIcon, 
-  PencilSquareIcon, 
   ArrowLeftOnRectangleIcon, 
   CheckCircleIcon, 
   XCircleIcon, 
@@ -13,15 +11,10 @@ import {
   MinusIcon,
   CogIcon,
   ShieldCheckIcon,
-  HeartIcon,
-  StarIcon,
-  MapPinIcon,
-  PhoneIcon,
-  EnvelopeIcon,
   CreditCardIcon,
   TruckIcon,
   GiftIcon,
-  ChartBarIcon,
+  UserCircleIcon,
   EyeIcon
 } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -32,6 +25,10 @@ import { toast } from 'react-hot-toast';
 import orderService from '../services/orderService';
 import config from '../config/config.js';
 import OrderDetailsModal from '../components/OrderDetailsModal/OrderDetailsModal';
+
+// PDF libs
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 
 // Helper to get tab from URL
 const useQuery = () => {
@@ -54,23 +51,63 @@ const Account = () => {
   });
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [activeTab, setActiveTab] = useState(() => {
-    const initialTab = query.get('tab') || 'overview';
-    return initialTab;
-  });
+  const [activeTab, setActiveTab] = useState(() => query.get('tab') || 'orders');
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
-  const { cartItems, removeFromCart, updateQuantity, clearCart, getTotalPrice, loading: cartLoading, getItemImage } = useCart();
+
+  const { cartItems, removeFromCart, updateQuantity, clearCart, getTotalPrice, getItemImage } = useCart();
   const { user, logout, updateProfile, isAuthenticated } = useAuth();
+
+  // Refs to bill sections for PDF export
+  const billRefs = useRef({});
+
+  // Water-park palette helpers
+  const aquaPill = 'bg-cyan-50 text-cyan-700 border-cyan-200';
+  const indigoPill = 'bg-indigo-50 text-indigo-700 border-indigo-200';
+  const tealPill = 'bg-teal-50 text-teal-700 border-teal-200';
+  const greenPill = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+  const grayPill = 'bg-gray-50 text-gray-700 border-gray-200';
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'processing':
+      case 'confirmed':
+        return aquaPill;
+      case 'manufacturing':
+        return tealPill;
+      case 'shipped':
+        return indigoPill;
+      case 'delivered':
+        return greenPill;
+      default:
+        return grayPill;
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'processing':
+        return <ClockIcon className="h-4 w-4" />;
+      case 'confirmed':
+        return <CheckCircleIcon className="h-4 w-4" />;
+      case 'manufacturing':
+        return <CogIcon className="h-4 w-4" />;
+      case 'shipped':
+        return <TruckIcon className="h-4 w-4" />;
+      case 'delivered':
+        return <CheckCircleIcon className="h-4 w-4" />;
+      default:
+        return <ClockIcon className="h-4 w-4" />;
+    }
+  };
 
   // Function to handle tab changes and update URL
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
-    // Update URL without reloading the page
     const newUrl = `/account?tab=${tabId}`;
     navigate(newUrl, { replace: true });
   };
@@ -80,7 +117,7 @@ const Account = () => {
       navigate('/login');
     } else {
       setLoading(false);
-      toast.success(`Welcome back, ${user?.name}!`);
+      if (user?.name) toast.success(`Welcome back, ${user?.name}!`);
     }
   }, [isAuthenticated, navigate, user]);
 
@@ -99,23 +136,17 @@ const Account = () => {
   }, [user, navigate]);
 
   useEffect(() => {
-    if (user?.email) {
-      fetchOrders();
-    }
+    if (user?.email) fetchOrders();
     // eslint-disable-next-line
   }, [user?.email]);
 
   useEffect(() => {
-    if (activeTab === 'orders') {
-      fetchOrders();
-    }
+    if (activeTab === 'orders') fetchOrders();
   }, [activeTab]);
 
   useEffect(() => {
     const tab = query.get('tab');
-    if (tab) {
-      setActiveTab(tab);
-    }
+    if (tab) setActiveTab(tab);
   }, [location.search]);
 
   useEffect(() => {
@@ -132,9 +163,9 @@ const Account = () => {
     try {
       const data = await orderService.getOrdersByEmail(user.email);
       if (data.success) {
-        const sortedOrders = data.orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setOrders(sortedOrders);
-        setFilteredOrders(sortedOrders);
+        const sorted = data.orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setOrders(sorted);
+        setFilteredOrders(sorted);
       } else {
         throw new Error(data.message || 'No success field in response');
       }
@@ -151,61 +182,27 @@ const Account = () => {
     if (newQuantity < 1) return;
     try {
       await updateQuantity(productId, newQuantity);
-      toast.success('Cart updated successfully');
-    } catch (error) {
-      toast.error('Failed to update cart');
+      toast.success('Ticket updated successfully');
+    } catch {
+      toast.error('Failed to update ticket');
     }
   };
 
   const handleRemoveFromCart = async (productId) => {
     try {
       await removeFromCart(productId);
-      toast.success('Item removed from cart');
-    } catch (error) {
-      toast.error('Failed to remove item from cart');
+      toast.success('Removed from ticket');
+    } catch {
+      toast.error('Failed to remove item');
     }
   };
 
   const handleClearCart = async () => {
     try {
       await clearCart();
-      toast.success('Cart cleared successfully');
-    } catch (error) {
-      toast.error('Failed to clear cart');
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'processing':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'confirmed':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'manufacturing':
-        return 'bg-purple-50 text-purple-700 border-purple-200';
-      case 'shipped':
-        return 'bg-indigo-50 text-indigo-700 border-indigo-200';
-      case 'delivered':
-        return 'bg-green-50 text-green-700 border-green-200';
-      default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
-    }
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'processing':
-        return <ClockIcon className="h-4 w-4" />;
-      case 'confirmed':
-        return <CheckCircleIcon className="h-4 w-4" />;
-      case 'manufacturing':
-        return <CogIcon className="h-4 w-4" />;
-      case 'shipped':
-        return <TruckIcon className="h-4 w-4" />;
-      case 'delivered':
-        return <CheckCircleIcon className="h-4 w-4" />;
-      default:
-        return <ClockIcon className="h-4 w-4" />;
+      toast.success('Ticket cleared');
+    } catch {
+      toast.error('Failed to clear ticket');
     }
   };
 
@@ -243,7 +240,6 @@ const Account = () => {
       await updateProfile(updateData);
       setMessage('Profile updated successfully!');
       setIsEditing(false);
-      // Clear password fields
       setFormData(prev => ({
         ...prev,
         currentPassword: '',
@@ -260,147 +256,285 @@ const Account = () => {
     try {
       await logout();
       navigate('/');
-    } catch (error) {
+    } catch {
       toast.error('Failed to logout');
     } finally {
       setIsLoggingOut(false);
     }
   };
 
+  // Download bill/ticket PDF
+  const handleDownloadBill = async (orderId) => {
+    try {
+      const target = billRefs.current[orderId];
+      if (!target) return;
+
+      // temporarily add a white background for clean capture
+      const originalBg = target.style.backgroundColor;
+      target.style.backgroundColor = '#ffffff';
+
+      const canvas = await html2canvas(target, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'pt', 'a4');
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let position = 0;
+      let heightLeft = imgHeight;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`WaterPark_Ticket_${orderId}.pdf`);
+
+      // restore bg
+      target.style.backgroundColor = originalBg || '';
+    } catch (e) {
+      console.error(e);
+      toast.error('Unable to generate PDF');
+    }
+  };
+
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: UserCircleIcon },
-    { id: 'profile', label: 'Profile', icon: PencilSquareIcon },
-   
-    { id: 'orders', label: 'Ticket', icon: GiftIcon },
-    
+    { id: 'orders', label: 'Tickets', icon: GiftIcon },
   ];
+
+  // Decorative bubbles
+  const Bubble = ({ className }) => (
+    <span
+      className={`absolute rounded-full opacity-30 blur-sm animate-[float_6s_ease-in-out_infinite] ${className}`}
+      style={{
+        background:
+          'radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,.2) 60%, rgba(255,255,255,0) 70%)'
+      }}
+    />
+  );
 
   // JSX for the orders tab
   const OrdersTab = () => {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold text-white">Your Orders</h2>
+          <div className="flex items-center gap-3">
+            {/* Wavey title with tiny surfboard SVG */}
+            <svg width="36" height="36" viewBox="0 0 24 24" className="shrink-0">
+              <path d="M4 16c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2" fill="none" stroke="#06b6d4" strokeWidth="1.5" />
+              <path d="M10 6c3 2 5 4 6 6 1.2 2.4-.4 5.5-3.2 6.3" fill="none" stroke="#0ea5e9" strokeWidth="1.5"/>
+            </svg>
+            <h2 className="text-2xl font-semibold text-cyan-900">Your Tickets</h2>
+          </div>
           <div className="flex gap-2">
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="rounded-xl border border-cyan-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 bg-white"
             >
-              <option value="all">All Orders</option>
+              <option value="all">All Tickets</option>
               <option value="processing">Processing</option>
               <option value="confirmed">Confirmed</option>
-              <option value="manufacturing">Manufacturing</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
+              <option value="manufacturing">In Queue</option>
+              <option value="shipped">Sent</option>
+              <option value="delivered">Checked-In</option>
             </select>
           </div>
         </div>
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="relative">
+              <div className="h-12 w-12 rounded-full border-4 border-cyan-200 border-t-transparent animate-spin"></div>
+              <div className="absolute inset-0 -m-2">
+                <svg viewBox="0 0 120 30" className="h-6 w-24">
+                  <path d="M0 15 Q 20 0, 40 15 T 80 15 T 120 15" fill="none" stroke="#67e8f9" strokeWidth="2"/>
+                </svg>
+              </div>
+            </div>
           </div>
         ) : filteredOrders.length === 0 ? (
-          <div className="text-center py-12">
-            <ShoppingCartIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">Not found</h3>
-            <p className="mt-1 text-sm text-gray-500">Start buying to create your first order.</p>
+          <div className="text-center py-12 relative overflow-hidden rounded-2xl border border-cyan-100">
+            <div className="absolute -top-16 -left-10 opacity-30">
+              <svg width="220" height="120" viewBox="0 0 1440 320">
+                <path fill="#cffafe" d="M0,224L48,197.3C96,171,192,117,288,90.7C384,64,480,64,576,80C672,96,768,128,864,149.3C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L0,320Z"></path>
+              </svg>
+            </div>
+            <ShoppingCartIcon className="mx-auto h-12 w-12 text-cyan-400" />
+            <h3 className="mt-2 text-sm font-medium text-cyan-900">No tickets found</h3>
+            <p className="mt-1 text-sm text-cyan-700">Dive into fun—book your first ticket!</p>
             <div className="mt-6">
               <Link
                 to="/shop"
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-4 py-2 shadow-sm text-sm font-medium rounded-xl text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400"
               >
-               explore 
+                Explore Rides
               </Link>
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {filteredOrders.map((order) => (
               <div
                 key={order._id}
-                className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow"
+                className="relative rounded-2xl border border-cyan-100 bg-gradient-to-br from-white to-cyan-50 p-6 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
               >
-                {/* Order Header */}
-                <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Order ID</p>
-                    <p className="font-mono text-sm">{order._id}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500">Order Date</p>
-                    <p className="font-medium">
-                      {format(new Date(order.createdAt), 'MMM dd, yyyy')}
-                    </p>
-                  </div>
+                {/* Decorative bubbles */}
+                <Bubble className="h-14 w-14 left-3 -top-4" />
+                <Bubble className="h-10 w-10 right-10 -bottom-4" />
+                <Bubble className="h-8 w-8 left-1/2 top-8" />
+
+                {/* Wave ribbon */}
+                <div className="absolute -top-1 left-0 right-0">
+                  <svg viewBox="0 0 1440 60" className="w-full h-8">
+                    <path fill="#a5f3fc" d="M0,32L48,37.3C96,43,192,53,288,48C384,43,480,21,576,18.7C672,16,768,32,864,42.7C960,53,1056,59,1152,53.3C1248,48,1344,32,1392,24L1440,16L1440,0L0,0Z"></path>
+                  </svg>
                 </div>
 
-                {/* Order Items Preview */}
-                <div className="mt-4 space-y-3">
-                  {order.items.map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                      <div className="flex items-center space-x-4">
-                        <img
-                          src={config.fixImageUrl(item.image)}
-                          alt={item.name}
-                          className="h-16 w-16 object-cover rounded-lg"
-                          onError={(e) => {
-                            e.target.src = '/placeholder.png';
-                            e.target.onerror = null;
-                          }}
-                        />
-                        <div>
-                          <h4 className="font-medium text-gray-900">{item.name}</h4>
-                          <p className="text-sm text-gray-500">
-                            Quantity: {item.quantity} × ₹{item.price.toFixed(2)}
-                          </p>
-                        </div>
+                {/* Printable BILL/TICKET (captured for PDF) */}
+                <div
+                  ref={(el) => (billRefs.current[order._id] = el)}
+                  className="bg-white rounded-xl border border-cyan-100 p-4"
+                >
+                  {/* Header */}
+                  <div className="flex flex-wrap justify-between items-start gap-4">
+                    <div className="flex items-center gap-3">
+                      {/* Ticket logo SVG */}
+                      <svg width="36" height="36" viewBox="0 0 24 24" className="shrink-0">
+                        <rect x="3" y="6" width="18" height="12" rx="2" ry="2" fill="#06b6d4" opacity=".15"/>
+                        <path d="M6 9h12M6 12h8M6 15h6" stroke="#06b6d4" strokeWidth="1.5" fill="none"/>
+                      </svg>
+                      <div>
+                        <p className="text-xs text-cyan-600 font-semibold tracking-wide">AquaSplash Water Park</p>
+                        <h3 className="text-lg font-bold text-cyan-900">Entry Ticket & Bill</h3>
                       </div>
-                      <p className="font-medium text-gray-900">
-                        ₹{(item.quantity * item.price).toFixed(2)}
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-cyan-600">Order Date</p>
+                      <p className="font-medium text-cyan-900">
+                        {format(new Date(order.createdAt), 'MMM dd, yyyy')}
                       </p>
                     </div>
-                  ))}
-                </div>
+                  </div>
 
-                {/* Order Summary */}
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <div className="flex flex-wrap items-center justify-between gap-4">
-                    <div className="flex flex-wrap gap-3">
-                      <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(order.orderStatus)}`}>
-                        {getStatusIcon(order.orderStatus)}
-                        <span>{order.orderStatus?.charAt(0).toUpperCase() + order.orderStatus?.slice(1)}</span>
-                      </div>
-                      <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${
-                        order.paymentStatus === 'completed' 
-                          ? 'bg-green-50 text-green-700 border-green-200'
-                          : order.paymentStatus === 'failed'
-                          ? 'bg-red-50 text-red-700 border-red-200'
-                          : 'bg-yellow-50 text-yellow-700 border-yellow-200'
-                      }`}>
-                        <CreditCardIcon className="h-4 w-4" />
-                        <span>Payment: {order.paymentStatus?.charAt(0).toUpperCase() + order.paymentStatus?.slice(1)}</span>
-                      </div>
+                  {/* Order IDs */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+                    <div>
+                      <p className="text-xs text-cyan-600">Order ID</p>
+                      <p className="font-mono text-sm">{order._id}</p>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <p className="text-sm text-gray-500">Total Amount</p>
-                        <p className="text-lg font-semibold text-gray-900">₹{order.totalAmount.toFixed(2)}</p>
-                      </div>
-                      <button
-                        onClick={() => setSelectedOrderId(order._id)}
-                        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                      >
-                        <EyeIcon className="h-4 w-4" />
-                        View Details
-                      </button>
+                    <div>
+                      <p className="text-xs text-cyan-600">Payment</p>
+                      <p className="text-sm font-medium capitalize">
+                        {order.paymentStatus || 'pending'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-cyan-600">Status</p>
+                      <p className="text-sm font-medium capitalize">{order.orderStatus}</p>
                     </div>
                   </div>
 
-                  {/* Shipping Address Preview */}
-                  <div className="mt-4 text-sm text-gray-500">
-                    <p>Shipping to: {order.address.street}, {order.address.city}, {order.address.state} {order.address.pincode}</p>
+                  {/* Items */}
+                  <div className="mt-4 space-y-3">
+                    {order.items.map((item, idx) => (
+                      <div key={idx} className="flex items-center justify-between py-2 border-b border-cyan-50 last:border-0">
+                        <div className="flex items-center gap-4">
+                          <img
+                            src={config.fixImageUrl(item.image)}
+                            alt={item.name}
+                            className="h-14 w-14 object-cover rounded-lg ring-1 ring-cyan-100"
+                            onError={(e) => { e.target.src = '/placeholder.png'; e.target.onerror = null; }}
+                          />
+                          <div>
+                            <h4 className="font-medium text-cyan-900">{item.name}</h4>
+                            <p className="text-sm text-cyan-700">
+                              Qty: {item.quantity} × ₹{item.price.toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="font-semibold text-cyan-900">
+                          ₹{(item.quantity * item.price).toFixed(2)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Summary */}
+                  <div className="mt-4 pt-4 border-t border-cyan-100">
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <div className="flex flex-wrap gap-2">
+                        <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(order.orderStatus)}`}>
+                          {getStatusIcon(order.orderStatus)}
+                          <span className="capitalize">{order.orderStatus}</span>
+                        </div>
+                        <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${
+                          order.paymentStatus === 'completed' 
+                            ? greenPill
+                            : order.paymentStatus === 'failed'
+                            ? 'bg-rose-50 text-rose-700 border-rose-200'
+                            : aquaPill
+                        }`}>
+                          <CreditCardIcon className="h-4 w-4" />
+                          <span className="capitalize">Payment: {order.paymentStatus || 'pending'}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="text-sm text-cyan-700">Total Amount</p>
+                          <p className="text-xl font-extrabold text-cyan-900">₹{order.totalAmount.toFixed(2)}</p>
+                        </div>
+                        <button
+                          onClick={() => setSelectedOrderId(order._id)}
+                          className="inline-flex items-center gap-2 px-4 py-2 border border-cyan-200 text-cyan-900 shadow-sm text-sm font-medium rounded-xl bg-white hover:bg-cyan-50 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                        >
+                          <EyeIcon className="h-4 w-4" />
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Address */}
+                    {order?.address && (
+                      <div className="mt-3 text-sm text-cyan-800">
+                        <p>
+                          <span className="font-medium">Guest Address:</span>{' '}
+                          {order.address.street}, {order.address.city}, {order.address.state} {order.address.pincode}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions row (outside capture area) */}
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => handleDownloadBill(order._id)}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-600 text-white hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400"
+                  >
+                    {/* Download SVG */}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 3v10m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M5 19h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                    Download Ticket PDF
+                  </motion.button>
+
+                  <div className="text-xs text-cyan-700 flex items-center gap-2">
+                    <svg width="22" height="22" viewBox="0 0 24 24">
+                      <path d="M2 12c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2" fill="none" stroke="#06b6d4" strokeWidth="1.5"/>
+                    </svg>
+                    Show this ticket QR at the gate (QR appears in details).
                   </div>
                 </div>
               </div>
@@ -413,8 +547,21 @@ const Account = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Water-park header backdrop */}
+      <div className="min-h-screen bg-gradient-to-b from-sky-50 via-cyan-50 to-white relative">
+        {/* top waves */}
+        <div className="absolute inset-x-0 -top-1">
+          <svg viewBox="0 0 1440 80" className="w-full h-16">
+            <path fill="#e0f2fe" d="M0,64L60,53.3C120,43,240,21,360,16C480,11,600,21,720,37.3C840,53,960,75,1080,69.3C1200,64,1320,32,1380,16L1440,0L1440,0L0,0Z"></path>
+          </svg>
+        </div>
+
+        {/* floating bubbles around */}
+        <Bubble className="h-24 w-24 right-6 top-24" />
+        <Bubble className="h-12 w-12 left-10 top-56" />
+        <Bubble className="h-16 w-16 right-24 bottom-40" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -422,16 +569,24 @@ const Account = () => {
             className="mb-8"
           >
             <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">My Account</h1>
-                <p className="text-gray-600 mt-1">Welcome back, {user?.name}! Manage your profile and orders.</p>
+              <div className="flex items-center gap-3">
+                <svg width="44" height="44" viewBox="0 0 24 24" className="shrink-0">
+                  <path d="M4 16c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2" fill="none" stroke="#06b6d4" strokeWidth="1.5" />
+                  <circle cx="7" cy="7" r="2" fill="#22d3ee" opacity=".6"/>
+                </svg>
+                <div>
+                  <h1 className="text-3xl font-extrabold tracking-tight text-cyan-900">My Aqua Account</h1>
+                  <p className="text-cyan-700 mt-1">
+                    Hey {user?.name || 'Guest'} — manage your profile & tickets. Surf’s up! 🏄‍♂️
+                  </p>
+                </div>
               </div>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleLogout}
                 disabled={isLoggingOut}
-                className="flex items-center space-x-2 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors shadow-lg"
+                className="flex items-center space-x-2 px-6 py-3 bg-rose-500 text-white rounded-2xl hover:bg-rose-600 transition-colors shadow-lg"
               >
                 <ArrowLeftOnRectangleIcon className="h-5 w-5" />
                 <span>{isLoggingOut ? 'Signing out...' : 'Sign out'}</span>
@@ -445,19 +600,22 @@ const Account = () => {
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-white rounded-2xl shadow-lg p-6 sticky top-8"
+                className="rounded-2xl shadow-lg p-6 sticky top-8 bg-white/70 backdrop-blur border border-cyan-100"
               >
                 <nav className="space-y-2">
-                  {tabs.map((tab) => (
+                  {[
+                    { id: 'orders', label: 'Tickets', icon: GiftIcon },
+                    { id: 'profile', label: 'Profile', icon: UserCircleIcon },
+                  ].map((tab) => (
                     <motion.button
                       key={tab.id}
                       whileHover={{ x: 4 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleTabChange(tab.id)}
-                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 border ${
                         activeTab === tab.id
-                          ? 'bg-[#8f3a61]-50 text-primary-dark border border-primary shadow-sm'
-                          : 'text-black-600 hover:bg-gray-50 hover:text-gray-900'
+                          ? 'bg-cyan-600 text-white border-cyan-600 shadow'
+                          : 'text-cyan-900 bg-white hover:bg-cyan-50 border-cyan-100'
                       }`}
                     >
                       <tab.icon className="h-5 w-5" />
@@ -471,214 +629,111 @@ const Account = () => {
             {/* Main Content */}
             <div className="lg:col-span-3">
               <AnimatePresence mode="wait">
-                {activeTab === 'overview' && (
-                  <motion.div
-                    key="overview"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="space-y-6"
-                  >
-                    {/* Stats Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <motion.div
-                        whileHover={{ y: -4 }}
-                        className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600">Total Tickets</p>
-                            <p className="text-2xl font-bold text-gray-900">{orders.length}</p>
-                          </div>
-                          <div className="p-3 bg-primary rounded-xl">
-                            <GiftIcon className="h-6 w-6 text-primary-dark" />
-                          </div>
-                        </div>
-                      </motion.div>
-
-                      
-
-                      <motion.div
-                        whileHover={{ y: -4 }}
-                        className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600">Account Status</p>
-                            <p className="text-2xl font-bold text-green-600">Active</p>
-                          </div>
-                          <div className="p-3 bg-green-100 rounded-xl">
-                            <CheckCircleIcon className="h-6 w-6 text-green-600" />
-                          </div>
-                        </div>
-                      </motion.div>
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => handleTabChange('cart')}
-                          className="flex items-center space-x-3 p-4 bg-[#8f3a61]-300 rounded-xl hover:bg-primary-50 hover:text-white transition-colors"
-                        >
-                          <ShoppingCartIcon className="h-6 w-6 text-primary-dark" />
-                          <span className="font-medium text-gray-900">View Ticket</span>
-                        </motion.button>
-                        
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => handleTabChange('orders')}
-                          className="flex items-center space-x-3 p-4 bg-secondary rounded-xl hover:bg-primary transition-colors"
-                        >
-                          <GiftIcon className="h-6 w-6 text-primary-dark" />
-                          <span className="font-medium text-gray-900">View Ticket</span>
-                        </motion.button>
-                        
-                        
-                        
-                      </div>
-                    </div>
-
-                    {/* Recent Activity */}
-                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-                      <div className="space-y-4">
-                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                          <div className="p-2 bg-primary rounded-lg">
-                            <UserCircleIcon className="h-4 w-4 text-primary-dark" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900">Account logged in</p>
-                            <p className="text-sm text-gray-500">Just now</p>
-                          </div>
-                        </div>
-                        
-                        {cartItems.length > 0 && (
-                          <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                            <div className="p-2 bg-primary rounded-lg">
-                              <ShoppingCartIcon className="h-4 w-4 text-primary-dark" />
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-900">{cartItems.length} items in cart</p>
-                              <p className="text-sm text-gray-500">Total: ₹{getTotalPrice().toFixed(2)}</p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
                 {activeTab === 'profile' && (
                   <motion.div
                     key="profile"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6"
+                    className="bg-white rounded-2xl shadow-lg border border-cyan-100 p-6"
                   >
                     <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-xl font-semibold text-gray-900">Profile Information</h3>
-                     
+                      <h3 className="text-xl font-semibold text-cyan-900">Profile Information</h3>
                     </div>
 
                     {isEditing ? (
                       <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                            <label className="block text-sm font-medium text-cyan-800 mb-2">Full Name</label>
                             <input
                               type="text"
                               name="name"
                               value={formData.name}
                               onChange={handleChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                              className="w-full px-4 py-3 border border-cyan-200 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
                               required
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <label className="block text-sm font-medium text-cyan-800 mb-2">Email</label>
                             <input
                               type="email"
                               name="email"
                               value={formData.email}
                               disabled
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                              className="w-full px-4 py-3 border border-cyan-200 rounded-lg bg-cyan-50 text-cyan-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                            <label className="block text-sm font-medium text-cyan-800 mb-2">Phone</label>
                             <input
                               type="tel"
                               name="phone"
                               value={formData.phone}
                               onChange={handleChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                              className="w-full px-4 py-3 border border-cyan-200 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                            <label className="block text-sm font-medium text-cyan-800 mb-2">Address</label>
                             <textarea
                               name="address"
                               value={formData.address}
                               onChange={handleChange}
                               rows="3"
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                              className="w-full px-4 py-3 border border-cyan-200 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
                             />
                           </div>
                         </div>
 
-                        <div className="border-t pt-6">
-                          <h4 className="text-lg font-medium text-gray-900 mb-4">Change Password (Optional)</h4>
+                        <div className="border-t border-cyan-100 pt-6">
+                          <h4 className="text-lg font-medium text-cyan-900 mb-4">Change Password (Optional)</h4>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                              <label className="block text-sm font-medium text-cyan-800 mb-2">Current Password</label>
                               <input
                                 type="password"
                                 name="currentPassword"
                                 value={formData.currentPassword}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="w-full px-4 py-3 border border-cyan-200 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                              <label className="block text-sm font-medium text-cyan-800 mb-2">New Password</label>
                               <input
                                 type="password"
                                 name="newPassword"
                                 value={formData.newPassword}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="w-full px-4 py-3 border border-cyan-200 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                              <label className="block text-sm font-medium text-cyan-800 mb-2">Confirm New Password</label>
                               <input
                                 type="password"
                                 name="confirmNewPassword"
                                 value={formData.confirmNewPassword}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="w-full px-4 py-3 border border-cyan-200 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
                               />
                             </div>
                           </div>
                         </div>
 
                         {error && (
-                          <div className="flex items-center space-x-2 p-4 bg-red-50 border border-red-200 rounded-lg">
-                            <XCircleIcon className="h-5 w-5 text-red-500" />
-                            <span className="text-red-700">{error}</span>
+                          <div className="flex items-center space-x-2 p-4 bg-rose-50 border border-rose-200 rounded-lg">
+                            <XCircleIcon className="h-5 w-5 text-rose-500" />
+                            <span className="text-rose-700">{error}</span>
                           </div>
                         )}
 
                         {message && (
-                          <div className="flex items-center space-x-2 p-4 bg-green-50 border border-green-200 rounded-lg">
-                            <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                            <span className="text-green-700">{message}</span>
+                          <div className="flex items-center space-x-2 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+                            <CheckCircleIcon className="h-5 w-5 text-emerald-600" />
+                            <span className="text-emerald-700">{message}</span>
                           </div>
                         )}
 
@@ -688,7 +743,7 @@ const Account = () => {
                             whileTap={{ scale: 0.95 }}
                             type="button"
                             onClick={() => setIsEditing(false)}
-                            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                            className="px-6 py-3 border border-cyan-200 text-cyan-900 rounded-lg hover:bg-cyan-50 transition-colors"
                           >
                             Cancel
                           </motion.button>
@@ -696,7 +751,7 @@ const Account = () => {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             type="submit"
-                            className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+                            className="px-6 py-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
                           >
                             Save Changes
                           </motion.button>
@@ -705,20 +760,20 @@ const Account = () => {
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <label className="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
-                          <p className="text-lg font-medium text-gray-900">{user?.name}</p>
+                          <label className="block text-sm font-medium text-cyan-700 mb-1">Full Name</label>
+                          <p className="text-lg font-medium text-cyan-900">{user?.name}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
-                          <p className="text-lg font-medium text-gray-900">{user?.email}</p>
+                          <label className="block text-sm font-medium text-cyan-700 mb-1">Email</label>
+                          <p className="text-lg font-medium text-cyan-900">{user?.email}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
-                          <p className="text-lg font-medium text-gray-900">{user?.phone || 'Not provided'}</p>
+                          <label className="block text-sm font-medium text-cyan-700 mb-1">Phone</label>
+                          <p className="text-lg font-medium text-cyan-900">{user?.phone || 'Not provided'}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-500 mb-1">Address</label>
-                          <p className="text-lg font-medium text-gray-900">{user?.address || 'Not provided'}</p>
+                          <label className="block text-sm font-medium text-cyan-700 mb-1">Address</label>
+                          <p className="text-lg font-medium text-cyan-900">{user?.address || 'Not provided'}</p>
                         </div>
                       </div>
                     )}
@@ -731,22 +786,22 @@ const Account = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6"
+                    className="bg-white rounded-2xl shadow-lg border border-cyan-100 p-6"
                   >
-                    <h3 className="text-xl font-semibold text-gray-900 mb-6">Shopping Ticket</h3>
+                    <h3 className="text-xl font-semibold text-cyan-900 mb-6">Ticket Cart</h3>
                     
                     {cartItems.length === 0 ? (
                       <div className="text-center py-12">
-                        <ShoppingCartIcon className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">Your Ticket is empty</h3>
-                        <p className="text-gray-500 mb-6">Start shopping to add items to your Ticket.</p>
+                        <ShoppingCartIcon className="mx-auto h-16 w-16 text-cyan-300 mb-4" />
+                        <h3 className="text-lg font-medium text-cyan-900 mb-2">Your Ticket is empty</h3>
+                        <p className="text-cyan-700 mb-6">Add passes and splash into fun!</p>
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => navigate('/shop')}
-                          className="px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors"
+                          className="px-6 py-3 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-colors"
                         >
-                         explore 
+                          Explore Rides
                         </motion.button>
                       </div>
                     ) : (
@@ -756,26 +811,26 @@ const Account = () => {
                             key={item.productId || item.product?._id || item.id}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
+                            className="flex items-center justify-between p-4 bg-cyan-50 rounded-xl"
                           >
-                            <div className="flex items-center space-x-4">
+                            <div className="flex items-center gap-4">
                               <img
                                 src={config.fixImageUrl(getItemImage(item))}
                                 alt={item.product?.name || item.name}
-                                className="h-16 w-16 object-cover rounded-lg"
+                                className="h-16 w-16 object-cover rounded-lg ring-1 ring-cyan-100"
                               />
                               <div>
-                                <h4 className="font-medium text-gray-900">{item.product?.name || item.name}</h4>
-                                <p className="text-sm text-gray-500">₹{(item.product?.price || item.price).toFixed(2)}</p>
+                                <h4 className="font-medium text-cyan-900">{item.product?.name || item.name}</h4>
+                                <p className="text-sm text-cyan-700">₹{(item.product?.price || item.price).toFixed(2)}</p>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-4">
-                              <div className="flex items-center space-x-2 bg-white rounded-lg p-2">
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-2 bg-white rounded-lg p-2 border border-cyan-100">
                                 <motion.button
                                   whileHover={{ scale: 1.1 }}
                                   whileTap={{ scale: 0.9 }}
                                   onClick={() => handleUpdateQuantity(item.productId || item.product?._id || item.id, item.quantity - 1)}
-                                  className="p-1 rounded-full hover:bg-gray-100"
+                                  className="p-1 rounded-full hover:bg-cyan-50"
                                   disabled={item.quantity <= 1}
                                 >
                                   <MinusIcon className="h-4 w-4" />
@@ -785,7 +840,7 @@ const Account = () => {
                                   whileHover={{ scale: 1.1 }}
                                   whileTap={{ scale: 0.9 }}
                                   onClick={() => handleUpdateQuantity(item.productId || item.product?._id || item.id, item.quantity + 1)}
-                                  className="p-1 rounded-full hover:bg-gray-100"
+                                  className="p-1 rounded-full hover:bg-cyan-50"
                                 >
                                   <PlusIcon className="h-4 w-4" />
                                 </motion.button>
@@ -794,7 +849,7 @@ const Account = () => {
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => handleRemoveFromCart(item.productId || item.product?._id || item.id)}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                               >
                                 <TrashIcon className="h-5 w-5" />
                               </motion.button>
@@ -802,38 +857,38 @@ const Account = () => {
                           </motion.div>
                         ))}
                           
-                        <div className="border-t pt-6">
+                        <div className="border-t border-cyan-100 pt-6">
                           <div className="flex justify-between items-center mb-4">
-                          <div className="text-lg font-medium">
-                            Total: ₹{getTotalPrice().toFixed(2)}
-                          </div>
-                              <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
+                            <div className="text-lg font-semibold text-cyan-900">
+                              Total: ₹{getTotalPrice().toFixed(2)}
+                            </div>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
                               onClick={handleClearCart}
-                              className="text-sm text-red-600 hover:text-red-800"
+                              className="text-sm text-rose-600 hover:text-rose-800"
                             >
-                              Clear Cart
-                              </motion.button>
-                            </div>
-                            <div className="flex space-x-4">
-                              <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => navigate('/shop')}
-                                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
-                              >
-                                Continue Shopping
-                              </motion.button>
-                              <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => navigate('/checkout')}
-                                className="flex-1 px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors"
-                              >
-                                Proceed to Checkout
-                              </motion.button>
-                            </div>
+                              Clear Ticket
+                            </motion.button>
+                          </div>
+                          <div className="flex flex-col sm:flex-row gap-3">
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => navigate('/shop')}
+                              className="flex-1 px-6 py-3 border border-cyan-200 text-cyan-900 rounded-xl hover:bg-cyan-50 transition-colors"
+                            >
+                              Continue Exploring
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => navigate('/checkout')}
+                              className="flex-1 px-6 py-3 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-colors"
+                            >
+                              Proceed to Checkout
+                            </motion.button>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -846,61 +901,10 @@ const Account = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6"
+                    className="bg-white rounded-2xl shadow-lg border border-cyan-100 p-6"
                   >
-                    <h3 className="text-xl font-semibold text-gray-900 mb-6">Order History</h3>
-                    
+                    <h3 className="text-xl font-semibold text-cyan-900 mb-6">Ticket History</h3>
                     <OrdersTab />
-                  </motion.div>
-                )}
-
-                {activeTab === 'security' && (
-                  <motion.div
-                    key="security"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6"
-                  >
-                    <h3 className="text-xl font-semibold text-gray-900 mb-6">Security Settings</h3>
-                    
-                    <div className="space-y-6">
-                      <div className="p-4 bg-green-50 border border-green-200 rounded-xl">
-                        <div className="flex items-center space-x-3">
-                          <ShieldCheckIcon className="h-6 w-6 text-green-600" />
-                          <div>
-                            <h4 className="font-medium text-green-900">Account Security</h4>
-                            <p className="text-sm text-green-700">Your account is secure and protected.</p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="p-4 bg-gray-50 rounded-xl">
-                          <h4 className="font-medium text-gray-900 mb-2">Two-Factor Authentication</h4>
-                          <p className="text-sm text-gray-600 mb-4">Add an extra layer of security to your account.</p>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                          >
-                            Enable 2FA
-                          </motion.button>
-                        </div>
-                        
-                        <div className="p-4 bg-gray-50 rounded-xl">
-                          <h4 className="font-medium text-gray-900 mb-2">Login History</h4>
-                          <p className="text-sm text-gray-600 mb-4">View your recent login activity.</p>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                          >
-                            View History
-                          </motion.button>
-                        </div>
-                      </div>
-                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -918,6 +922,15 @@ const Account = () => {
           />
         )}
       </AnimatePresence>
+
+      {/* keyframes for floating bubbles (Tailwind arbitrary) */}
+      <style>{`
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+          100% { transform: translateY(0px); }
+        }
+      `}</style>
     </>
   );
 };
