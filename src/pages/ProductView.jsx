@@ -129,7 +129,11 @@ const ProductView = () => {
                 id: foundProduct._id || foundProduct.id,
                 // Ensure price and regularPrice are numbers
                 price: parseFloat(foundProduct.price) || 0,
-                regularPrice: parseFloat(foundProduct.regularPrice) || 0,
+                regularprice: parseFloat(foundProduct.regularprice) || 0,
+                adultprice: parseFloat(foundProduct.adultprice) || 0,
+                childprice: parseFloat(foundProduct.childprice) || 0,
+                weekendprice: parseFloat(foundProduct.weekendprice) || 0,
+                
                 // Ensure images array exists
                 images: foundProduct.images || [foundProduct.image],
               };
@@ -292,10 +296,10 @@ const handleProceedToCheckout = () => {
     adultCount: adultquantity,
     childCount: childquantity,
     date: BookingDate,
-    subtotal: adultquantity * product.regularPrice + childquantity * product.price,
+    subtotal: adultquantity * product.adultprice + childquantity * product.childprice,
     // Assuming the deposit is the full amount payable now.
     // You can adjust this logic if the deposit is a different amount.
-    deposit: adultquantity * product.regularPrice + childquantity * product.price,
+    deposit: adultquantity * product.adultprice + childquantity * product.childprice,
   };
 
   // 3. Save the data to localStorage
@@ -540,9 +544,14 @@ const handleProceedToCheckout = () => {
 
   {/* Price Section */}
   <div className="space-y-2">
-    <div className="flex flex-wrap items-baseline gap-2">
+     <div className="flex flex-wrap items-baseline gap-2">
       <span className="text-3xl font-extrabold text-[#0077B6]">
-        ₹{product.price.toFixed(2)}
+        ₹{product.childprice.toFixed(2)} for child ticket
+      </span>
+    </div>
+     <div className="flex flex-wrap items-baseline gap-2">
+      <span className="text-3xl font-extrabold text-[#0077B6]">
+        ₹{product.adultprice.toFixed(2)} for adult ticket
       </span>
     </div>
   </div>
@@ -684,8 +693,8 @@ const handleProceedToCheckout = () => {
           >
             <td className="px-4 py-3 font-medium">👨 Adult</td>
             <td className="px-4 py-3 text-center">{adultquantity}</td>
-            <td className="px-4 py-3 text-right">₹{product.regularPrice}</td>
-            <td className="px-4 py-3 text-right">₹{adultquantity * product.regularPrice}</td>
+            <td className="px-4 py-3 text-right">₹{product.adultprice}</td>
+            <td className="px-4 py-3 text-right">₹{adultquantity * product.adultprice}</td>
           </motion.tr>
 
           {/* Child */}
@@ -697,8 +706,8 @@ const handleProceedToCheckout = () => {
           >
             <td className="px-4 py-3 font-medium">👧 Child</td>
             <td className="px-4 py-3 text-center">{childquantity}</td>
-            <td className="px-4 py-3 text-right">₹{product.price}</td>
-            <td className="px-4 py-3 text-right">₹{childquantity * product.price}</td>
+            <td className="px-4 py-3 text-right">₹{product.childprice}</td>
+            <td className="px-4 py-3 text-right">₹{childquantity * product.childprice}</td>
           </motion.tr>
         </tbody>
 
@@ -712,7 +721,7 @@ const handleProceedToCheckout = () => {
           >
             <td className="px-4 py-3 text-left" colSpan={3}>💰 Grand Total</td>
             <td className="px-4 py-3 text-right">
-              ₹{adultquantity * product.regularPrice + childquantity * product.price}
+              ₹{adultquantity * product.adultprice + childquantity * product.childprice}
             </td>
           </motion.tr>
         </tfoot>
@@ -870,20 +879,13 @@ const handleProceedToCheckout = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <span className="text-xs text-gray-600">Adult Ticket</span>
-                <p className="font-bold text-xl text-[#0077B6]">₹{product.price?.toFixed(2) || 'N/A'}</p>
+                <p className="font-bold text-xl text-[#0077B6]">₹{product.adultprice?.toFixed(2) || 'N/A'}</p>
               </div>
               <div>
                 <span className="text-xs text-gray-600">Child Ticket</span>
-                <p className="font-bold text-xl text-[#0077B6]">₹{product.regularPrice?.toFixed(2) || 'N/A'}</p>
+                <p className="font-bold text-xl text-[#0077B6]">₹{product.childprice?.toFixed(2) || 'N/A'}</p>
               </div>
-              {product.regularPrice && product.regularPrice > product.price && (
-                <div>
-                  <span className="text-xs text-gray-600">Discount</span>
-                  <p className="text-lg font-semibold text-red-600">
-                    {Math.round(((product.regularPrice - product.price) / product.regularPrice) * 100)}% OFF 🎉
-                  </p>
-                </div>
-              )}
+        
             </div>
           </div>
 
