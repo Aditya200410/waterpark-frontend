@@ -49,9 +49,9 @@ const handleFetchTicket = async (e) => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
-        className="bg-white/20 backdrop-blur-lg rounded-3xl shadow-lg p-10 w-full max-w-md relative z-10 mt-14"
+        className="bg-white/20 backdrop-blur-lg rounded-3xl shadow-lg p-10 w-full max-w-md relative z-10 mt-14 h-fit"
       >
-        <div className="max-w-md w-full space-y-8">
+        <div className="max-w-md w-full space-y-8 ">
           <div className="text-center">
             <h2 className="text-4xl md:text-5xl font-poppins text-blue-900 drop-shadow-lg">
               Check Your <span className="italic text-cyan-600">Ticket</span>
