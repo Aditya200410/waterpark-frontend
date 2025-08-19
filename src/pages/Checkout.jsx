@@ -4,10 +4,13 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext"; 
 
+
 function CheckoutPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useAuth(); // ✅ logged-in user info
+
+  const [loading, setLoading] = useState(false);
 
   const getCheckoutData = () => {
     if (location.state) {
@@ -23,11 +26,7 @@ function CheckoutPage() {
   const checkoutData = getCheckoutData();
   const { adultCount, childCount, date, resortName, subtotal, deposit, resortId } = checkoutData;
 
-  useEffect(() => {
-    return () => {
-      localStorage.removeItem("checkoutData");
-    };
-  }, []);
+
 
   const [billingDetails, setBillingDetails] = useState({
     firstName: "",
@@ -67,19 +66,15 @@ function CheckoutPage() {
 
   const handlePayment = async (e) => {
     e.preventDefault();
-    if (
-      billingDetails.email === "" ||
-      billingDetails.firstName === "" ||
-      billingDetails.lastName === "" ||
-      billingDetails.phone === "" ||
-      billingDetails.city === ""
-    ) {
+    if (billingDetails.email === "" || billingDetails.firstName === "" || billingDetails.lastName === "" || billingDetails.phone === "" || billingDetails.city === "") {
       toast.error("Please fill all the details");
       return;
     }
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/bookings/create`, {
+      console.log("Order placed with details:", billingDetails, paymentMethod, resortId);
+
+      const response = await axios.post("http://localhost:5175/api/bookings/create", {
         waterpark: resortId,
         waterparkName: resortName,
         name: `${billingDetails.firstName} ${billingDetails.lastName}`,
@@ -96,26 +91,29 @@ function CheckoutPage() {
       const { success, orderId, booking, key, amount, currency, name, description, prefill } = response.data;
 
       if (!success) {
+        console.error("Error:", response.data.message);
         toast.error("Failed to create booking. Please try again.");
         return;
       }
 
       if (paymentMethod === "razorpay" && orderId) {
+        // Initialize Razorpay payment
         const options = {
-          key,
-          amount,
-          currency,
-          name,
-          description,
+          key: key,
+          amount: amount,
+          currency: currency,
+          name: name,
+          description: description,
           order_id: orderId,
-          prefill,
+          prefill: prefill,
           handler: async function (response) {
             try {
-              const verifyResponse = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/bookings/verify-payment`, {
+              // Verify payment on backend
+              const verifyResponse = await axios.post(`/api/bookings/verify`, {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-                bookingId: booking._id,
+                bookingId: booking._id
               });
 
               if (verifyResponse.data.success) {
@@ -125,14 +123,15 @@ function CheckoutPage() {
                 toast.error("Payment verification failed. Please contact support.");
               }
             } catch (error) {
+              console.error("Payment verification error:", error);
               toast.error("Payment verification failed. Please contact support.");
             }
           },
           modal: {
-            ondismiss: function () {
+            ondismiss: function() {
               toast.info("Payment cancelled");
-            },
-          },
+            }
+          }
         };
 
         const rzp = new window.Razorpay(options);
@@ -142,6 +141,7 @@ function CheckoutPage() {
         navigate("/ticket", { state: { booking: booking } });
       }
     } catch (error) {
+      console.error("Error initiating payment:", error);
       toast.error("Payment initiation failed. Please try again.");
     }
   };

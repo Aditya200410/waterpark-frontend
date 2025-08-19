@@ -28,6 +28,7 @@ const config = {
     FEATURED_PRODUCTS: '/api/featured-products',
     DATA: '/api/data-page',
     BLOG: '/api/blog',
+    CHECKOUT: '/api/bookings',
   },
   
   // Full API URLs (constructed from base URL and endpoints)
