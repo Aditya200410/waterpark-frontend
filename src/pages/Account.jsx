@@ -162,10 +162,10 @@ const Account = () => {
     setLoading(true);
     try {
       const data = await orderService.getOrdersByEmail(user.email);
-      if (data.success) {
-        const sorted = data.orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setOrders(sorted);
-        setFilteredOrders(sorted);
+      if (data) {
+       
+        setOrders(data);
+        setFilteredOrders(data);
       } else {
         throw new Error(data.message || 'No success field in response');
       }

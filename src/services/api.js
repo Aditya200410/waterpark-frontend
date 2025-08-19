@@ -52,7 +52,7 @@ export const heroCarouselAPI = {
 
 // Order API endpoints
 export const orderAPI = {
-  getOrdersByEmail: (email) => api.get(`/bookings?email=${email}`),
+  getOrdersByEmail: (email) => api.get(`/bookings/email/?email=${email}`),
   getOrderById: (orderId) => api.get(`/bookings/${orderId}`),
   createOrder: (orderData) => api.post('/bookings', orderData),
 };
