@@ -335,18 +335,7 @@ const Account = () => {
             <h2 className="text-2xl font-semibold text-cyan-900">Your Tickets</h2>
           </div>
           <div className="flex gap-2">
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="rounded-xl border border-cyan-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 bg-white"
-            >
-              <option value="all">All Tickets</option>
-              <option value="processing">Processing</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="manufacturing">In Queue</option>
-              <option value="shipped">Sent</option>
-              <option value="delivered">Checked-In</option>
-            </select>
+           
           </div>
         </div>
 
