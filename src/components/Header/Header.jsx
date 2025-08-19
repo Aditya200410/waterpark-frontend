@@ -160,7 +160,7 @@ const Header = () => {
     { name: 'Home', path: '/' },
     { name: 'Waterparks', path: '/waterparks' },
     { name: 'Offers', path: '/offers' },
- { name: 'Gallery', path: '/gallery' },
+   { name: 'Tickets', path: '/tickets' },
     { name: 'Blog', path: '/blog' },
   ];
 
@@ -170,7 +170,7 @@ const Header = () => {
     { name: 'Offers', path: '/offers' },
 
     { name: 'Blog', path: '/blog' },
-
+  { name: 'Ticket', path: '/tickets' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' }
   ];
@@ -612,9 +612,9 @@ const Header = () => {
             <ShoppingCart className="w-6 h-6" />
             <span className="text-xs mt-1 font-medium">Waterpark</span>
           </Link>
-          <Link to="/gallery" className="flex flex-col items-center justify-center text-white/90 hover:text-white transition-colors duration-200 relative">
+          <Link to="/tickets" className="flex flex-col items-center justify-center text-white/90 hover:text-white transition-colors duration-200 relative">
             <ShoppingBag className="w-6 h-6" />
-            <span className="text-xs mt-1 font-medium">Gallery</span>
+            <span className="text-xs mt-1 font-medium">Tickets</span>
             {getTotalItems && getTotalItems() > 0 && (
               <motion.span
                 initial={{ scale: 0 }}

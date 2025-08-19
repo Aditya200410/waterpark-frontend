@@ -4,9 +4,6 @@ import { Phone, Mail, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import React from 'react';
 
-// ✅ Import Google Fonts (use in _app or index.html if needed)
-// Example: 
-// <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Fredoka:wght@400;600&family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
 
 export default function Footer() {
   return (
@@ -52,15 +49,15 @@ export default function Footer() {
               <path d="M192 128c0 35 29 64 64 64s64-29 64-64-29-64-64-64-64 29-64 64z" />
             </svg>
 
-            <p className="text-gray-100 font-[Inter] leading-relaxed text-sm md:text-base max-w-xs">
+            <p className="text-gray-100   leading-relaxed text-sm md:text-base max-w-xs">
               Water Park Chalo is your go-to destination for booking tickets to the best water parks in India. Enjoy seamless experience with trusted partners and exclusive offers.
             </p>
           </div>
 
           {/* Useful Links */}
           <div className="flex flex-col items-center space-y-3">
-            <h4 className="text-2xl font-[Pacifico] mb-3">Useful Links</h4>
-            <ul className="flex flex-col space-y-2 text-gray-100 font-[Fredoka] text-base ">
+            <h4 className="text-2xl     mb-3">Useful Links</h4>
+            <ul className="flex flex-col space-y-2 text-gray-100     text-base ">
             
             <Link to="/about" className="hover:text-yellow-200">About Us</Link>
             <Link to="/contact" className="hover:text-yellow-200">Contact Us</Link>
@@ -73,16 +70,16 @@ export default function Footer() {
 
           {/* Contact */}
           <div className="flex flex-col items-start space-y-3">
-            <h4 className="text-2xl font-[Pacifico] mb-3">Contact & Location</h4>
-            <div className="flex items-center space-x-2 font-[Fredoka]">
+            <h4 className="text-2xl     mb-3">Contact & Location</h4>
+            <div className="flex items-center space-x-2    ">
               <Phone className="w-5 h-5" />
               <a href="tel:+918847714464" className="hover:text-yellow-200">+91 88477 14464</a>
             </div>
-            <div className="flex items-center space-x-2 font-[Fredoka]">
+            <div className="flex items-center space-x-2    ">
               <Mail className="w-5 h-5" />
               <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-200">wpc@waterparkchalo.com</a>
             </div>
-            <div className="flex items-start space-x-2 font-[Fredoka]">
+            <div className="flex items-start space-x-2    ">
               <MapPin className="w-5 h-5 mt-1" />
               <span className="text-sm">110, Lakshmi Apt 1, Alkapuri, Nallasopara 401209</span>
             </div>
@@ -91,7 +88,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-white/30 mt-8 pt-4 text-center">
-          <div className="text-gray-200 text-sm md:text-base mb-3 font-[Inter]">
+          <div className="text-gray-200 text-sm md:text-base mb-3  ">
             © 2025 All Rights Reserved by Water Park Chalo. Made by{" "}
             <a href="https://www.appzeto.com/" target="_blank" rel="noopener noreferrer" className="text-yellow-200 hover:text-white font-bold">
               Appzeto
@@ -116,14 +113,14 @@ export default function Footer() {
             animate={{ y: [0, -8, 0] }}
             transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
           />
-          <p className="text-gray-100 font-[Inter] text-sm max-w-sm">
+          <p className="text-gray-100   text-sm max-w-sm">
             Water Park Chalo is your go-to destination for booking tickets to the best water parks in India. Enjoy seamless experience with trusted partners and exclusive offers.
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col space-y-2 font-[Fredoka]">
-            <h4 className="text-lg font-[Pacifico]">Links</h4>
+          <div className="flex flex-col space-y-2    ">
+            <h4 className="text-lg    ">Links</h4>
             <Link to="/about" className="hover:text-yellow-200">About Us</Link>
             <Link to="/contact" className="hover:text-yellow-200">Contact Us</Link>
             <Link to="/policies" className="hover:text-yellow-200">Policies</Link>
@@ -131,15 +128,15 @@ export default function Footer() {
               <Link to="/blog" className="hover:text-yellow-200">Blog</Link>
               <Link to="offers" className="hover:text-yellow-200">Offers</Link>
           </div>
-          <div className="flex flex-col space-y-2 font-[Fredoka]">
-            <h4 className="text-lg font-[Pacifico]">Contact</h4>
+          <div className="flex flex-col space-y-2    ">
+            <h4 className="text-lg    ">Contact</h4>
             <a href="tel:+918847714464" className="hover:text-yellow-200">+91 88477 14464</a>
             <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-200">wpc@waterparkchalo.com</a>
             <span className="text-xs">110, Lakshmi Apt 1,<br />Alkapuri, Nallasopara 401209</span>
           </div>
         </div>
 
-        <div className="border-t border-white/30 pt-3 text-center text-gray-200 text-xs font-[Inter]">
+        <div className="border-t border-white/30 pt-3 text-center text-gray-200 text-xs  ">
           © 2025 All Rights Reserved by Water Park Chalo. <br />
           Made by <a href="https://www.appzeto.com/" target="_blank" rel="noopener noreferrer" className="text-yellow-200 hover:text-white font-bold">Appzeto</a>
         </div>

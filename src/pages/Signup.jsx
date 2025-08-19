@@ -60,7 +60,7 @@ const Signup = () => {
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
+    <div className="min-h-screen flex  justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
 
       {/* Animated bubbles for water theme */}
       {[...Array(10)].map((_, i) => (
@@ -79,7 +79,7 @@ const Signup = () => {
         transition={{ duration: 0.6 }}
         className="bg-white/20 backdrop-blur-lg rounded-3xl shadow-lg p-10 w-full max-w-md relative z-10"
       >
-       <div className="max-w-md w-full space-y-8">
+       <div className="max-w-md w-full space-y-8 mt-12">
           <div className="text-center">
             <h2 className="text-4xl md:text-5xl font-poppins text-blue-900 drop-shadow-lg">
              Sign  <span className="italic text-cyan-600">up</span>

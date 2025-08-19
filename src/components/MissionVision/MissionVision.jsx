@@ -37,7 +37,7 @@ export default function MissionVission() {
   }, []);
 
   return (
-    <section className="relative min-h-screen overflow-hidden py-20">
+    <section className="relative min-h-screen overflow-hidden">
       {/* Floating Bubbles */}
       {Array.from({ length: 12 }).map((_, i) => (
         <motion.div
@@ -62,7 +62,7 @@ export default function MissionVission() {
         </motion.div>
       ))}
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+      <div className="container relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -83,7 +83,7 @@ export default function MissionVission() {
         {error && <p className="text-center text-red-500 text-lg">{error}</p>}
 
         {/* Blogs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {blogs.map((blog) => (
             <motion.div
               key={blog._id}

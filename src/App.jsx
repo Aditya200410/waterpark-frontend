@@ -44,6 +44,7 @@ import OurPartners from './components/OurPartners';
 import Blogview from './pages/Blogview';
 import Gallery from './pages/Gallery';
 import WaterparkTicket from './pages/Ticket';
+import Tickets from './pages/tickets';
 
 
 // Protected Route component
@@ -194,6 +195,7 @@ function AppContent() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/login" element={<Login />} />
              <Route path="/ticket" element={<WaterparkTicket/>} />
+               <Route path="/tickets" element={<Tickets/>} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
         <Route path="/wishlist" element={<Wishlist />} />
@@ -208,7 +210,7 @@ function AppContent() {
                <Route path="/blog/:id" element={<Blogview />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/policies" element={<Policies />} />
-        
+      
         <Route path="/payment/status" element={<PaymentStatus />} />
 
       </Routes>
