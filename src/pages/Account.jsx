@@ -485,12 +485,7 @@ const Account = () => {
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                 
 
-                  <div className="text-xs text-cyan-700 flex items-center gap-2">
-                    <svg width="22" height="22" viewBox="0 0 24 24">
-                      <path d="M2 12c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2" fill="none" stroke="#06b6d4" strokeWidth="1.5"/>
-                    </svg>
-                    Show this ticket QR at the gate (QR appears in details).
-                  </div>
+                 
                 </div>
               </div>
             ))}

@@ -27,8 +27,8 @@ const ProductView = () => {
   const navigate = useNavigate();
   
   const [selectedImage, setSelectedImage] = useState(0);
-  const [adultquantity, setadultQuantity] = useState(1);
-    const [childquantity, setchildQuantity] = useState(1);
+  const [adultquantity, setadultQuantity] = useState(0);
+    const [childquantity, setchildQuantity] = useState(0);
     const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
