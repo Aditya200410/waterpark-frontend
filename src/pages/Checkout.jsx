@@ -109,7 +109,7 @@ function CheckoutPage() {
           handler: async function (response) {
             try {
               // Verify payment on backend
-              const verifyResponse = await axios.post(`/api/bookings/verify`, {
+              const verifyResponse = await axios.post("https://water-backend-fe1c.onrender.com/api/bookings/verify", {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
