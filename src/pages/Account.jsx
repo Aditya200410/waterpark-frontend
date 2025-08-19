@@ -420,7 +420,7 @@ const Account = () => {
                     <div className="text-right">
                       <p className="text-xs text-cyan-600">Order Date</p>
                       <p className="font-medium text-cyan-900">
-                        {format(new Date(order.createdAt), 'MMM dd, yyyy')}
+                       
                       </p>
                     </div>
                   </div>
@@ -444,29 +444,7 @@ const Account = () => {
                   </div>
 
                   {/* Items */}
-                  <div className="mt-4 space-y-3">
-                    {order.items.map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between py-2 border-b border-cyan-50 last:border-0">
-                        <div className="flex items-center gap-4">
-                          <img
-                            src={config.fixImageUrl(item.image)}
-                            alt={item.name}
-                            className="h-14 w-14 object-cover rounded-lg ring-1 ring-cyan-100"
-                            onError={(e) => { e.target.src = '/placeholder.png'; e.target.onerror = null; }}
-                          />
-                          <div>
-                            <h4 className="font-medium text-cyan-900">{item.name}</h4>
-                            <p className="text-sm text-cyan-700">
-                              Qty: {item.quantity} × ₹{item.price.toFixed(2)}
-                            </p>
-                          </div>
-                        </div>
-                        <p className="font-semibold text-cyan-900">
-                          ₹{(item.quantity * item.price).toFixed(2)}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+                
 
                   {/* Summary */}
                   <div className="mt-4 pt-4 border-t border-cyan-100">
@@ -516,19 +494,7 @@ const Account = () => {
 
                 {/* Actions row (outside capture area) */}
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                  <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => handleDownloadBill(order._id)}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-600 text-white hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400"
-                  >
-                    {/* Download SVG */}
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 3v10m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M5 19h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
-                    Download Ticket PDF
-                  </motion.button>
+                
 
                   <div className="text-xs text-cyan-700 flex items-center gap-2">
                     <svg width="22" height="22" viewBox="0 0 24 24">

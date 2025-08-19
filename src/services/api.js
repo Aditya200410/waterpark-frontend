@@ -52,9 +52,9 @@ export const heroCarouselAPI = {
 
 // Order API endpoints
 export const orderAPI = {
-  getOrdersByEmail: (email) => api.get(`/orders?email=${email}`),
-  getOrderById: (orderId) => api.get(`/orders/${orderId}`),
-  createOrder: (orderData) => api.post('/orders', orderData),
+  getOrdersByEmail: (email) => api.get(`/bookings?email=${email}`),
+  getOrderById: (orderId) => api.get(`/bookings/${orderId}`),
+  createOrder: (orderData) => api.post('/bookings', orderData),
 };
 
 // Coupon endpoints

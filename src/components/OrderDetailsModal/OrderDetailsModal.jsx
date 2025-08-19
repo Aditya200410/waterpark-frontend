@@ -2,41 +2,73 @@ import { useEffect, useState } from 'react';
 import { orderAPI } from '../../services/api';
 import Loader from '../Loader/Loader';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Download } from "lucide-react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
+ // Function to download ticket as PDF
+  const handleDownload = async () => {
+    const ticketElement = document.getElementById("ticket-card");
+    if (!ticketElement) return;
+
+    const canvas = await html2canvas(ticketElement, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("Waterpark-Ticket.pdf");
+  };
 
 const OrderDetailsModal = ({ orderId, onClose }) => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchOrderDetails = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await orderAPI.getOrderById(orderId);
-        setOrder(response.data.order);
-      } catch (err) {
-        setError('Failed to load order details. Please try again later.');
-        console.error('Error fetching order details:', err);
-      } finally {
-        setLoading(false);
+  const formatDate = (date) => {
+  if (!date) return "-";
+  return new Date(date).toLocaleString("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+};
+
+ useEffect(() => {
+  const fetchOrderDetails = async () => {
+    try {
+      console.log("Fetching order details for ID:", orderId);
+      setLoading(true);
+      setError(null);
+
+      const res = await fetch(`http://localhost:5175/api/bookings/${orderId}`);
+      const data = await res.json();
+      console.log("Raw API response:", data);
+
+      // ✅ Store only booking object
+      if (data.booking) {
+        setOrder(data.booking);
+      } else {
+        setOrder(null);
+        console.warn("No booking found in response:", data);
       }
-    };
 
-    if (orderId) {
-      fetchOrderDetails();
+      console.log("Order details fetched:", data.booking);
+    } catch (err) {
+      setError("Failed to load order details. Please try again later.");
+      console.error("Error fetching order details:", err);
+    } finally {
+      setLoading(false);
     }
-  }, [orderId]);
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   };
+
+  if (orderId) {
+    fetchOrderDetails();
+  }
+}, [orderId]);
+
+
 
   const getStatusColor = (status) => {
     const statusColors = {
@@ -64,131 +96,140 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-blue-400 via-cyan-300 to-pink-200 bg-opacity-80 backdrop-blur-lg p-4"
       >
         <motion.div
           initial={{ scale: 0.95, y: 40 }}
           animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0.95, y: 40 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-          className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl bg-white/70 backdrop-blur-lg border border-white/30"
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl bg-white/90 backdrop-blur-lg border-4 border-blue-300 font-['Poppins']"
         >
-          <div className="sticky top-0 bg-white/80 backdrop-blur border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-3xl z-10">
-            <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Order Details</h2>
-          <button
-            onClick={onClose}
-              className="group p-2 rounded-full hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500"
-              aria-label="Close order details"
-          >
-              <svg className="w-6 h-6 text-gray-500 group-hover:text-pink-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+          {/* Header */}
+          <div className="sticky top-0 bg-gradient-to-r from-blue-500 to-cyan-400 px-6 py-4 flex justify-between items-center rounded-t-2xl shadow-md">
+            <h2 className="text-2xl font-extrabold text-white tracking-wide">
+              🎟️ Waterpark Ticket
+            </h2>
+            <button
+              onClick={onClose}
+              className="group p-2 rounded-full hover:bg-white/20 transition-colors focus:outline-none"
+              aria-label="Close booking details"
+            >
+              <svg
+                className="w-6 h-6 text-white group-hover:text-yellow-200 transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
 
-          <div className="p-6 sm:p-8">
-          {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <Loader />
+          {/* Content */}
+          <div id="ticket-card" className="p-6 sm:p-8 space-y-8">
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin w-10 h-10 border-4 border-pink-500 border-t-transparent rounded-full"></div>
+              </div>
+            ) : error ? (
+              <div className="text-center text-red-600 py-8">{error}</div>
+            ) : order ? (
+              <div className="space-y-6">
+                {/* Ticket Header Info */}
+                <div className="text-center">
+                  <h3 className="text-3xl font-extrabold text-blue-600">
+                    {order?.waterparkName}
+                  </h3>
+                  <p className="text-gray-600 italic">"Splash • Chill • Fun"</p>
+                </div>
+
+                {/* Booking Info */}
+                <div className="grid grid-cols-2 gap-6 border-t border-dashed border-blue-300 pt-6">
+                  <div>
+                    <p className="text-xs text-gray-500">Booking ID</p>
+                    <p className="font-mono text-sm text-blue-700">
+                      #{order?._id}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-gray-500">Visit Date</p>
+                    <p className="font-bold text-gray-800">
+                      {new Date(order?.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Name</p>
+                    <p className="font-semibold text-gray-800">
+                      {order?.name}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-gray-500">Phone</p>
+                    <p className="font-semibold text-gray-800">
+                      {order?.phone}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Ticket Divider */}
+                <div className="border-t-2 border-dotted border-blue-400 my-6"></div>
+
+                {/* Guests Info */}
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-xs text-gray-500">Adults</p>
+                    <p className="font-bold text-blue-700">{order?.adults}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Children</p>
+                    <p className="font-bold text-pink-600">{order?.children}</p>
+                  </div>
+                </div>
+
+                {/* Payment Summary */}
+                <div className="border-t border-dashed border-blue-300 pt-4 grid grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-xs text-gray-500">Advance Paid</p>
+                    <p className="font-semibold text-green-600">
+                      ₹{order?.advanceAmount}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Total Amount</p>
+                    <p className="text-2xl font-extrabold text-pink-700">
+                      ₹{order?.totalAmount}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center text-gray-500 py-8">
+                No booking details found.
+              </div>
+            )}
+          </div>
+
+          {/* Download Button */}
+          {order && (
+            <div className="flex justify-center p-6 rounded-b-3xl">
+              <button
+                onClick={handleDownload}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r  from-blue-400 via-blue-600 text-white font-bold rounded-full hover:scale-105 transition-transform"
+              >
+                <Download className="w-5 h-5" /> Download Ticket
+              </button>
             </div>
-          ) : error ? (
-            <div className="text-center text-red-600 py-8">{error}</div>
-          ) : order ? (
-              <div className="space-y-8">
-              {/* Order Status and Date */}
-              <div className="flex flex-wrap justify-between items-start gap-4">
-                <div>
-                    <p className="text-xs text-gray-500">Order ID</p>
-                    <p className="font-mono text-sm text-pink-700">{order._id}</p>
-                </div>
-                <div className="text-right">
-                    <p className="text-xs text-gray-500">Order Date</p>
-                    <p className="font-medium text-gray-800">{formatDate(order.createdAt)}</p>
-                </div>
-              </div>
-
-              {/* Status Badges */}
-              <div className="flex flex-wrap gap-4">
-                  <span className={`px-4 py-1 rounded-full text-sm font-semibold shadow-sm border ${getStatusColor(order.orderStatus)} transition-all`}> 
-                    <span className="inline-block w-2 h-2 rounded-full mr-2 align-middle bg-current opacity-60"></span>
-                  {order.orderStatus?.charAt(0).toUpperCase() + order.orderStatus?.slice(1)}
-                </span>
-                  <span className={`px-4 py-1 rounded-full text-sm font-semibold shadow-sm border ${getPaymentStatusColor(order.paymentStatus)} transition-all`}>
-                    <span className="inline-block w-2 h-2 rounded-full mr-2 align-middle bg-current opacity-60"></span>
-                  Payment: {order.paymentStatus?.charAt(0).toUpperCase() + order.paymentStatus?.slice(1)}
-                </span>
-              </div>
-
-              {/* Customer Details */}
-              <div className="border-t border-gray-200 pt-4">
-                  <h3 className="font-semibold text-gray-900 mb-2 text-lg">Customer Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                      <p className="text-xs text-gray-500">Name</p>
-                      <p className="font-medium text-gray-800">{order.customerName}</p>
-                  </div>
-                  <div>
-                      <p className="text-xs text-gray-500">Email</p>
-                      <p className="font-medium text-gray-800">{order.email}</p>
-                  </div>
-                  <div>
-                      <p className="text-xs text-gray-500">Phone</p>
-                      <p className="font-medium text-gray-800">{order.phone}</p>
-                  </div>
-                  <div>
-                      <p className="text-xs text-gray-500">Payment Method</p>
-                      <p className="font-medium text-gray-800">{order.paymentMethod}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Shipping Address */}
-              <div className="border-t border-gray-200 pt-4">
-                  <h3 className="font-semibold text-gray-900 mb-2 text-lg">Shipping Address</h3>
-                  <p className="text-gray-700 text-base">
-                  {order.address.street}<br />
-                  {order.address.city}, {order.address.state} {order.address.pincode}<br />
-                  {order.address.country}
-                </p>
-              </div>
-
-              {/* Order Items */}
-              <div className="border-t border-gray-200 pt-4">
-                  <h3 className="font-semibold text-gray-900 mb-4 text-lg">Order Items</h3>
-                <div className="space-y-4">
-                  {order.items.map((item, index) => (
-                      <div key={index} className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0 gap-4">
-                        <div className="flex items-center gap-4 flex-1 min-w-0">
-                          {item.image && (
-                            <img src={item.image} alt={item.name} className="w-14 h-14 object-cover rounded-xl border border-gray-200 shadow-sm" />
-                          )}
-                          <div className="min-w-0">
-                            <p className="font-medium text-gray-900 truncate">{item.name}</p>
-                            <p className="text-xs text-gray-500">Quantity: {item.quantity}</p>
-                          </div>
-                      </div>
-                        <p className="font-semibold text-lg text-pink-700 whitespace-nowrap">₹{item.price.toFixed(2)}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Order Total */}
-              <div className="border-t border-gray-200 pt-4">
-                <div className="flex justify-between items-center">
-                    <p className="font-semibold text-gray-900 text-lg">Total Amount</p>
-                    <p className="text-2xl font-bold text-pink-700">₹{order.totalAmount.toFixed(2)}</p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center text-gray-500 py-8">No order details found.</div>
           )}
-        </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
   );
-};
+}
 
 export default OrderDetailsModal; 

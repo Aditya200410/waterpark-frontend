@@ -133,7 +133,7 @@ const ProductView = () => {
                 adultprice: parseFloat(foundProduct.adultprice) || 0,
                 childprice: parseFloat(foundProduct.childprice) || 0,
                 weekendprice: parseFloat(foundProduct.weekendprice) || 0,
-                
+
                 // Ensure images array exists
                 images: foundProduct.images || [foundProduct.image],
               };
@@ -543,6 +543,7 @@ const handleProceedToCheckout = () => {
   </div>
 
   {/* Price Section */}
+  
   <div className="space-y-2">
      <div className="flex flex-wrap items-baseline gap-2">
       <span className="text-3xl font-extrabold text-[#0077B6]">
