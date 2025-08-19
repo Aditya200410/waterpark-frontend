@@ -37,7 +37,20 @@ export default function BlogPage() {
   }, []);
 
   return (
-    <section className="relative bg-gradient-to-b from-blue-50 to-white min-h-screen overflow-hidden py-20">
+
+       <div className="min-h-screen flex items-center justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
+
+      {/* Animated bubbles for water theme */}
+      {[...Array(10)].map((_, i) => (
+        <motion.div
+          key={i}
+          animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
+          transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
+          className="absolute w-6 h-6 rounded-full bg-blue-300 opacity-70"
+          style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
+        />
+      ))}
+    <section className="relative min-h-screen overflow-hidden py-20">
       {/* Floating Bubbles */}
       {Array.from({ length: 12 }).map((_, i) => (
         <motion.div
@@ -129,5 +142,6 @@ export default function BlogPage() {
         </div>
       </div>
     </section>
+    </div>
   );
 }

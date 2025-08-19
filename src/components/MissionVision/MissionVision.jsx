@@ -68,14 +68,14 @@ export default function MissionVission() {
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-12 md:mb-16"
         >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-black mb-4 tracking-tight">
-            WHY  <span className="text-black italic font-serif">  US</span> ✨
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-900 mb-4">
+            why <span className="text-blue-900 italic font-serif">us</span> ✨
           </h1>
-          <div className="w-32 h-1 bg-gradient-to-r from-blue-100 to-blue-200 mx-auto mb-6 rounded-full shadow-sm"></div>
-          <p className="text-lg sm:text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-            Hand-picked featured articles you shouldn’t miss. Dive in for inspiration, tips, and exciting stories!
+          <div className="w-28 md:w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-4 rounded-full"></div>
+          <p className="text-base sm:text-lg md:text-xl text-blue-700 max-w-3xl mx-auto leading-relaxed">
+            we offer a unique blend of adventure, relaxation, and unforgettable experiences. Our mission is to create a waterpark that caters to all ages, ensuring everyone has a splashing good time.
           </p>
         </motion.div>
 

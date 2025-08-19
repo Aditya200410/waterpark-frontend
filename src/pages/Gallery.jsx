@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import config from '../config/config';
-
+import { Droplet, Star } from "lucide-react";
 
 
 const Gallery = () => {
@@ -45,9 +45,51 @@ const Gallery = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-200 via-blue-400 to-blue-600 p-6 relative overflow-hidden">
-      <h1 className="text-4xl font-bold text-blue-900 text-center mb-8">Water Park Gallery</h1>
+      <div className="min-h-screen flex items-center justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
 
+      {/* Animated bubbles for water theme */}
+      {[...Array(10)].map((_, i) => (
+        <motion.div
+          key={i}
+          animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
+          transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
+          className="absolute w-6 h-6 rounded-full bg-blue-300 opacity-70"
+          style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
+        />
+      ))}
+    <section className="relative  min-h-screen overflow-hidden py-16 md:py-20">
+      {/* Floating Bubbles */}
+      {Array.from({ length: 10 }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-6 h-6 md:w-8 md:h-8 text-blue-300"
+          style={{
+            top: `${Math.random() * 80 + 10}%`,
+            left: `${Math.random() * 90 + 5}%`,
+          }}
+          animate={{ y: [-10, 10, -10], x: [-5, 5, -5], rotate: [0, 15, -15, 0] }}
+          transition={{ repeat: Infinity, duration: 6 + Math.random() * 4, ease: "easeInOut" }}
+        >
+          <Droplet size={24} color="#60A5FA" />
+        </motion.div>
+      ))}
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12 md:mb-16"
+        >
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-600 mb-4">
+            Explore Our <span className="text-blue-400 italic font-serif">Gallery</span> ✨
+          </h1>
+          <div className="w-28 md:w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-4 rounded-full"></div>
+          <p className="text-base sm:text-lg md:text-xl text-blue-700 max-w-3xl mx-auto leading-relaxed">
+            Discover our gallery images.
+          </p>
+        </motion.div>
       {/* Floating bubbles */}
       {[...Array(6)].map((_, i) => (
         <motion.div
@@ -87,6 +129,8 @@ const Gallery = () => {
           </motion.div>
         ))}
       </div>
+    </div>
+      </section>
     </div>
   );
 };

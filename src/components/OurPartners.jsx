@@ -45,18 +45,18 @@ export default function OurPartners() {
   return (
     <section className="py-10 md:py-14 lg:py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
+         <motion.div
+          initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-10 md:mb-14 lg:mb-20"
+          className="text-center mb-12 md:mb-16"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-4 md:mb-5">
-            Our <span className="font-serif italic">Partners</span>
-          </h2>
-          <div className="w-20 md:w-24 h-0.5 bg-gradient-to-r from-pink-600 to-pink-600 mx-auto mb-5 md:mb-7"></div>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            We collaborate with trusted water parks, ticketing platforms, and payment providers to give you a seamless experience.
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-900 mb-4">
+            Explore Our <span className="text-blue-900 italic font-serif">Patners</span> ✨
+          </h1>
+          <div className="w-28 md:w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-4 rounded-full"></div>
+          <p className="text-base sm:text-lg md:text-xl text-blue-700 max-w-3xl mx-auto leading-relaxed">
+            Discover our Patners .
           </p>
         </motion.div>
 

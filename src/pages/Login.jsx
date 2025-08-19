@@ -193,8 +193,8 @@ const Login = () => {
                 key={i}
                 className="absolute rounded-full bg-white/40 animate-float"
                 style={{
-                  width: `${Math.random() * 40 + 20}px`,
-                  height: `${Math.random() * 40 + 20}px`,
+                  width: `${1 * 40 + 20}px`,
+                  height: `${1 * 40 + 20}px`,
                   top: `${Math.random() * 100}%`,
                   left: `${Math.random() * 100}%`,
                   animationDelay: `${Math.random() * 5}s`,

@@ -63,12 +63,12 @@ const Signup = () => {
     <div className="min-h-screen flex items-center justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
 
       {/* Animated bubbles for water theme */}
-      {[...Array(8)].map((_, i) => (
+      {[...Array(10)].map((_, i) => (
         <motion.div
           key={i}
-          animate={{ y: [0, -200, 0], x: [0, 50, -50, 0] }}
+          animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
           transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
-          className="absolute w-6 h-6 rounded-full bg-blue-300/50 opacity-70"
+          className="absolute w-6 h-6 rounded-full bg-blue-300 opacity-70"
           style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
         />
       ))}
@@ -79,15 +79,22 @@ const Signup = () => {
         transition={{ duration: 0.6 }}
         className="bg-white/20 backdrop-blur-lg rounded-3xl shadow-lg p-10 w-full max-w-md relative z-10"
       >
-        <div className="text-center mb-6">
-          <h2 className="text-4xl font-bold text-blue-100 mb-2 tracking-tight">
-            Create <span className="italic text-white font-serif">Account</span>
-          </h2>
-          <p className="text-sm text-blue-50">
-            Already have an account?{" "}
-            <Link to="/login" className="font-semibold text-blue-900 hover:underline">Sign in</Link>
-          </p>
-        </div>
+       <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <h2 className="text-4xl md:text-5xl font-poppins text-blue-900 drop-shadow-lg">
+             Sign  <span className="italic text-cyan-600">up</span>
+            </h2>
+            <p className="mt-2 text-sm md:text-base text-blue-800">
+              Returing user ?{" "}
+              <Link
+                to="/login"
+                className="font-medium text-cyan-600 hover:text-cyan-500"
+              >
+                log in
+              </Link>
+            </p>
+          </div>
+          </div>
 
         {error && <p className="text-red-500 text-sm text-center mb-3">{error}</p>}
 
