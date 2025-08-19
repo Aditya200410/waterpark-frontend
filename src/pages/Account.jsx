@@ -164,8 +164,12 @@ const Account = () => {
       const data = await orderService.getOrdersByEmail(user.email);
       if (data) {
        
-        setOrders(data);
-        setFilteredOrders(data);
+       const completedOrders = data.filter(
+      (order) => order.paymentStatus?.toLowerCase() === "completed"
+    );
+
+    setOrders(completedOrders);
+    setFilteredOrders(completedOrders);
       } else {
         throw new Error(data.message || 'No success field in response');
       }
@@ -335,7 +339,7 @@ const Account = () => {
             <h2 className="text-2xl font-semibold text-cyan-900">Your Tickets</h2>
           </div>
           <div className="flex gap-2">
-           
+        
           </div>
         </div>
 
@@ -485,7 +489,7 @@ const Account = () => {
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                 
 
-                 
+               
                 </div>
               </div>
             ))}

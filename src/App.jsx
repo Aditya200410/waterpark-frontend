@@ -43,6 +43,7 @@ import BlogPage from './pages/BlogPage';
 import OurPartners from './components/OurPartners';
 import Blogview from './pages/Blogview';
 import Gallery from './pages/Gallery';
+import WaterparkTicket from './pages/Ticket';
 
 
 // Protected Route component
@@ -192,6 +193,7 @@ function AppContent() {
         <Route path="/waterparks" element={<Shop />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/login" element={<Login />} />
+             <Route path="/ticket" element={<WaterparkTicket/>} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
         <Route path="/wishlist" element={<Wishlist />} />
