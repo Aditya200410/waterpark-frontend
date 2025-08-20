@@ -124,7 +124,7 @@ export default function Footer() {
             <motion.img
               src="/logo.png"
               alt="Water Park Chalo"
-              className="h-20 w-auto rounded-xl drop-shadow-lg bg-white/20 p-2"
+              className="h-32 w-auto rounded-xl drop-shadow-lg bg-white/20 p-2"
               animate={{ y: [0, -8, 0] }}
               transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut" }}
             />
@@ -135,8 +135,8 @@ export default function Footer() {
 
           <div className="grid grid-cols-2 gap-6 text-sm">
             <div>
-              <h4 className="text-lg font-semibold mb-4">Links</h4>
-              <ul className="space-y-2">
+              <h4 className="text-2xl font-semibold mb-4">Links</h4>
+              <ul className="space-y-2 text-lg">
                 <li><AnimatedLink to="/about">About Us</AnimatedLink></li>
                 <li><AnimatedLink to="/contact">Contact Us</AnimatedLink></li>
                 <li><AnimatedLink to="/policies">Policies</AnimatedLink></li>
