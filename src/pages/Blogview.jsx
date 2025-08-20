@@ -59,7 +59,7 @@ const BlogView = () => {
     );
 
   return (
-    <div className=" min-h-screen font-sans">
+    <div className=" min-h-screen font-sans overflow-hidden">
 
   
         {/* Animated bubbles for water theme */}
