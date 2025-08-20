@@ -166,6 +166,7 @@ const Header = () => {
     { name: 'Waterparks', path: '/waterparks' },
     { name: 'Tickets', path: '/tickets' },
     { name: 'Offers', path: '/offers' },
+    { name: 'gallery', path: '/gallery' },
     { name: 'Blog', path: '/blog' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' }
