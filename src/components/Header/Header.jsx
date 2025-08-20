@@ -355,7 +355,7 @@ const Header = () => {
                   {activeMobileTab === 'menu' && <motion.div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" layoutId="mobileTab" />}
                 </button>
                 <button onClick={() => setActiveMobileTab('categories')} className={`flex-1 py-3 text-center text-sm font-semibold transition-all duration-200 relative ${activeMobileTab === 'categories' ? 'text-white' : 'text-white/70'}`}>
-                  CATEGORIES
+                  Locations
                   {activeMobileTab === 'categories' && <motion.div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" layoutId="mobileTab" />}
                 </button>
               </div>

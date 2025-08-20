@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
+import WhyUs from "../components/MissionVision/MissionVision"; // 👈 Import the new component
 
 const Login = () => {
   const navigate = useNavigate();
@@ -60,6 +61,8 @@ const Login = () => {
               </Link>
             </p>
           </div>
+
+      
 
           {/* Error Message */}
           {error && (
@@ -169,7 +172,10 @@ const Login = () => {
           </form>
         </div>
       </motion.div>
-
+    {/* Why Us Section */}
+    <div className="lg:hidden flex">
+          <WhyUs  />
+          </div>
       {/* Right Side - Fun Water Theme */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}

@@ -583,150 +583,36 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
             
                   {/* Desktop Tabs */}
             
-                  {!isMobile ? (
-            
-                    <nav className="flex space-x-6 overflow-x-auto">
-            
-                      {tabs.map((tab) => (
-            
-                        <motion.button
-            
-                          key={tab.id}
-            
-                          onClick={() => setActiveTab(tab.id)}
-            
-                          whileHover={{ scale: 1.05 }}
-            
-                          whileTap={{ scale: 0.95 }}
-            
-                          className={`relative py-3 px-4 text-lg rounded-t-xl font-semibold transition-all duration-300
-            
-                            ${
-            
-                              activeTab === tab.id
-            
-                                ? "bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white shadow-md"
-            
-                                : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"
-            
-                            }`}
-            
-                        >
-            
-                          {tab.label}
-            
-                          {activeTab === tab.id && (
-            
-                            <motion.div
-            
-                              layoutId="tab-underline"
-            
-                              className="absolute left-0 right-0 bottom-0 h-1 bg-[#90E0EF] rounded-full"
-            
-                            />
-            
-                          )}
-            
-                        </motion.button>
-            
-                      ))}
-            
-                    </nav>
-            
-                  ) : (
-            
-                    // Mobile Elegant Dropdown
-            
-                    <div className="p-3">
-            
-                      <button
-            
-                        onClick={() => setDropdownOpen(!dropdownOpen)}
-            
-                        className="w-full flex items-center justify-between p-3 text-lg font-semibold rounded-lg border border-blue-300 bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white shadow-md hover:shadow-lg transition"
-            
-                      >
-            
-                        {tabs.find((t) => t.id === activeTab)?.label}
-            
-                        <motion.div
-            
-                          animate={{ rotate: dropdownOpen ? 180 : 0 }}
-            
-                          transition={{ duration: 0.3 }}
-            
-                        >
-            
-                          <ChevronDown size={22} />
-            
-                        </motion.div>
-            
-                      </button>
-            
-            
-            
-                      {/* Dropdown list */}
-            
-                      <AnimatePresence>
-            
-                        {dropdownOpen && (
-            
-                          <motion.div
-            
-                            initial={{ opacity: 0, y: -10 }}
-            
-                            animate={{ opacity: 1, y: 0 }}
-            
-                            exit={{ opacity: 0, y: -10 }}
-            
-                            transition={{ duration: 0.2 }}
-            
-                            className="absolute left-0 right-0 mt-2 bg-white border border-blue-200 rounded-xl shadow-lg z-10"
-            
-                          >
-            
-                            {tabs.map((tab) => (
-            
-                              <button
-            
-                                key={tab.id}
-            
-                                onClick={() => {
-            
-                                  setActiveTab(tab.id);
-            
-                                  setDropdownOpen(false);
-            
-                                }}
-            
-                                className={`w-full text-left px-4 py-3 text-md font-medium rounded-lg transition ${
-            
-                                  activeTab === tab.id
-            
-                                    ? "bg-[#E0F7FA] text-[#0077B6]"
-            
-                                    : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-            
-                                }`}
-            
-                              >
-            
-                                {tab.label}
-            
-                              </button>
-            
-                            ))}
-            
-                          </motion.div>
-            
-                        )}
-            
-                      </AnimatePresence>
-            
-                    </div>
-            
-                  )}
-            
+                
+     <div className="mt-10 font-['Baloo_2',cursive]">
+  {/* Tab Navigation */}
+  <div className="border-b-2 border-blue-200">
+    {/* Unified Responsive Tabs that Wrap on Small Screens */}
+    <nav className="flex flex-wrap gap-x-2 gap-y-3 sm:gap-x-4 pb-2">
+      {tabs.map((tab) => (
+        <motion.button
+          key={tab.id}
+          onClick={() => setActiveTab(tab.id)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className={`relative py-2 px-3 text-sm sm:py-3 sm:px-4 sm:text-lg rounded-t-xl font-semibold transition-all duration-300 ${
+            activeTab === tab.id
+              ? "bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white shadow-md"
+              : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"
+          }`}
+        >
+          {tab.label}
+          {activeTab === tab.id && (
+            <motion.div
+              layoutId="tab-underline"
+              className="absolute left-0 right-0 -bottom-[2px] h-1 bg-[#90E0EF] rounded-full"
+            />
+          )}
+        </motion.button>
+      ))}
+    </nav>
+  </div>
+  </div>
                 </div>
             
             
