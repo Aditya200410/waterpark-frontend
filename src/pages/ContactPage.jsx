@@ -72,7 +72,7 @@ const Contact = () => {
 
   return (
     <LazyMotion features={domAnimation}>
-      <div className="font-sans bg-foam text-deep-blue overflow-x-hidden">
+      <div className="font-sans bg-foam text-deep-blue overflow-hidden">
         
         {/* HERO SECTION */}
         <section className="relative text-center py-24 px-4 sm:py-32 bg-water-blue overflow-hidden">

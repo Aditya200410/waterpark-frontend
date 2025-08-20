@@ -615,7 +615,6 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
   </div>
 
   </div>
-            </div>
                 </div>
             
             
