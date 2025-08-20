@@ -2,10 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --primary-color: #8f3a61;
-  --secondary-color: #8f3a61;
-}
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
 @keyframes ripple {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }

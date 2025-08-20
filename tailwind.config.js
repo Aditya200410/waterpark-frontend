@@ -1,12 +1,19 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
+      fontFamily: {
+        // Updated default font family to Nunito
+        sans: ['Nunito', 'sans-serif'],
+      },
       colors: {
+        // Your old palette
         primary: '#0077be',
         'primary-dark': '#005a8e',
         secondary: '#f0f9ff',
@@ -23,9 +30,16 @@ export default {
           600: '#00a896',
           700: '#00877a',
         },
-      },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+
+        // New water park palette
+        'water-blue': {
+          light: '#67e8f9', // cyan-300
+          DEFAULT: '#06b6d4', // cyan-500
+          dark: '#0891b2', // cyan-600
+        },
+        'sun-yellow': '#fde047', // yellow-300
+        'deep-blue': '#0c4a6e', // sky-900
+        'foam': '#f0f9ff', // sky-50
       },
       container: {
         center: true,
@@ -48,5 +62,5 @@ export default {
       },
     },
   },
- 
-}
+  plugins: [],
+};

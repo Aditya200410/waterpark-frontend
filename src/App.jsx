@@ -154,9 +154,10 @@ function AppContent() {
   const seoData = getSEOConfig();
   
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative z-0 pt-20 mt-20 bg-transparent">
       <SEO {...seoData} />
-      <Header />
+      <Header/>
+     
       <Routes>
         <Route path="/" element={
           <main>

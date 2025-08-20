@@ -9,8 +9,12 @@ import OurPartners from '../components/OurPartners';
 
 export default function Home() {
   return (
-    <div>
-      <Hero />
+    <div >
+           {/* Animated bubbles for water theme */}
+      
+
+      <Hero className="pt-10" />
+      
       <Categories />
       <WeeklyBestsellers />
       <MostLoved />

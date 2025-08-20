@@ -72,7 +72,7 @@ const AboutUs = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-gradient-to-b from-blue-500 via-cyan-400 to-blue-200">
         <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
             <motion.div
@@ -91,7 +91,7 @@ const AboutUs = () => {
       </section>
 
       {/* Story Section */}
-      <section className="py-16 bg-gradient-to-b from-blue-100 to-blue-50">
+      <section className="py-16    bg-gradient-to-b from-blue-500 via-cyan-400 to-blue-200">
         <div className="container mx-auto px-4 md:px-0 grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -126,7 +126,7 @@ const AboutUs = () => {
       </section>
 
       {/* Values Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 ">
         <div className="container mx-auto px-4 md:px-0 text-center">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -143,7 +143,7 @@ const AboutUs = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-blue-50 rounded-2xl p-6 shadow hover:shadow-lg transition-shadow text-center"
+                className="bg-gradient-to-b from-blue-500 via-cyan-400 to-blue-200 rounded-2xl p-6 shadow hover:shadow-lg transition-shadow text-center"
               >
                 <div className="text-4xl mb-4">{value.icon}</div>
                 <h3 className="text-xl font-semibold text-blue-900 mb-2">{value.title}</h3>
@@ -155,7 +155,7 @@ const AboutUs = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="py-16 bg-gradient-to-b from-blue-50 to-blue-100">
+      <section className="py-16 bg-gradient-to-b from-blue-500 via-cyan-400 to-blue-200">
         <div className="container mx-auto px-4 md:px-0 text-center">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}

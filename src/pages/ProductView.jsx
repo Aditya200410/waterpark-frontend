@@ -385,14 +385,14 @@ const handleProceedToCheckout = () => {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
- className=" w-full h-full bg-[#00B4D8]">
+ className=" w-full h-full bg-[#00B4D8] overflow-hidden">
 
       <SEO {...productSEO} />
       {/* Breadcrumb */}
   
 
       <div className="container mx-auto px-4 py-4 sm:py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-row-12 gap-4 lg:gap-8 items-start">
           {/* Product Images - Left Side */}
         <motion.div 
   initial={{ opacity: 0, x: -20 }}
@@ -406,7 +406,7 @@ const handleProceedToCheckout = () => {
     <img
       src={productImages[selectedImage]}
       alt={product.name}
-      className="max-w-full max-h-[60vh] object-contain cursor-pointer"
+      className="max-w-full max-h-[60vh] object-cover cursor-pointer"
       onClick={handleImageClick}
       onError={e => {
         e.target.onerror = null;
@@ -558,11 +558,10 @@ const handleProceedToCheckout = () => {
   </div>
 
   {/* Product Description */}
-  <div>
-    <p className="text-sm text-gray-700 leading-relaxed">
-      {product.description}
-    </p>
-  </div>
+  <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
+            <h4 className="font-bold text-[#03045E] mb-3 text-lg">📖 Description</h4>
+            <p className="text-base text-[#023E8A] leading-relaxed">{product.description || 'No description available.'}</p>
+          </div>
 
   {/* Quantity + Actions */}
   <div className="flex flex-wrap items-center gap-3">

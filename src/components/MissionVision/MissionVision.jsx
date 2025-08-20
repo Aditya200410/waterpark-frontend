@@ -38,28 +38,15 @@ export default function MissionVission() {
 
   return (
     <section className="relative min-h-screen overflow-hidden">
-      {/* Floating Bubbles */}
-      {Array.from({ length: 12 }).map((_, i) => (
+        {/* Animated bubbles for water theme */}
+      {[...Array(10)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute w-5 h-5 md:w-7 md:h-7 text-blue-300"
-          style={{
-            top: `${Math.random() * 85 + 5}%`,
-            left: `${Math.random() * 90 + 5}%`,
-          }}
-          animate={{
-            y: [-12, 12, -12],
-            x: [-6, 6, -6],
-            rotate: [0, 20, -20, 0],
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 6 + Math.random() * 4,
-            ease: "easeInOut",
-          }}
-        >
-          <Droplet size={20} color="#3B82F6" />
-        </motion.div>
+          animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
+          transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
+          className="absolute w-6 h-6 rounded-full bg-blue-300 "
+          style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
+        />
       ))}
 
       <div className="container relative z-10">

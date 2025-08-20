@@ -70,18 +70,18 @@ export default function Footer() {
 
           {/* Contact */}
           <div className="flex flex-col items-start space-y-3">
-            <h4 className="text-2xl     mb-3">Contact & Location</h4>
+            <h4 className="text-2xl  mb-5">Contact & Location</h4>
             <div className="flex items-center space-x-2    ">
               <Phone className="w-5 h-5" />
-              <a href="tel:+918847714464" className="hover:text-yellow-200">+91 88477 14464</a>
+              <a href="tel:+918847714464 text-sm" className="hover:text-yellow-200">+91 88477 14464</a>
             </div>
             <div className="flex items-center space-x-2    ">
               <Mail className="w-5 h-5" />
-              <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-200">wpc@waterparkchalo.com</a>
+              <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-200 text-sm">wpc@waterparkchalo.com</a>
             </div>
             <div className="flex items-start space-x-2    ">
               <MapPin className="w-5 h-5 mt-1" />
-              <span className="text-sm">110, Lakshmi Apt 1, Alkapuri, Nallasopara 401209</span>
+              <span className="text-sm">110, Lakshmi Apt 1, Alkapuri, Nallasopara</span>
             </div>
           </div>
         </div>
@@ -128,11 +128,11 @@ export default function Footer() {
               <Link to="/blog" className="hover:text-yellow-200">Blog</Link>
               <Link to="offers" className="hover:text-yellow-200">Offers</Link>
           </div>
-          <div className="flex flex-col space-y-2    ">
+          <div className="flex flex-col space-y-5    ">
             <h4 className="text-lg    ">Contact</h4>
             <a href="tel:+918847714464" className="hover:text-yellow-200">+91 88477 14464</a>
             <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-200">wpc@waterparkchalo.com</a>
-            <span className="text-xs">110, Lakshmi Apt 1,<br />Alkapuri, Nallasopara 401209</span>
+            <span >110, Lakshmi Apt 1,<br />Alkapuri, Nallasopara</span>
           </div>
         </div>
 
