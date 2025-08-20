@@ -29,6 +29,9 @@ const ProductView = () => {
   // Ref for the booking section to scroll to
   const bookingSectionRef = useRef(null);
 
+
+
+const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or 'full'
   const [selectedImage, setSelectedImage] = useState(0);
   const [adultquantity, setadultQuantity] = useState(1); // Default to 1
   const [childquantity, setchildQuantity] = useState(0);
@@ -1187,7 +1190,7 @@ const ProductView = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <td className="px-4 py-3 font-medium">👧 Child Adult 3 to 8 year</td>
+            <td className="px-4 py-3 font-medium">👧 Child 3 to 8 year</td>
             <td className="px-4 py-3 text-center">{childquantity}</td>
             <td className="px-4 py-3 text-right">₹{product.childprice}</td>
             <td className="px-4 py-3 text-right">₹{childquantity * product.childprice}</td>
