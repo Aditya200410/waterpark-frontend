@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Menu, X, ChevronDown, Search, User, Heart, Home, ShoppingCart, Phone, Mail } from 'lucide-react';
+import { ShoppingBag, Menu, X, ChevronDown, Search, User, Heart, Home, ShoppingCart, Phone, Mail, DiamondPercent, TicketPercent } from 'lucide-react';
 import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaWhatsapp } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -192,6 +192,7 @@ const Header = () => {
     <>
       {/* Search Overlay - Unchanged Logic, Refined Styling */}
       <AnimatePresence>
+        
         {isSearchOpen && (
           <motion.div
             initial={{ y: -60, opacity: 0 }}
@@ -273,75 +274,44 @@ const Header = () => {
             </nav>
 
           
-    {/* Right side: Icons and Auth */}
+    
+{/* Right side: Icons and Auth */}
 <div className="flex items-center space-x-4">
-  {/* Desktop Search - icon */}
+  {/* 🔍 Search Icon (Mobile + Desktop) */}
   <motion.button
     onClick={handleSearchIconClick}
-    className={`hidden md:inline-flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-300 ${
+    className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-300 ${
       isScrolled
-        ? 'text-gray-600 hover:bg-gray-200'
-        : 'text-white hover:bg-white/20'
+        ? "text-gray-700 hover:bg-gray-200"
+        : "text-white hover:bg-white/20"
     }`}
     whileHover={{ scale: 1.1 }}
     whileTap={{ scale: 0.9 }}
     aria-label="Open search"
   >
-    <Search size={20} />
+    <Search size={22} />
   </motion.button>
 
-  {/* ✅ Mobile Search Icon & Box */}
-  <div className="relative md:hidden flex items-center">
-    {isSearchOpen ? (
-      <form
-        onSubmit={handleSearch}
-        className="flex items-center bg-white/90 rounded-full px-3 py-1 shadow-sm"
-      >
-        <input
-          type="text"
-          ref={searchInputRef}
-          placeholder="Search..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-32 bg-transparent focus:outline-none text-sm text-gray-700"
-        />
-        <button type="submit" className="ml-2 text-cyan-600">
-          <Search size={18} />
-        </button>
-        <button
-          type="button"
-          onClick={() => setIsSearchOpen(false)}
-          className="ml-2 text-gray-500"
-        >
-          <X size={18} />
-        </button>
-      </form>
-    ) : (
-      <motion.button
-        onClick={() => setIsSearchOpen(true)}
-        className={`p-2 rounded-full transition-colors duration-200 ${
-          isScrolled ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-white/20'
-        }`}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        <Search size={22} />
-      </motion.button>
-    )}
-  </div>
-
-  {/* Hamburger Menu */}
-  <motion.button
-    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-    className={`lg:hidden p-2 rounded-lg transition-colors duration-200 ${
-      isScrolled ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-white/20'
-    }`}
-    whileHover={{ scale: 1.1 }}
-    whileTap={{ scale: 0.9 }}
+  {/* 👤 User Icon (Mobile + Desktop) */}
+  <Link
+    to={user ? "/account" : "/login"}
+    className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-200 
+               md:gap-2 md:px-3 md:py-2 md:w-auto md:h-auto ${
+                 isScrolled
+                   ? "text-gray-700 hover:bg-gray-200"
+                   : "text-white hover:bg-white/20"
+               }`}
   >
-    {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-  </motion.button>
+    <User size={22} />
+    <span className="hidden md:inline font-medium">
+      {user ? "My Account" : "Login / Register"}
+    </span>
+  </Link>
 </div>
+
+
+
+
 
           </div>
         </div>
@@ -438,9 +408,9 @@ const Header = () => {
             <WavesIcon className="w-6 h-6" /> {/* Using ShoppingCart for consistency */}
             <span className="text-xs mt-1 font-medium">Parks</span>
           </Link>
-          <Link to="/tickets" className="flex flex-col items-center justify-center text-gray-600 hover:text-cyan-500 transition-colors duration-200 relative w-1/4">
-            <ShoppingBag className="w-6 h-6" />
-            <span className="text-xs mt-1 font-medium">Tickets</span>
+          <Link to="/offers" className="flex flex-col items-center justify-center text-gray-600 hover:text-cyan-500 transition-colors duration-200 relative w-1/4">
+            <TicketPercent className="w-6 h-6" />
+            <span className="text-xs mt-1 font-medium">offers</span>
             {getTotalItems && getTotalItems() > 0 && (
               <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-1 right-2 bg-cyan-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-md">
                 {getTotalItems()}

@@ -167,15 +167,11 @@ function AppContent() {
             <ErrorBoundary>
               <Categories/>
             </ErrorBoundary>
-            <ErrorBoundary>
-              <FeaturedProducts />
-            </ErrorBoundary>
+         
             <ErrorBoundary>
               <WeeklyBestsellers />
             </ErrorBoundary>
-            <ErrorBoundary>
-              <MostLoved />
-            </ErrorBoundary>
+     
             <ErrorBoundary>
               <Testimonials />
             </ErrorBoundary>

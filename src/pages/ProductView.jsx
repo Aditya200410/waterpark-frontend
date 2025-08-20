@@ -557,183 +557,10 @@ const handleProceedToCheckout = () => {
     </div>
   </div>
 
-  {/* Product Description */}
-  <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">📖 Description</h4>
-            <p className="text-base text-[#023E8A] leading-relaxed">{product.description || 'No description available.'}</p>
-          </div>
+ 
 
-  {/* Quantity + Actions */}
-  <div className="flex flex-wrap items-center gap-3">
-    {/* Adult Qty */}
-    <div className="flex items-center gap-2">
-      <label className="text-xs font-medium text-gray-700">👨 Adult:</label>
-      <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-        <button
-          onClick={() => handleadultQuantityChange(adultquantity - 1)}
-          className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
-          disabled={adultquantity <= 1}
-        >
-          -
-        </button>
-        <span className="px-3 py-2 border-x border-gray-300 text-sm">
-          {adultquantity}
-        </span>
-        <button
-          onClick={() => handleadultQuantityChange(adultquantity + 1)}
-          className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
-        >
-          +
-        </button>
-      </div>
-    </div>
 
-    {/* Child Qty */}
-    <div className="flex items-center gap-2">
-      <label className="text-xs font-medium text-gray-700">👧 Child:</label>
-      <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-        <button
-          onClick={() => handlechildQuantityChange(childquantity - 1)}
-          className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
-          disabled={childquantity <= 1}
-        >
-          -
-        </button>
-        <span className="px-3 py-2 border-x border-gray-300 text-sm">
-          {childquantity}
-        </span>
-        <button
-          onClick={() => handlechildQuantityChange(childquantity + 1)}
-          className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
-        >
-          +
-        </button>
-      </div>
-    </div>
-
-    {/* Book Button */}
-    <motion.button 
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={handleProceedToCheckout}
-      disabled={typeof product.stock === 'number' ? product.stock <= 0 : isOutOfStock}
-      className={`flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold transition-all text-sm shadow-lg ${
-        typeof product.stock === 'number'
-          ? (product.stock <= 0
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-[#00B4D8] text-white hover:bg-[#0096C7]')
-          : (isOutOfStock
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-[#00B4D8] text-white hover:bg-[#0096C7]')
-      }`}
-    >
-      BOOK NOW
-    </motion.button>
-
-    {/* Share Button */}
-    <motion.button 
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className="p-3 border border-gray-300 rounded-full hover:bg-[#CAF0F8] transition-colors"
-      onClick={handleShare}
-    >
-      <ShareIcon className="h-4 w-4 text-gray-600" />
-    </motion.button>
-  </div>
-
-{/* Date Picker Section */}
-<div className="mt-6 relative z-10">
-  <motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5 }}
-    className="bg-gradient-to-r from-[#90E0EF] to-[#48CAE4] p-4 rounded-xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-3"
-  >
-    <label className="text-sm font-semibold text-[#03045E] flex items-center gap-2">
-      📅 Select Date: {BookingDate ? BookingDate : "Not Selected"}
-    </label>
-    <input
-      type="date"
-      className="px-4 py-2 rounded-lg border border-[#0077B6]/40 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] text-[#03045E] bg-white"
-      min={new Date().toISOString().split("T")[0]}  // ✅ Block past dates
-      onChange={(e) => setBookingDate(e.target.value)}
-    />
-  </motion.div>
-</div>
-
-  {/* Ticket Summary */}
-  <div className="mt-6 w-full flex justify-center relative z-10">
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="w-full max-w-lg bg-gradient-to-br from-[#00B4D8] via-[#0096C7] to-[#0077B6] rounded-2xl shadow-xl overflow-hidden"
-    >
-      {/* Header */}
-      <div className="bg-[#023E8A] text-white text-center py-3 text-lg font-bold tracking-wide flex items-center justify-center gap-2">
-        🎟️ Ticket Summary
-      </div>
-
-      {/* Table */}
-      <table className="w-full text-sm text-white">
-        <thead className="bg-[#03045E]/80">
-          <tr>
-            <th className="px-4 py-3 text-left">Ticket Type</th>
-            <th className="px-4 py-3 text-center">Qty</th>
-            <th className="px-4 py-3 text-right">Price</th>
-            <th className="px-4 py-3 text-right">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Adult */}
-          <motion.tr 
-            className="border-t border-white/30 hover:bg-white/10 transition"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <td className="px-4 py-3 font-medium">👨 Adult</td>
-            <td className="px-4 py-3 text-center">{adultquantity}</td>
-            <td className="px-4 py-3 text-right">₹{product.adultprice}</td>
-            <td className="px-4 py-3 text-right">₹{adultquantity * product.adultprice}</td>
-          </motion.tr>
-
-          {/* Child */}
-          <motion.tr 
-            className="border-t border-white/30 hover:bg-white/10 transition"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <td className="px-4 py-3 font-medium">👧 Child</td>
-            <td className="px-4 py-3 text-center">{childquantity}</td>
-            <td className="px-4 py-3 text-right">₹{product.childprice}</td>
-            <td className="px-4 py-3 text-right">₹{childquantity * product.childprice}</td>
-          </motion.tr>
-        </tbody>
-
-        {/* Footer */}
-        <tfoot>
-          <motion.tr 
-            className="bg-[#48CAE4] text-[#03045E] font-bold text-base"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.6 }}
-          >
-            <td className="px-4 py-3 text-left" colSpan={3}>💰 Grand Total</td>
-            <td className="px-4 py-3 text-right">
-              ₹{adultquantity * product.adultprice + childquantity * product.childprice}
-            </td>
-          </motion.tr>
-        </tfoot>
-      </table>
-    </motion.div>
-  </div>
-</motion.div>
-
-        </div>
-
-     {/* Product Tabs - Water Park Theme */}
+ {/* Product Tabs - Water Park Theme */}
 <div className="mt-10 font-['Baloo_2',cursive]">
   {/* Tab Navigation */}
   <div className="border-b-2 border-blue-200 relative">
@@ -984,10 +811,182 @@ const handleProceedToCheckout = () => {
   </div>
 </div>
 
+  {/* Quantity + Actions */}
+  <div className="flex flex-wrap items-center gap-3">
+    {/* Adult Qty */}
+    <div className="flex items-center gap-2">
+      <label className="text-xs font-medium text-gray-700">👨 Adult:</label>
+      <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+        <button
+          onClick={() => handleadultQuantityChange(adultquantity - 1)}
+          className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
+          disabled={adultquantity <= 1}
+        >
+          -
+        </button>
+        <span className="px-3 py-2 border-x border-gray-300 text-sm">
+          {adultquantity}
+        </span>
+        <button
+          onClick={() => handleadultQuantityChange(adultquantity + 1)}
+          className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
+        >
+          +
+        </button>
+      </div>
+    </div>
+
+    {/* Child Qty */}
+    <div className="flex items-center gap-2">
+      <label className="text-xs font-medium text-gray-700">👧 Child:</label>
+      <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+        <button
+          onClick={() => handlechildQuantityChange(childquantity - 1)}
+          className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
+          disabled={childquantity <= 1}
+        >
+          -
+        </button>
+        <span className="px-3 py-2 border-x border-gray-300 text-sm">
+          {childquantity}
+        </span>
+        <button
+          onClick={() => handlechildQuantityChange(childquantity + 1)}
+          className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
+        >
+          +
+        </button>
+      </div>
+    </div>
+
+    {/* Book Button */}
+    <motion.button 
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={handleProceedToCheckout}
+      disabled={typeof product.stock === 'number' ? product.stock <= 0 : isOutOfStock}
+      className={`flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold transition-all text-sm shadow-lg ${
+        typeof product.stock === 'number'
+          ? (product.stock <= 0
+            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            : 'bg-[#00B4D8] text-white hover:bg-[#0096C7]')
+          : (isOutOfStock
+            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            : 'bg-[#00B4D8] text-white hover:bg-[#0096C7]')
+      }`}
+    >
+      BOOK NOW
+    </motion.button>
+
+    {/* Share Button */}
+    <motion.button 
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="p-3 border border-gray-300 rounded-full hover:bg-[#CAF0F8] transition-colors"
+      onClick={handleShare}
+    >
+      <ShareIcon className="h-4 w-4 text-gray-600" />
+    </motion.button>
+  </div>
+
+{/* Date Picker Section */}
+<div className="mt-6 relative z-10">
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="bg-gradient-to-r from-[#90E0EF] to-[#48CAE4] p-4 rounded-xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-3"
+  >
+    <label className="text-sm font-semibold text-[#03045E] flex items-center gap-2">
+      📅 Select Date: {BookingDate ? BookingDate : "Not Selected"}
+    </label>
+    <input
+      type="date"
+      className="px-4 py-2 rounded-lg border border-[#0077B6]/40 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] text-[#03045E] bg-white"
+      min={new Date().toISOString().split("T")[0]}  // ✅ Block past dates
+      onChange={(e) => setBookingDate(e.target.value)}
+    />
+  </motion.div>
+</div>
+
+  {/* Ticket Summary */}
+  <div className="mt-6 w-full flex justify-center relative z-10">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-full max-w-lg bg-gradient-to-br from-[#00B4D8] via-[#0096C7] to-[#0077B6] rounded-2xl shadow-xl overflow-hidden"
+    >
+      {/* Header */}
+      <div className="bg-[#023E8A] text-white text-center py-3 text-lg font-bold tracking-wide flex items-center justify-center gap-2">
+        🎟️ Ticket Summary
+      </div>
+
+      {/* Table */}
+      <table className="w-full text-sm text-white">
+        <thead className="bg-[#03045E]/80">
+          <tr>
+            <th className="px-4 py-3 text-left">Ticket Type</th>
+            <th className="px-4 py-3 text-center">Qty</th>
+            <th className="px-4 py-3 text-right">Price</th>
+            <th className="px-4 py-3 text-right">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Adult */}
+          <motion.tr 
+            className="border-t border-white/30 hover:bg-white/10 transition"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <td className="px-4 py-3 font-medium">👨 Adult</td>
+            <td className="px-4 py-3 text-center">{adultquantity}</td>
+            <td className="px-4 py-3 text-right">₹{product.adultprice}</td>
+            <td className="px-4 py-3 text-right">₹{adultquantity * product.adultprice}</td>
+          </motion.tr>
+
+          {/* Child */}
+          <motion.tr 
+            className="border-t border-white/30 hover:bg-white/10 transition"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <td className="px-4 py-3 font-medium">👧 Child</td>
+            <td className="px-4 py-3 text-center">{childquantity}</td>
+            <td className="px-4 py-3 text-right">₹{product.childprice}</td>
+            <td className="px-4 py-3 text-right">₹{childquantity * product.childprice}</td>
+          </motion.tr>
+        </tbody>
+
+        {/* Footer */}
+        <tfoot>
+          <motion.tr 
+            className="bg-[#48CAE4] text-[#03045E] font-bold text-base"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <td className="px-4 py-3 text-left" colSpan={3}>💰 Grand Total</td>
+            <td className="px-4 py-3 text-right">
+              ₹{adultquantity * product.adultprice + childquantity * product.childprice}
+            </td>
+          </motion.tr>
+        </tfoot>
+      </table>
+    </motion.div>
+  </div>
+</motion.div>
+
+        </div>
+
+    
+
 
         {/* Related Products */}
         <div className="mt-8">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">You Might Also Like</h3>
+         
           <div>
             <MostLoved />
           </div>

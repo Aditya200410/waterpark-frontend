@@ -136,7 +136,7 @@ export default function FeaturedProducts() {
             Featured <span className="font-serif italic">Parks</span>
           </h2>
             <p className="text-gray-600 text-sm md:text-base lg:text-lg leading-relaxed mb-4 md:mb-6 max-w-2xl mx-auto">
-              Discover our handpicked collection of exceptional handcrafted pieces, each telling a unique story of artistry and tradition
+              Discover our handpicked collection of exceptional parks, each telling a unique story of artistry and tradition
             </p>
             <div className="w-16 md:w-20 h-0.5 bg-gradient-to-r from-[#0077B6]-500 to-[#0077B6]-600 mx-auto"></div>
         </div>
@@ -167,7 +167,7 @@ export default function FeaturedProducts() {
           >
             <Link
               to="/shop"
-              className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-[#0077B6] to-[#0077B6] hover:from-[#0077B6] hover:to-[#6a2847] transition-all duration-300 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-[#0077B6] to-[#0077B6] hover:from-[#0077B6] hover:to-[#0077B6] transition-all duration-300 shadow-lg hover:shadow-xl"
             >
               View More Products
             </Link>
