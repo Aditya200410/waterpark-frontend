@@ -271,42 +271,77 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* Right side: Icons and Auth */}
-            <div className="flex items-center space-x-4">
-              {/* Desktop Search - now an icon */}
-              <motion.button
-                onClick={handleSearchIconClick}
-                className={`hidden md:inline-flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-300 ${isScrolled ? 'text-gray-600 hover:bg-gray-200' : 'text-white hover:bg-white/20'
-                  }`}
-                whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} aria-label="Open search"
-              >
-                <Search size={20} />
-              </motion.button>
+          
+    {/* Right side: Icons and Auth */}
+<div className="flex items-center space-x-4">
+  {/* Desktop Search - icon */}
+  <motion.button
+    onClick={handleSearchIconClick}
+    className={`hidden md:inline-flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-300 ${
+      isScrolled
+        ? 'text-gray-600 hover:bg-gray-200'
+        : 'text-white hover:bg-white/20'
+    }`}
+    whileHover={{ scale: 1.1 }}
+    whileTap={{ scale: 0.9 }}
+    aria-label="Open search"
+  >
+    <Search size={20} />
+  </motion.button>
 
-              {/* Auth Button */}
-              {user ? (
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="hidden md:block">
-                  <Link to="/account" className="flex items-center px-5 py-2.5 bg-cyan-500 text-white text-sm font-semibold rounded-full hover:bg-cyan-600 transition-all duration-200 shadow-lg">
-                    My Account
-                  </Link>
-                </motion.div>
-              ) : (
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="hidden md:block">
-                  <Link to="/login" className={`flex items-center px-5 py-2.5 text-sm font-semibold rounded-full transition-all duration-200 shadow-lg ${isScrolled ? 'bg-cyan-500 text-white hover:bg-cyan-600' : 'bg-white/90 text-cyan-600 hover:bg-white'}`}>
-                    Login
-                  </Link>
-                </motion.div>
-              )}
+  {/* ✅ Mobile Search Icon & Box */}
+  <div className="relative md:hidden flex items-center">
+    {isSearchOpen ? (
+      <form
+        onSubmit={handleSearch}
+        className="flex items-center bg-white/90 rounded-full px-3 py-1 shadow-sm"
+      >
+        <input
+          type="text"
+          ref={searchInputRef}
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-32 bg-transparent focus:outline-none text-sm text-gray-700"
+        />
+        <button type="submit" className="ml-2 text-cyan-600">
+          <Search size={18} />
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsSearchOpen(false)}
+          className="ml-2 text-gray-500"
+        >
+          <X size={18} />
+        </button>
+      </form>
+    ) : (
+      <motion.button
+        onClick={() => setIsSearchOpen(true)}
+        className={`p-2 rounded-full transition-colors duration-200 ${
+          isScrolled ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-white/20'
+        }`}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <Search size={22} />
+      </motion.button>
+    )}
+  </div>
 
-              {/* Mobile Hamburger Menu */}
-              <motion.button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className={`lg:hidden p-2 rounded-lg transition-colors duration-200 ${isScrolled ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-white/20'}`}
-                whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-              >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </motion.button>
-            </div>
+  {/* Hamburger Menu */}
+  <motion.button
+    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+    className={`lg:hidden p-2 rounded-lg transition-colors duration-200 ${
+      isScrolled ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-white/20'
+    }`}
+    whileHover={{ scale: 1.1 }}
+    whileTap={{ scale: 0.9 }}
+  >
+    {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+  </motion.button>
+</div>
+
           </div>
         </div>
       </header>
