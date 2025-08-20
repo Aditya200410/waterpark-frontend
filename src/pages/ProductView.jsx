@@ -584,18 +584,19 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
                   {/* Desktop Tabs */}
             
                 
-     <div className="mt-10 font-['Baloo_2',cursive]">
+            
+          <div className="mt-10 font-['Baloo_2',cursive]">
   {/* Tab Navigation */}
   <div className="border-b-2 border-blue-200">
-    {/* Unified Responsive Tabs that Wrap on Small Screens */}
-    <nav className="flex flex-wrap gap-x-2 gap-y-3 sm:gap-x-4 pb-2">
+    {/* Unified Responsive Tabs for All Devices */}
+    <nav className="flex space-x-1 sm:space-x-1 overflow-x-auto pb-1">
       {tabs.map((tab) => (
         <motion.button
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className={`relative py-2 px-3 text-sm sm:py-3 sm:px-4 sm:text-lg rounded-t-xl font-semibold transition-all duration-300 ${
+          className={`relative whitespace-nowrap py-2 px-3 text-sm sm:py-3 sm:px-4 sm:text-lg rounded-t-xl font-semibold transition-all duration-300 ${
             activeTab === tab.id
               ? "bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white shadow-md"
               : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"
@@ -612,7 +613,9 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
       ))}
     </nav>
   </div>
+
   </div>
+            </div>
                 </div>
             
             
