@@ -25,10 +25,12 @@ import { toast } from 'react-hot-toast';
 import orderService from '../services/orderService';
 import config from '../config/config.js';
 import OrderDetailsModal from '../components/OrderDetailsModal/OrderDetailsModal';
+import Ticket from './Tickets.jsx'; // adjust path if needed
 
 // PDF libs
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import { TicketIcon } from 'lucide-react';
 
 // Helper to get tab from URL
 const useQuery = () => {
@@ -560,6 +562,7 @@ const Account = () => {
                   {[
                     { id: 'orders', label: 'Tickets', icon: GiftIcon },
                     { id: 'profile', label: 'Profile', icon: UserCircleIcon },
+                    { id: 'check-ticket', label: 'Check Ticket', icon: TicketIcon }, // new tab
                   ].map((tab) => (
                     <motion.button
                       key={tab.id}
@@ -861,6 +864,40 @@ const Account = () => {
                     <OrdersTab />
                   </motion.div>
                 )}
+
+
+                <AnimatePresence mode="wait">
+  {activeTab === 'profile' && (
+    <motion.div
+      key="profile"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* Profile form here */}
+    </motion.div>
+  )}
+
+  {activeTab === 'orders' && (
+    <motion.div
+      key="orders"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      <OrdersTab />
+    </motion.div>
+  )}
+
+  {activeTab === 'check-ticket' && (
+  
+      <Ticket />
+
+  )}
+</AnimatePresence>
+
               </AnimatePresence>
             </div>
           </div>
