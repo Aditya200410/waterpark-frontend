@@ -37,7 +37,7 @@ export default function MissionVission() {
   }, []);
 
   return (
- <section className="relative min-h-screen overflow-hidden">
+ <section className="relative h-fit overflow-hidden mb-10">
   {/* Animated bubbles for water theme */}
   {[...Array(10)].map((_, i) => (
     <motion.div

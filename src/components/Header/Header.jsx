@@ -33,7 +33,7 @@ const Header = () => {
   const [dynamicCategories, setDynamicCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [activeMobileTab, setActiveMobileTab] = useState('menu');
-  const { navigateToHome, navigateToShop, navigateToProduct } = useSellerNavigation();
+  const { navigateToHome, navigateToProduct } = useSellerNavigation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -249,10 +249,30 @@ const Header = () => {
           }`}
       >
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-20"> {/* Shorter height */}
+          {/* MODIFIED: Added `relative` for positioning context */}
+          <div className="relative flex items-center justify-between h-20"> {/* Shorter height */}
 
-            {/* Left side: Logo */}
-            <motion.button onClick={navigateToHome} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} >
+            {/* NEW: Left side (Mobile): Hamburger Menu */}
+            <motion.button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className={`lg:hidden flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-300 ${isScrolled ? "text-gray-700 hover:bg-gray-200" : "text-white hover:bg-white/20"}`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              aria-label="Open menu"
+            >
+              <Menu size={24} />
+            </motion.button>
+            
+          {/* FIXED: Centered on mobile, left on desktop.
+              Changed responsive classes from a complex "lg:relative..." to a simpler and more robust "lg:static lg:transform-none".
+            */}
+            <motion.button
+              onClick={navigateToHome}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:static lg:transform-none"
+              aria-label="Go to homepage"
+            >
               <img src={logo} alt="Waterpark Chalo" className={`h-16 w-auto transition-all duration-300 ${isScrolled ? '' : 'drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)]'}`} />
             </motion.button>
 
@@ -274,45 +294,40 @@ const Header = () => {
             </nav>
 
           
-    
-{/* Right side: Icons and Auth */}
-<div className="flex items-center space-x-4">
-  {/* 🔍 Search Icon (Mobile + Desktop) */}
-  <motion.button
-    onClick={handleSearchIconClick}
-    className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-300 ${
-      isScrolled
-        ? "text-gray-700 hover:bg-gray-200"
-        : "text-white hover:bg-white/20"
-    }`}
-    whileHover={{ scale: 1.1 }}
-    whileTap={{ scale: 0.9 }}
-    aria-label="Open search"
-  >
-    <Search size={22} />
-  </motion.button>
+      
+            {/* Right side: Icons and Auth */}
+            <div className="flex items-center space-x-4">
+              {/* 🔍 Search Icon (Mobile + Desktop) */}
+              <motion.button
+                onClick={handleSearchIconClick}
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-300 ${
+                  isScrolled
+                    ? "text-gray-700 hover:bg-gray-200"
+                    : "text-white hover:bg-white/20"
+                }`}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                aria-label="Open search"
+              >
+                <Search size={22} />
+              </motion.button>
 
-  {/* 👤 User Icon (Mobile + Desktop) */}
-  <Link
-    to={user ? "/account" : "/login"}
-    className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-200 
-               md:gap-2 md:px-3 md:py-2 md:w-auto md:h-auto ${
-                 isScrolled
-                   ? "text-gray-700 hover:bg-gray-200"
-                   : "text-white hover:bg-white/20"
-               }`}
-  >
-    <User size={22} />
-    <span className="hidden md:inline font-medium">
-      {user ? "My Account" : "Login / Register"}
-    </span>
-  </Link>
-</div>
-
-
-
-
-
+              {/* 👤 User Icon (Mobile + Desktop) */}
+              <Link
+                to={user ? "/account" : "/login"}
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-200 
+                          md:gap-2 md:px-3 md:py-2 md:w-auto md:h-auto ${
+                            isScrolled
+                              ? "text-gray-700 hover:bg-gray-200"
+                              : "text-white hover:bg-white/20"
+                          }`}
+              >
+                <User size={22} />
+                <span className="hidden md:inline font-medium">
+                  {user ? "My Account" : "Login / Register"}
+                </span>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
