@@ -575,7 +575,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
             { /* Product Description */}
             {/* Product Tabs - Water Park Theme */}
             
-            <div className="mt-10 font-['Baloo_2',cursive]">
+            <div className="mt-10 font-[baloo_2]">
             
               {/* Tab Navigation */}
             
@@ -585,7 +585,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
             
                 
             
-          <div className="mt-10 font-['Baloo_2',cursive]">
+          <div className="mt-10 font-['Baloo_2']">
   {/* Tab Navigation */}
   <div className="border-b-2 border-blue-200">
     {/* Unified Responsive Tabs for All Devices */}
