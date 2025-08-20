@@ -201,11 +201,7 @@ const Hero = () => {
             initial="hidden"
             animate="visible"
           >
-            {currentItem.subtitle && (
-              <motion.h2 variants={textItemVariants} className="text-lg md:text-xl font-semibold tracking-wider uppercase text-cyan-300">
-                {currentItem.subtitle}
-              </motion.h2>
-            )}
+        
 
             {currentItem.title && (
               <motion.h1 variants={textItemVariants} className="text-4xl md:text-6xl lg:text-7xl font-extrabold my-2 md:my-4 drop-shadow-lg">
