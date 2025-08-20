@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // Added useRef
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ShieldCheck } from "lucide-react"; // Added ShieldCheck for modal
 import { 
   HeartIcon, ShoppingCartIcon, ShareIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon, XMarkIcon,
   DocumentTextIcon, CogIcon, TruckIcon, ChatBubbleLeftRightIcon 
@@ -26,10 +26,13 @@ const ProductView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
+  // Ref for the booking section to scroll to
+  const bookingSectionRef = useRef(null);
+
   const [selectedImage, setSelectedImage] = useState(0);
-  const [adultquantity, setadultQuantity] = useState(0);
-    const [childquantity, setchildQuantity] = useState(0);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [adultquantity, setadultQuantity] = useState(1); // Default to 1
+  const [childquantity, setchildQuantity] = useState(0);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [modalSelectedImage, setModalSelectedImage] = useState(0);
@@ -43,7 +46,10 @@ const ProductView = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isEditingReview, setIsEditingReview] = useState(false);
   const [error, setError] = useState(null);
-  const [BookingDate, setBookingDate] = useState(null);
+  const [BookingDate, setBookingDate] = useState(new Date().toISOString().split("T")[0]); // Default to today
+  
+  // NEW: State for the terms and conditions modal
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   const tabs = [
     { id: 'description', label: 'Description', icon: DocumentTextIcon },
@@ -55,12 +61,13 @@ const ProductView = () => {
   // Detect screen size
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 640); // sm breakpoint
+      setIsMobile(window.innerWidth < 768); // md breakpoint
     };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  
   // Load reviews for the product
   const loadReviews = async () => {
     if (!product?._id) return;
@@ -119,8 +126,8 @@ const ProductView = () => {
             
             // Check for both the new MongoDB format and old format
             foundProduct = data.product || // New MongoDB format
-                         (Array.isArray(data.products) ? data.products[0] : null) || // Array format
-                         (data._id ? data : null); // Direct object format
+                           (Array.isArray(data.products) ? data.products[0] : null) || // Array format
+                           (data._id ? data : null); // Direct object format
             
             if (foundProduct) {
               // Ensure consistent ID field
@@ -198,6 +205,51 @@ const ProductView = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [product]);
 
+  // Handle opening the terms modal
+  const handleOpenTermsModal = () => {
+    if (!BookingDate) {
+      toast.error("Please select a date for your booking.");
+      return;
+    }
+    if (adultquantity === 0 && childquantity === 0) {
+        toast.error("Please add at least one adult or child ticket.");
+        return;
+    }
+    setIsTermsModalOpen(true);
+  };
+
+  // This function now proceeds after terms are accepted
+  const handleProceedToCheckout = () => {
+    // 1. Close the modal
+    setIsTermsModalOpen(false);
+
+    // 2. Structure the data for the checkout page
+    const checkoutData = {
+      resortId: product._id,
+      resortName: product.name,
+      adultCount: adultquantity,
+      childCount: childquantity,
+      date: BookingDate,
+      subtotal: adultquantity * product.adultprice + childquantity * product.childprice,
+      deposit: adultquantity * product.adultprice + childquantity * product.childprice,
+    };
+
+    // 3. Save the data to localStorage and navigate
+    try {
+      localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+      navigate('/checkout', { state: checkoutData });
+    } catch (error) {
+      console.error("Could not proceed to checkout:", error);
+      toast.error("An error occurred. Please try again.");
+    }
+  };
+
+  // NEW: Function to scroll to the booking section
+  const scrollToBooking = () => {
+    bookingSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+
   if (loading) return <Loader fullScreen={true} withHeaderFooter={true} size="large" text="Loading product details..."  />;
   if (error) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
@@ -217,7 +269,6 @@ const ProductView = () => {
   // Use product.images array if available, otherwise fallback to single image
   const productImages = (() => {
     if (product.images && Array.isArray(product.images) && product.images.length > 0) {
-      // Filter out any non-image files and empty/undefined strings, and map to fixed URLs
       const validImages = product.images
         .filter(img => {
           if (!img || typeof img !== 'string') return false;
@@ -226,26 +277,20 @@ const ProductView = () => {
         })
         .map(img => config.fixImageUrl(img));
       
-      // If we have valid images, use them; otherwise fallback to single image
       if (validImages.length > 0) {
         return validImages;
       }
     }
     
-    // Use the single image field as fallback
     const fallbackImage = config.fixImageUrl(product.image);
     return [fallbackImage];
   })();
 
   const handleadultQuantityChange = (value) => {
-    if (value >= 1) {
-      setadultQuantity(value);
-    }
+    setadultQuantity(Math.max(0, value)); // Allow 0
   }
-     const handlechildQuantityChange = (value) => {
-    if (value >= 1) {
-      setchildQuantity(value);
-    }
+  const handlechildQuantityChange = (value) => {
+    setchildQuantity(Math.max(0, value)); // Allow 0
   };
 
   // Calculate average rating
@@ -270,7 +315,6 @@ const ProductView = () => {
   // Handle review deletion
   const handleReviewDeleted = () => {
     setUserReview(null);
-    // Reload all reviews to get updated counts
     loadReviews();
   };
 
@@ -282,40 +326,6 @@ const ProductView = () => {
     setSelectedImage((prev) => (prev === productImages.length - 1 ? 0 : prev + 1));
   };
 
-const handleProceedToCheckout = () => {
-  // 1. Basic validation: Ensure a booking date is selected.
-  if (!BookingDate) {
-    toast.error("Please select a date for your booking.");
-    return;
-  }
-
-  // 2. Structure the data for the checkout page
-  const checkoutData = {
-    resortId: product._id,
-    resortName: product.name,
-    adultCount: adultquantity,
-    childCount: childquantity,
-    date: BookingDate,
-    subtotal: adultquantity * product.adultprice + childquantity * product.childprice,
-    // Assuming the deposit is the full amount payable now.
-    // You can adjust this logic if the deposit is a different amount.
-    deposit: adultquantity * product.adultprice + childquantity * product.childprice,
-  };
-
-  // 3. Save the data to localStorage
-  try {
-    localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
-    
-    // 4. Navigate to the checkout page
-    // We pass the data in the state as well, which is often cleaner,
-    // but localStorage provides a reliable fallback.
-    navigate('/checkout', { state: checkoutData });
-
-  } catch (error) {
-    console.error("Could not proceed to checkout:", error);
-    toast.error("An error occurred. Please try again.");
-  }
-};
 
   const handleShare = async () => {
     setIsShareModalOpen(true);
@@ -381,558 +391,782 @@ const handleProceedToCheckout = () => {
     setIsImageModalOpen(false);
   };
 
+  const grandTotal = adultquantity * product.adultprice + childquantity * product.childprice;
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
- className=" w-full h-full bg-[#00B4D8] overflow-hidden">
+      className=" w-full h-full bg-[#00B4D8] overflow-hidden">
 
       <SEO {...productSEO} />
       {/* Breadcrumb */}
   
-
       <div className="container mx-auto px-4 py-4 sm:py-6">
-        <div className="grid grid-cols-1 lg:grid-row-12 gap-4 lg:gap-8 items-start">
-          {/* Product Images - Left Side */}
-        <motion.div 
-  initial={{ opacity: 0, x: -20 }}
-  animate={{ opacity: 1, x: 0 }}
-  transition={{ duration: 0.5 }}
-  className="lg:col-span-5 space-y-4 flex flex-col"
->
-  {/* Main Image Display */}
-  <div className="relative w-full flex items-center justify-center rounded-2xl overflow-hidden bg-gradient-to-br from-[#CAF0F8] via-[#ADE8F4] to-[#90E0EF] group shadow-xl border border-[#0077B6]/20" style={{ maxHeight: '60vh' }}>
-    
-    <img
-      src={productImages[selectedImage]}
-      alt={product.name}
-      className="max-w-full max-h-[60vh] object-cover cursor-pointer"
-      onClick={handleImageClick}
-      onError={e => {
-        e.target.onerror = null;
-        if (productImages[selectedImage] !== config.fixImageUrl(product.image)) {
-          e.target.src = config.fixImageUrl(product.image);
-        } else {
-          e.target.src = 'https://placehold.co/600x600/e0f7fa/006d77?text=No+Image';
-        }
-      }}
-    />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
+           {/* Product Images - Left Side */}
+           <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="lg:col-span-5 space-y-4 flex flex-col"
+            >
+            {/* Main Image Display */}
+            <div className="relative w-full flex items-center justify-center rounded-2xl overflow-hidden bg-gradient-to-br from-[#CAF0F8] via-[#ADE8F4] to-[#90E0EF] group shadow-xl border border-[#0077B6]/20" style={{ maxHeight: '60vh' }}>
+            
+            <img
+                src={productImages[selectedImage]}
+                alt={product.name}
+                className="max-w-full max-h-[60vh] object-cover cursor-pointer"
+                onClick={handleImageClick}
+                onError={e => {
+                e.target.onerror = null;
+                if (productImages[selectedImage] !== config.fixImageUrl(product.image)) {
+                    e.target.src = config.fixImageUrl(product.image);
+                } else {
+                    e.target.src = 'https://placehold.co/600x600/e0f7fa/006d77?text=No+Image';
+                }
+                }}
+            />
 
-    {/* Gallery Badge */}
-    {productImages.length > 1 && (
-      <div className="absolute top-3 right-3 bg-[#03045E]/70 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
-        📷 {productImages.length} Photos
-      </div>
-    )}
+            {/* Gallery Badge */}
+            {productImages.length > 1 && (
+                <div className="absolute top-3 right-3 bg-[#03045E]/70 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+                📷 {productImages.length} Photos
+                </div>
+            )}
 
-    {/* Navigation Arrows */}
-    {productImages.length > 1 && (
-      <>
-        <motion.button
-          initial={{ opacity: 0, x: -10 }}
-          whileHover={{ x: -5, scale: 1.1 }}
-          className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-[#90E0EF] text-[#0077B6] p-3 rounded-full shadow-lg border-2 border-[#0077B6]/30 transition-all"
-          onClick={handlePreviousImage}
-          aria-label="Previous image"
-        >
-          <ChevronLeftIcon className="h-6 w-6" />
-        </motion.button>
+            {/* Navigation Arrows */}
+            {productImages.length > 1 && (
+                <>
+                <motion.button
+                    initial={{ opacity: 0, x: -10 }}
+                    whileHover={{ x: -5, scale: 1.1 }}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-[#90E0EF] text-[#0077B6] p-3 rounded-full shadow-lg border-2 border-[#0077B6]/30 transition-all"
+                    onClick={handlePreviousImage}
+                    aria-label="Previous image"
+                >
+                    <ChevronLeftIcon className="h-6 w-6" />
+                </motion.button>
 
-        <motion.button
-          initial={{ opacity: 0, x: 10 }}
-          whileHover={{ x: 5, scale: 1.1 }}
-          className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-[#90E0EF] text-[#0077B6] p-3 rounded-full shadow-lg border-2 border-[#0077B6]/30 transition-all"
-          onClick={handleNextImage}
-          aria-label="Next image"
-        >
-          <ChevronRightIcon className="h-6 w-6" />
-        </motion.button>
-      </>
-    )}
+                <motion.button
+                    initial={{ opacity: 0, x: 10 }}
+                    whileHover={{ x: 5, scale: 1.1 }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-[#90E0EF] text-[#0077B6] p-3 rounded-full shadow-lg border-2 border-[#0077B6]/30 transition-all"
+                    onClick={handleNextImage}
+                    aria-label="Next image"
+                >
+                    <ChevronRightIcon className="h-6 w-6" />
+                </motion.button>
+                </>
+            )}
 
-    {/* Counter */}
-    {productImages.length > 1 && (
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#023E8A]/80 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md"
-      >
-        {selectedImage + 1} / {productImages.length}
-      </motion.div>
-    )}
-  </div>
-
-  {/* Thumbnails */}
-  {productImages.length > 1 && (
-    <div className="grid grid-cols-4 gap-3">
-      {productImages.map((image, index) => (
-        <motion.button
-          key={index}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setSelectedImage(index)}
-          className={`aspect-square rounded-xl overflow-hidden border-2 transition-all relative shadow-sm ${
-            selectedImage === index 
-              ? 'border-[#0077B6] shadow-lg' 
-              : 'border-transparent hover:border-[#0077B6]/30'
-          }`}
-        >
-          <img 
-            src={image} 
-            alt={`${product.name} - Image ${index + 1}`}
-            className="w-full h-full object-cover bg-white" 
-            onError={e => {
-              e.target.onerror = null;
-              e.target.src = 'https://placehold.co/150x150/e0f7fa/006d77?text=Image';
-            }}
-          />
-          {selectedImage === index && (
-            <div className="absolute inset-0 bg-[#0077B6]/20 flex items-center justify-center">
-              <div className="w-3 h-3 bg-[#0077B6] rounded-full"></div>
+            {/* Counter */}
+            {productImages.length > 1 && (
+                <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#023E8A]/80 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md"
+                >
+                {selectedImage + 1} / {productImages.length}
+                </motion.div>
+            )}
             </div>
-          )}
-        </motion.button>
-      ))}
-    </div>
-  )}
-</motion.div>
+
+            {/* Thumbnails */}
+            {productImages.length > 1 && (
+            <div className="grid grid-cols-4 gap-3">
+                {productImages.map((image, index) => (
+                <motion.button
+                    key={index}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setSelectedImage(index)}
+                    className={`aspect-square rounded-xl overflow-hidden border-2 transition-all relative shadow-sm ${
+                    selectedImage === index 
+                        ? 'border-[#0077B6] shadow-lg' 
+                        : 'border-transparent hover:border-[#0077B6]/30'
+                    }`}
+                >
+                    <img 
+                    src={image} 
+                    alt={`${product.name} - Image ${index + 1}`}
+                    className="w-full h-full object-cover bg-white" 
+                    onError={e => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://placehold.co/150x150/e0f7fa/006d77?text=Image';
+                    }}
+                    />
+                    {selectedImage === index && (
+                    <div className="absolute inset-0 bg-[#0077B6]/20 flex items-center justify-center">
+                        <div className="w-3 h-3 bg-[#0077B6] rounded-full"></div>
+                    </div>
+                    )}
+                </motion.button>
+                ))}
+            </div>
+            )}
+            </motion.div>
 
 
           {/* Product Details - Right Side */}
-       <motion.div 
-  initial={{ opacity: 0, x: 20 }}
-  animate={{ opacity: 1, x: 0 }}
-  transition={{ duration: 0.5, delay: 0.2 }}
-  className="lg:col-span-7 space-y-6 flex flex-col justify-start bg-gradient-to-br from-[#E0F7FA] to-[#B2EBF2] p-6 rounded-2xl shadow-lg relative overflow-hidden"
->
-  {/* Decorative Wave Background */}
-  <div className="absolute top-0 left-0 w-full h-24 bg-[#00B4D8] rounded-b-[50%] opacity-20 pointer-events-none"></div>
-
-  {/* Product Header */}
-  <div className="space-y-3 relative z-10">
-    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-      <MapPin size={14} className="text-blue-800" />
-      <span className="px-2 py-1 bg-[#CAF0F8] text-[#023E8A] text-xs font-medium rounded-full">
-        {product.category}
-      </span>
-      {product.isNew && (
-        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-          🌊 New Splash!
-        </span>
-      )}
-    </div>
-
-    <h1 className="text-2xl font-bold text-[#03045E] leading-tight">
-      {product.name}
-    </h1>
-    
-    {/* Rating Display */}
-    <div className="flex items-center gap-2">
-      <div className="flex items-center gap-1">
-        {[...Array(5)].map((_, index) => (
-          <StarIcon
-            key={index}
-            className={`h-4 w-4 ${index < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'}`}
-          />
-        ))}
-        <span className="text-xs text-gray-600">
-          {averageRating > 0 ? `${averageRating.toFixed(1)} (${reviews.length} reviews)` : 'No reviews yet'}
-        </span>
-      </div>
-    </div>
-  </div>
-
-  {/* Price Section */}
-  
-  <div className="space-y-2">
-     <div className="flex flex-wrap items-baseline gap-2">
-      <span className="text-3xl font-extrabold text-[#0077B6]">
-        ₹{product.childprice.toFixed(2)} for child ticket
-      </span>
-    </div>
-     <div className="flex flex-wrap items-baseline gap-2">
-      <span className="text-3xl font-extrabold text-[#0077B6]">
-        ₹{product.adultprice.toFixed(2)} for adult ticket
-      </span>
-    </div>
-  </div>
-
- 
-
-
- {/* Product Tabs - Water Park Theme */}
-<div className="mt-10 font-['Baloo_2',cursive]">
-  {/* Tab Navigation */}
-  <div className="border-b-2 border-blue-200 relative">
-      {/* Desktop Tabs */}
-      {!isMobile ? (
-        <nav className="flex space-x-6 overflow-x-auto">
-          {tabs.map((tab) => (
-            <motion.button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={`relative py-3 px-4 text-lg rounded-t-xl font-semibold transition-all duration-300 
-                ${
-                  activeTab === tab.id
-                    ? "bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white shadow-md"
-                    : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"
-                }`}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="lg:col-span-7 space-y-6 flex flex-col justify-start bg-gradient-to-br from-[#E0F7FA] to-[#B2EBF2] p-6 rounded-2xl shadow-lg relative overflow-hidden"
             >
-              {tab.label}
-              {activeTab === tab.id && (
-                <motion.div
-                  layoutId="tab-underline"
-                  className="absolute left-0 right-0 bottom-0 h-1 bg-[#90E0EF] rounded-full"
-                />
-              )}
-            </motion.button>
-          ))}
-        </nav>
-      ) : (
-        // Mobile Elegant Dropdown
-        <div className="p-3">
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-full flex items-center justify-between p-3 text-lg font-semibold rounded-lg border border-blue-300 bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white shadow-md hover:shadow-lg transition"
-          >
-            {tabs.find((t) => t.id === activeTab)?.label}
-            <motion.div
-              animate={{ rotate: dropdownOpen ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <ChevronDown size={22} />
-            </motion.div>
-          </button>
+            {/* Decorative Wave Background */}
+            <div className="absolute top-0 left-0 w-full h-24 bg-[#00B4D8] rounded-b-[50%] opacity-20 pointer-events-none"></div>
 
-          {/* Dropdown list */}
-          <AnimatePresence>
-            {dropdownOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="absolute left-0 right-0 mt-2 bg-white border border-blue-200 rounded-xl shadow-lg z-10"
-              >
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      setActiveTab(tab.id);
-                      setDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-4 py-3 text-md font-medium rounded-lg transition ${
-                      activeTab === tab.id
-                        ? "bg-[#E0F7FA] text-[#0077B6]"
-                        : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
+            {/* Product Header */}
+            <div className="space-y-3 relative z-10">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <MapPin size={14} className="text-blue-800" />
+                <span className="px-2 py-1 bg-[#CAF0F8] text-[#023E8A] text-xs font-medium rounded-full">
+                {product.category}
+                </span>
+                {product.isNew && (
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                    🌊 New Splash!
+                </span>
+                )}
+            </div>
+
+            <h1 className="text-2xl font-bold text-[#03045E] leading-tight">
+                {product.name}
+            </h1>
+            
+            {/* Rating Display */}
+            <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, index) => (
+                    <StarIcon
+                    key={index}
+                    className={`h-4 w-4 ${index < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'}`}
+                    />
                 ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
-    </div>
-
-  {/* Tab Content */}
-  <div className="py-8">
-    <AnimatePresence mode="wait">
-      {/* --- Description Tab --- */}
-      {activeTab === 'description' && (
-        <motion.div
-          key="description"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -30 }}
-          transition={{ duration: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          {/* Features */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">💡 Features</h4>
-            <div className="space-y-2 text-sm text-[#023E8A]">
-              {product.utility
-                ? product.utility.split(/\r?\n/).map((line, index) => (
-                    <p key={index} className="font-medium">
-                      {line.trim()}
-                    </p>
-                  ))
-                : <p>N/A</p>}
+                <span className="text-xs text-gray-600">
+                    {averageRating > 0 ? `${averageRating.toFixed(1)} (${reviews.length} reviews)` : 'No reviews yet'}
+                </span>
+                </div>
             </div>
-          </div>
-
-          {/* Facilities */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">🏝️ Facility</h4>
-            <p className="text-sm text-[#023E8A] whitespace-pre-line">
-              {product.care || 'Care instructions not available'}
-            </p>
-          </div>
-        </motion.div>
-      )}
-
-      {/* --- Specifications Tab --- */}
-      {activeTab === 'specifications' && (
-        <motion.div 
-          key="specifications"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -30 }}
-          transition={{ duration: 0.4 }}
-          className="space-y-6"
-        >
-          {/* Basic Info */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">ℹ️ Basic Information</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <span className="text-xs text-gray-600">Product Name</span>
-                <p className="text-base font-semibold text-[#023E8A]">{product.name}</p>
-              </div>
-              <div>
-                <span className="text-xs text-gray-600">Location</span>
-                <p className="text-base font-semibold text-[#023E8A]">{product.category}</p>
-              </div>
             </div>
-          </div>
 
-          {/* Pricing Info */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">💵 Pricing</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <span className="text-xs text-gray-600">Adult Ticket</span>
-                <p className="font-bold text-xl text-[#0077B6]">₹{product.adultprice?.toFixed(2) || 'N/A'}</p>
-              </div>
-              <div>
-                <span className="text-xs text-gray-600">Child Ticket</span>
-                <p className="font-bold text-xl text-[#0077B6]">₹{product.childprice?.toFixed(2) || 'N/A'}</p>
-              </div>
-        
+            {/* Price Section */}
+            
+            <div className="space-y-2">
+                <div className="flex flex-wrap items-baseline gap-2">
+                <span className="text-3xl font-extrabold text-[#0077B6]">
+                    ₹{product.childprice.toFixed(2)} for child ticket
+                </span>
+                </div>
+                <div className="flex flex-wrap items-baseline gap-2">
+                <span className="text-3xl font-extrabold text-[#0077B6]">
+                    ₹{product.adultprice.toFixed(2)} for adult ticket
+                </span>
+                </div>
             </div>
-          </div>
 
-          {/* Description */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">📖 Description</h4>
-            <p className="text-base text-[#023E8A] leading-relaxed">{product.description || 'No description available.'}</p>
-          </div>
-        </motion.div>
-      )}
 
-      {/* --- FAQ Tab --- */}
-      {activeTab === 'FAQ' && (
-        <motion.div
-          key="FAQ"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -30 }}
-          transition={{ duration: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          {/* Info */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">🌞 Park Information</h4>
-            <ul className="space-y-2 text-[#023E8A]">
-              <li>• Opening Hours: 10:00 AM – 7:00 PM</li>
-              <li>• Tickets available online & gate</li>
-              <li>• Free entry for kids below 3 yrs</li>
-              <li>• Lockers & changing rooms</li>
-              <li>• Food courts inside park</li>
-            </ul>
-          </div>
-          
-          {/* Safety */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            <h4 className="font-bold text-[#03045E] mb-3 text-lg">🛟 Safety & Policies</h4>
-            <ul className="space-y-2 text-[#023E8A]">
-              <li>• Swimwear is mandatory</li>
-              <li>• Outside food not allowed</li>
-              <li>• Follow lifeguards at all times</li>
-              <li>• Pregnant women avoid rides</li>
-              <li>• First aid available on-site</li>
-            </ul>
-          </div>
-        </motion.div>
-      )}
-
-      {/* --- Reviews Tab --- */}
-      {activeTab === 'reviews' && (
-        <motion.div
-          key="reviews"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -30 }}
-          transition={{ duration: 0.4 }}
-          className="space-y-6"
-        >
-          {reviewsLoading ? (
-            <div className="flex items-center justify-center py-10 text-blue-600 font-medium">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-3">Loading reviews...</span>
+            { /* Product Description */}
+            {/* Product Tabs - Water Park Theme */}
+            
+            <div className="mt-10 font-['Baloo_2',cursive]">
+            
+              {/* Tab Navigation */}
+            
+              <div className="border-b-2 border-blue-200 relative">
+            
+                  {/* Desktop Tabs */}
+            
+                  {!isMobile ? (
+            
+                    <nav className="flex space-x-6 overflow-x-auto">
+            
+                      {tabs.map((tab) => (
+            
+                        <motion.button
+            
+                          key={tab.id}
+            
+                          onClick={() => setActiveTab(tab.id)}
+            
+                          whileHover={{ scale: 1.05 }}
+            
+                          whileTap={{ scale: 0.95 }}
+            
+                          className={`relative py-3 px-4 text-lg rounded-t-xl font-semibold transition-all duration-300
+            
+                            ${
+            
+                              activeTab === tab.id
+            
+                                ? "bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white shadow-md"
+            
+                                : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"
+            
+                            }`}
+            
+                        >
+            
+                          {tab.label}
+            
+                          {activeTab === tab.id && (
+            
+                            <motion.div
+            
+                              layoutId="tab-underline"
+            
+                              className="absolute left-0 right-0 bottom-0 h-1 bg-[#90E0EF] rounded-full"
+            
+                            />
+            
+                          )}
+            
+                        </motion.button>
+            
+                      ))}
+            
+                    </nav>
+            
+                  ) : (
+            
+                    // Mobile Elegant Dropdown
+            
+                    <div className="p-3">
+            
+                      <button
+            
+                        onClick={() => setDropdownOpen(!dropdownOpen)}
+            
+                        className="w-full flex items-center justify-between p-3 text-lg font-semibold rounded-lg border border-blue-300 bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white shadow-md hover:shadow-lg transition"
+            
+                      >
+            
+                        {tabs.find((t) => t.id === activeTab)?.label}
+            
+                        <motion.div
+            
+                          animate={{ rotate: dropdownOpen ? 180 : 0 }}
+            
+                          transition={{ duration: 0.3 }}
+            
+                        >
+            
+                          <ChevronDown size={22} />
+            
+                        </motion.div>
+            
+                      </button>
+            
+            
+            
+                      {/* Dropdown list */}
+            
+                      <AnimatePresence>
+            
+                        {dropdownOpen && (
+            
+                          <motion.div
+            
+                            initial={{ opacity: 0, y: -10 }}
+            
+                            animate={{ opacity: 1, y: 0 }}
+            
+                            exit={{ opacity: 0, y: -10 }}
+            
+                            transition={{ duration: 0.2 }}
+            
+                            className="absolute left-0 right-0 mt-2 bg-white border border-blue-200 rounded-xl shadow-lg z-10"
+            
+                          >
+            
+                            {tabs.map((tab) => (
+            
+                              <button
+            
+                                key={tab.id}
+            
+                                onClick={() => {
+            
+                                  setActiveTab(tab.id);
+            
+                                  setDropdownOpen(false);
+            
+                                }}
+            
+                                className={`w-full text-left px-4 py-3 text-md font-medium rounded-lg transition ${
+            
+                                  activeTab === tab.id
+            
+                                    ? "bg-[#E0F7FA] text-[#0077B6]"
+            
+                                    : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+            
+                                }`}
+            
+                              >
+            
+                                {tab.label}
+            
+                              </button>
+            
+                            ))}
+            
+                          </motion.div>
+            
+                        )}
+            
+                      </AnimatePresence>
+            
+                    </div>
+            
+                  )}
+            
+                </div>
+            
+            
+            
+              {/* Tab Content */}
+            
+              <div className="py-8">
+            
+                <AnimatePresence mode="wait">
+            
+                  {/* --- Description Tab --- */}
+            
+                  {activeTab === 'description' && (
+            
+                    <motion.div
+            
+                      key="description"
+            
+                      initial={{ opacity: 0, y: 30 }}
+            
+                      animate={{ opacity: 1, y: 0 }}
+            
+                      exit={{ opacity: 0, y: -30 }}
+            
+                      transition={{ duration: 0.4 }}
+            
+                      className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            
+                    >
+            
+                      {/* Features */}
+            
+                      <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
+            
+                        <h4 className="font-bold text-[#03045E] mb-3 text-lg">💡 Features</h4>
+            
+                        <div className="space-y-2 text-sm text-[#023E8A]">
+            
+                          {product.utility
+            
+                            ? product.utility.split(/\r?\n/).map((line, index) => (
+            
+                                <p key={index} className="font-medium">
+            
+                                  {line.trim()}
+            
+                                </p>
+            
+                              ))
+            
+                            : <p>N/A</p>}
+            
+                        </div>
+            
+                      </div>
+            
+            
+            
+                      {/* Facilities */}
+            
+                      <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
+            
+                        <h4 className="font-bold text-[#03045E] mb-3 text-lg">🏝️ Facility</h4>
+            
+                        <p className="text-sm text-[#023E8A] whitespace-pre-line">
+            
+                          {product.care || 'Care instructions not available'}
+            
+                        </p>
+            
+                      </div>
+            
+                    </motion.div>
+            
+                  )}
+            
+            
+            
+                  {/* --- Specifications Tab --- */}
+            
+                  {activeTab === 'specifications' && (
+            
+                    <motion.div
+            
+                      key="specifications"
+            
+                      initial={{ opacity: 0, y: 30 }}
+            
+                      animate={{ opacity: 1, y: 0 }}
+            
+                      exit={{ opacity: 0, y: -30 }}
+            
+                      transition={{ duration: 0.4 }}
+            
+                      className="space-y-6"
+            
+                    >
+            
+                      {/* Basic Info */}
+            
+                      <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
+            
+                        <h4 className="font-bold text-[#03045E] mb-3 text-lg">ℹ️ Basic Information</h4>
+            
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+                          <div>
+            
+                            <span className="text-xs text-gray-600">Product Name</span>
+            
+                            <p className="text-base font-semibold text-[#023E8A]">{product.name}</p>
+            
+                          </div>
+            
+                          <div>
+            
+                            <span className="text-xs text-gray-600">Location</span>
+            
+                            <p className="text-base font-semibold text-[#023E8A]">{product.category}</p>
+            
+                          </div>
+            
+                        </div>
+            
+                      </div>
+            
+            
+            
+                      {/* Pricing Info */}
+            
+                      <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
+            
+                        <h4 className="font-bold text-[#03045E] mb-3 text-lg">💵 Pricing</h4>
+            
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+                          <div>
+            
+                            <span className="text-xs text-gray-600">Adult Ticket</span>
+            
+                            <p className="font-bold text-xl text-[#0077B6]">₹{product.adultprice?.toFixed(2) || 'N/A'}</p>
+            
+                          </div>
+            
+                          <div>
+            
+                            <span className="text-xs text-gray-600">Child Ticket</span>
+            
+                            <p className="font-bold text-xl text-[#0077B6]">₹{product.childprice?.toFixed(2) || 'N/A'}</p>
+            
+                          </div>
+            
+                   
+            
+                        </div>
+            
+                      </div>
+            
+            
+            
+                      {/* Description */}
+            
+                      <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
+            
+                        <h4 className="font-bold text-[#03045E] mb-3 text-lg">📖 Description</h4>
+            
+                        <p className="text-base text-[#023E8A] leading-relaxed">{product.description || 'No description available.'}</p>
+            
+                      </div>
+            
+                    </motion.div>
+            
+                  )}
+            
+            
+            
+                  {/* --- FAQ Tab --- */}
+            
+                  {activeTab === 'FAQ' && (
+            
+                    <motion.div
+            
+                      key="FAQ"
+            
+                      initial={{ opacity: 0, y: 30 }}
+            
+                      animate={{ opacity: 1, y: 0 }}
+            
+                      exit={{ opacity: 0, y: -30 }}
+            
+                      transition={{ duration: 0.4 }}
+            
+                      className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            
+                    >
+            
+                      {/* Info */}
+            
+                      <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
+            
+                        <h4 className="font-bold text-[#03045E] mb-3 text-lg">🌞 Park Information</h4>
+            
+                        <ul className="space-y-2 text-[#023E8A]">
+            
+                          <li>• Opening Hours: 10:00 AM – 7:00 PM</li>
+            
+                          <li>• Tickets available online & gate</li>
+            
+                          <li>• Free entry for kids below 3 yrs</li>
+            
+                          <li>• Lockers & changing rooms</li>
+            
+                          <li>• Food courts inside park</li>
+            
+                        </ul>
+            
+                      </div>
+            
+                     
+            
+                      {/* Safety */}
+            
+                      <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
+            
+                        <h4 className="font-bold text-[#03045E] mb-3 text-lg">🛟 Safety & Policies</h4>
+            
+                        <ul className="space-y-2 text-[#023E8A]">
+            
+                          <li>• Swimwear is mandatory</li>
+            
+                          <li>• Outside food not allowed</li>
+            
+                          <li>• Follow lifeguards at all times</li>
+            
+                          <li>• Pregnant women avoid rides</li>
+            
+                          <li>• First aid available on-site</li>
+            
+                        </ul>
+            
+                      </div>
+            
+                    </motion.div>
+            
+                  )}
+            
+            
+            
+                  {/* --- Reviews Tab --- */}
+            
+                  {activeTab === 'reviews' && (
+            
+                    <motion.div
+            
+                      key="reviews"
+            
+                      initial={{ opacity: 0, y: 30 }}
+            
+                      animate={{ opacity: 1, y: 0 }}
+            
+                      exit={{ opacity: 0, y: -30 }}
+            
+                      transition={{ duration: 0.4 }}
+            
+                      className="space-y-6"
+            
+                    >
+            
+                      {reviewsLoading ? (
+            
+                        <div className="flex items-center justify-center py-10 text-blue-600 font-medium">
+            
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            
+                          <span className="ml-3">Loading reviews...</span>
+            
+                        </div>
+            
+                      ) : (
+            
+                        <>
+            
+                          <ReviewForm
+            
+                            productId={product._id}
+            
+                            existingReview={userReview}
+            
+                            isEditing={isEditingReview}
+            
+                            onStartEdit={() => setIsEditingReview(true)}
+            
+                            onCancelEdit={() => setIsEditingReview(false)}
+            
+                            onReviewSubmitted={(review) => {
+            
+                              handleReviewSubmitted(review);
+            
+                              setIsEditingReview(false);
+            
+                            }}
+            
+                            onReviewUpdated={(review) => {
+            
+                              handleReviewUpdated(review);
+            
+                              setIsEditingReview(false);
+            
+                            }}
+            
+                            onReviewDeleted={() => {
+            
+                              handleReviewDeleted();
+            
+                              setIsEditingReview(false);
+            
+                            }}
+            
+                          />
+            
+            
+            
+                          <ReviewList
+            
+                            reviews={reviews}
+            
+                            averageRating={averageRating}
+            
+                            totalReviews={reviews.length}
+            
+                          />
+            
+                        </>
+            
+                      )}
+            
+                    </motion.div>
+            
+                  )}
+            
+                </AnimatePresence>
+            
+              </div>
+            
             </div>
-          ) : (
-            <>
-              <ReviewForm
-                productId={product._id}
-                existingReview={userReview}
-                isEditing={isEditingReview}
-                onStartEdit={() => setIsEditingReview(true)}
-                onCancelEdit={() => setIsEditingReview(false)}
-                onReviewSubmitted={(review) => {
-                  handleReviewSubmitted(review);
-                  setIsEditingReview(false);
-                }}
-                onReviewUpdated={(review) => {
-                  handleReviewUpdated(review);
-                  setIsEditingReview(false);
-                }}
-                onReviewDeleted={() => {
-                  handleReviewDeleted();
-                  setIsEditingReview(false);
-                }}
-              />
+            
 
-              <ReviewList
-                reviews={reviews}
-                averageRating={averageRating}
-                totalReviews={reviews.length}
-              />
-            </>
-          )}
-        </motion.div>
-      )}
-    </AnimatePresence>
-  </div>
-</div>
+            {/* -------------------- NEW BOOKING SECTION REF -------------------- */}
+            <div ref={bookingSectionRef} className="space-y-6 pt-4 border-t-2 border-dashed border-[#0096C7]">
+                {/* Date Picker Section */}
+                <div className="mt-6 relative z-10">
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="bg-gradient-to-r from-[#90E0EF] to-[#48CAE4] p-4 rounded-xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-3"
+                >
+                    <label className="text-sm font-semibold text-[#03045E] flex items-center gap-2">
+                    📅 Select Date:
+                    </label>
+                    <input
+                    type="date"
+                    value={BookingDate} // Controlled component
+                    className="px-4 py-2 rounded-lg border border-[#0077B6]/40 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] text-[#03045E] bg-white"
+                    min={new Date().toISOString().split("T")[0]}  // Block past dates
+                    onChange={(e) => setBookingDate(e.target.value)}
+                    />
+                </motion.div>
+                </div>
 
-  {/* Quantity + Actions */}
-  <div className="flex flex-wrap items-center gap-3">
-    {/* Adult Qty */}
-    <div className="flex items-center gap-2">
-      <label className="text-xs font-medium text-gray-700">👨 Adult:</label>
-      <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-        <button
-          onClick={() => handleadultQuantityChange(adultquantity - 1)}
-          className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
-          disabled={adultquantity <= 1}
-        >
-          -
-        </button>
-        <span className="px-3 py-2 border-x border-gray-300 text-sm">
-          {adultquantity}
-        </span>
-        <button
-          onClick={() => handleadultQuantityChange(adultquantity + 1)}
-          className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
-        >
-          +
-        </button>
-      </div>
-    </div>
+                 {/* Quantity + Actions */}
+                <div className="flex flex-wrap items-center gap-4">
+                    {/* Adult Qty */}
+                    <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-700">👨 Adult:</label>
+                    <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
+                        <button
+                        onClick={() => handleadultQuantityChange(adultquantity - 1)}
+                        className="px-3 py-2 hover:bg-[#CAF0F8] transition-colors disabled:opacity-50"
+                        disabled={adultquantity <= 0}
+                        >
+                        -
+                        </button>
+                        <span className="px-4 py-2 border-x border-gray-300 text-md font-semibold text-[#03045E]">
+                        {adultquantity}
+                        </span>
+                        <button
+                        onClick={() => handleadultQuantityChange(adultquantity + 1)}
+                        className="px-3 py-2 hover:bg-[#CAF0F8] transition-colors"
+                        >
+                        +
+                        </button>
+                    </div>
+                    </div>
 
-    {/* Child Qty */}
-    <div className="flex items-center gap-2">
-      <label className="text-xs font-medium text-gray-700">👧 Child:</label>
-      <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-        <button
-          onClick={() => handlechildQuantityChange(childquantity - 1)}
-          className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
-          disabled={childquantity <= 1}
-        >
-          -
-        </button>
-        <span className="px-3 py-2 border-x border-gray-300 text-sm">
-          {childquantity}
-        </span>
-        <button
-          onClick={() => handlechildQuantityChange(childquantity + 1)}
-          className="px-2 py-2 hover:bg-[#CAF0F8] transition-colors"
-        >
-          +
-        </button>
-      </div>
-    </div>
+                    {/* Child Qty */}
+                    <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-700">👧 Child:</label>
+                    <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
+                        <button
+                        onClick={() => handlechildQuantityChange(childquantity - 1)}
+                        className="px-3 py-2 hover:bg-[#CAF0F8] transition-colors disabled:opacity-50"
+                        disabled={childquantity <= 0}
+                        >
+                        -
+                        </button>
+                        <span className="px-4 py-2 border-x border-gray-300 text-md font-semibold text-[#03045E]">
+                        {childquantity}
+                        </span>
+                        <button
+                        onClick={() => handlechildQuantityChange(childquantity + 1)}
+                        className="px-3 py-2 hover:bg-[#CAF0F8] transition-colors"
+                        >
+                        +
+                        </button>
+                    </div>
+                    </div>
+                </div>
 
-    {/* Book Button */}
-    <motion.button 
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={handleProceedToCheckout}
-      disabled={typeof product.stock === 'number' ? product.stock <= 0 : isOutOfStock}
-      className={`flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold transition-all text-sm shadow-lg ${
-        typeof product.stock === 'number'
-          ? (product.stock <= 0
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-[#00B4D8] text-white hover:bg-[#0096C7]')
-          : (isOutOfStock
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-[#00B4D8] text-white hover:bg-[#0096C7]')
-      }`}
-    >
-      BOOK NOW
-    </motion.button>
+                {/* Ticket Summary */}
+                <div className="w-full flex justify-center relative z-10">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="w-full max-w-lg bg-gradient-to-br from-[#00B4D8] via-[#0096C7] to-[#0077B6] rounded-2xl shadow-xl overflow-hidden"
+                >
+                    {/* Header */}
+                    <div className="bg-[#023E8A] text-white text-center py-3 text-lg font-bold tracking-wide flex items-center justify-center gap-2">
+                    🎟️ Ticket Summary
+                    </div>
 
-    {/* Share Button */}
-    <motion.button 
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className="p-3 border border-gray-300 rounded-full hover:bg-[#CAF0F8] transition-colors"
-      onClick={handleShare}
-    >
-      <ShareIcon className="h-4 w-4 text-gray-600" />
-    </motion.button>
-  </div>
-
-{/* Date Picker Section */}
-<div className="mt-6 relative z-10">
-  <motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5 }}
-    className="bg-gradient-to-r from-[#90E0EF] to-[#48CAE4] p-4 rounded-xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-3"
-  >
-    <label className="text-sm font-semibold text-[#03045E] flex items-center gap-2">
-      📅 Select Date: {BookingDate ? BookingDate : "Not Selected"}
-    </label>
-    <input
-      type="date"
-      className="px-4 py-2 rounded-lg border border-[#0077B6]/40 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] text-[#03045E] bg-white"
-      min={new Date().toISOString().split("T")[0]}  // ✅ Block past dates
-      onChange={(e) => setBookingDate(e.target.value)}
-    />
-  </motion.div>
-</div>
-
-  {/* Ticket Summary */}
-  <div className="mt-6 w-full flex justify-center relative z-10">
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="w-full max-w-lg bg-gradient-to-br from-[#00B4D8] via-[#0096C7] to-[#0077B6] rounded-2xl shadow-xl overflow-hidden"
-    >
-      {/* Header */}
-      <div className="bg-[#023E8A] text-white text-center py-3 text-lg font-bold tracking-wide flex items-center justify-center gap-2">
-        🎟️ Ticket Summary
-      </div>
-
-      {/* Table */}
-      <table className="w-full text-sm text-white">
-        <thead className="bg-[#03045E]/80">
-          <tr>
-            <th className="px-4 py-3 text-left">Ticket Type</th>
-            <th className="px-4 py-3 text-center">Qty</th>
-            <th className="px-4 py-3 text-right">Price</th>
-            <th className="px-4 py-3 text-right">Total</th>
-          </tr>
-        </thead>
-        <tbody>
+                    {/* Table */}
+                    <table className="w-full text-sm text-white">
+                    <thead className="bg-[#03045E]/80">
+                        <tr>
+                        <th className="px-4 py-3 text-left">Ticket Type</th>
+                        <th className="px-4 py-3 text-center">Qty</th>
+                        <th className="px-4 py-3 text-right">Price</th>
+                        <th className="px-4 py-3 text-right">Total</th>
+                        </tr>
+                    </thead>
+                   <tbody>
           {/* Adult */}
           <motion.tr 
             className="border-t border-white/30 hover:bg-white/10 transition"
@@ -940,7 +1174,7 @@ const handleProceedToCheckout = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <td className="px-4 py-3 font-medium">👨 Adult</td>
+            <td className="px-4 py-3 font-medium">👨 Adult above 8 year</td>
             <td className="px-4 py-3 text-center">{adultquantity}</td>
             <td className="px-4 py-3 text-right">₹{product.adultprice}</td>
             <td className="px-4 py-3 text-right">₹{adultquantity * product.adultprice}</td>
@@ -953,45 +1187,93 @@ const handleProceedToCheckout = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <td className="px-4 py-3 font-medium">👧 Child</td>
+            <td className="px-4 py-3 font-medium">👧 Child Adult 3 to 8 year</td>
             <td className="px-4 py-3 text-center">{childquantity}</td>
             <td className="px-4 py-3 text-right">₹{product.childprice}</td>
             <td className="px-4 py-3 text-right">₹{childquantity * product.childprice}</td>
           </motion.tr>
         </tbody>
 
-        {/* Footer */}
-        <tfoot>
-          <motion.tr 
-            className="bg-[#48CAE4] text-[#03045E] font-bold text-base"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.6 }}
-          >
-            <td className="px-4 py-3 text-left" colSpan={3}>💰 Grand Total</td>
-            <td className="px-4 py-3 text-right">
-              ₹{adultquantity * product.adultprice + childquantity * product.childprice}
-            </td>
-          </motion.tr>
-        </tfoot>
-      </table>
-    </motion.div>
-  </div>
-</motion.div>
+                    {/* Footer */}
+                    <tfoot>
+                        <motion.tr 
+                        className="bg-[#48CAE4] text-[#03045E] font-bold text-base"
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.6 }}
+                        >
+                        <td className="px-4 py-3 text-left" colSpan={3}>💰 Grand Total</td>
+                        <td className="px-4 py-3 text-right">
+                            ₹{grandTotal.toFixed(2)}
+                        </td>
+                        </motion.tr>
+                    </tfoot>
+                    </table>
+                </motion.div>
+                </div>
+                
+                {/* MODIFIED: Book button now opens the terms modal */}
+                <div className="flex items-center gap-4">
+                    <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleOpenTermsModal}
+                    disabled={isOutOfStock}
+                    className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-full font-bold text-lg transition-all shadow-lg ${
+                        isOutOfStock
+                        ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white hover:shadow-xl'
+                    }`}
+                    >
+                    {isOutOfStock ? 'CURRENTLY UNAVAILABLE' : 'BOOK NOW'}
+                    </motion.button>
 
+                    {/* Share Button */}
+                    <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-4 bg-white border border-gray-300 rounded-full hover:bg-[#CAF0F8] transition-colors shadow-md"
+                    onClick={handleShare}
+                    >
+                    <ShareIcon className="h-5 w-5 text-gray-600" />
+                    </motion.button>
+                </div>
+            </div>
+
+          
+            </motion.div>
         </div>
 
-    
-
+      
 
         {/* Related Products */}
         <div className="mt-8">
-         
-          <div>
+            <div>
             <MostLoved />
-          </div>
+            </div>
         </div>
       </div>
+
+       {/* -------------------- NEW FIXED BOOK NOW BUTTON -------------------- */}
+   <motion.div
+    initial={{ y: 100, opacity: 0 }}
+    animate={{ y: 0, opacity: 1 }}
+    transition={{ delay: 0.5, type: 'spring', stiffness: 100 }}
+    // Positioned from the left, no longer stretching full-width
+    className="fixed bottom-20 left-6 md:bottom-6 md:left-6 z-40" 
+    >
+    <button
+    onClick={scrollToBooking}
+    // Removed w-50 and changed to rounded-full for all screen sizes
+    className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-[#03045E] to-[#0077B6] text-white font-bold text-lg rounded-full shadow-2xl hover:shadow-blue-400/50 transition-all duration-300 transform hover:-translate-y-1"
+    >
+    <span>Book Now</span>
+    <span className="hidden md:inline-block">-</span>
+    <div className="px-3 py-1 bg-white/20 rounded-full text-sm">
+        ₹{grandTotal.toFixed(2)}
+    </div>
+    </button>
+</motion.div>
 
       {/* Full Size Image Modal */}
       <AnimatePresence>
@@ -1206,8 +1488,90 @@ const handleProceedToCheckout = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Full Size Image Modal */}
+      {/* ... Your existing image modal code ... */}
+
+      {/* Share Modal */}
+      {/* ... Your existing share modal code ... */}
+
+      {/* -------------------- NEW TERMS & CONDITIONS MODAL -------------------- */}
+      <AnimatePresence>
+        {isTermsModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setIsTermsModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-gradient-to-br from-[#E0F7FA] to-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden border-2 border-[#00B4D8]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-5 bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white">
+                <div className="flex items-center gap-3">
+                    <ShieldCheck className="h-7 w-7" />
+                    <h3 className="text-xl font-bold">Booking Confirmation</h3>
+                </div>
+                <button
+                  onClick={() => setIsTermsModalOpen(false)}
+                  className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                >
+                  <XMarkIcon className="h-6 w-6" />
+                </button>
+              </div>
+
+              {/* Body Content */}
+              <div className="p-6 space-y-4">
+                <h4 className="text-lg font-semibold text-[#03045E]">Terms and Conditions</h4>
+                <div className="text-sm text-gray-600 max-h-48 overflow-y-auto space-y-2 pr-2">
+                {product.terms.split('\n').map((line, index) => (
+                    <p key={index} className="whitespace-pre-wrap"> {line}</p>
+                ))}
+                
+                 </div>
+                 {/* Summary inside modal */}
+                <div className="bg-[#CAF0F8] p-4 rounded-lg border border-[#90E0EF]">
+                    <h5 className="font-bold text-[#023E8A] mb-2">Your Booking Summary</h5>
+                    <div className="flex justify-between items-center text-md">
+                        <span className="text-gray-700">Total Amount Payable:</span>
+                        <span className="font-extrabold text-2xl text-[#0077B6]">₹{grandTotal.toFixed(2)}</span>
+                    </div>
+                     <p className="text-xs text-center text-gray-500 mt-2">You will be redirected to the payment gateway.</p>
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="flex items-center justify-end gap-3 p-4 bg-gray-50 border-t">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsTermsModalOpen(false)}
+                  className="px-5 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  Cancel
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleProceedToCheckout}
+                  className="px-6 py-2 text-sm font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors shadow-sm"
+                >
+                  I Accept & Proceed to Pay
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </motion.div>
   );
 };
 
-export default ProductView; 
+export default ProductView;
