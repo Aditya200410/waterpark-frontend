@@ -44,7 +44,7 @@ import OurPartners from './components/OurPartners';
 import Blogview from './pages/Blogview';
 import Gallery from './pages/Gallery';
 import WaterparkTicket from './pages/Ticket';
-import Tickets from './pages/tickets';
+import Tickets from './pages/Tickets';
 
 
 // Protected Route component
