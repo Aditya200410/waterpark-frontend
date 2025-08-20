@@ -64,6 +64,7 @@ export default function Footer() {
             <Link to="/policies" className="hover:text-yellow-200">Policies</Link>
              <Link to="/gallery" className="hover:text-yellow-200">gallery</Link>
               <Link to="/blog" className="hover:text-yellow-200">Blog</Link>
+              <Link to="/tickets" className="hover:text-yellow-200">Tickets</Link>
               <Link to="offers" className="hover:text-yellow-200">Offers</Link>
             </ul>
           </div>
@@ -126,6 +127,7 @@ export default function Footer() {
             <Link to="/policies" className="hover:text-yellow-200">Policies</Link>
              <Link to="/gallery" className="hover:text-yellow-200">gallery</Link>
               <Link to="/blog" className="hover:text-yellow-200">Blog</Link>
+              <Link to="/tickets" className="hover:text-yellow-200">tickets</Link>
               <Link to="offers" className="hover:text-yellow-200">Offers</Link>
           </div>
           <div className="flex flex-col space-y-5    ">
