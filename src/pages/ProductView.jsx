@@ -641,24 +641,25 @@ const handleProceedToCheckout = () => {
     </motion.button>
   </div>
 
-  {/* Date Picker Section */}
-  <div className="mt-6 relative z-10">
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-gradient-to-r from-[#90E0EF] to-[#48CAE4] p-4 rounded-xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-3"
-    >
-      <label className="text-sm font-semibold text-[#03045E] flex items-center gap-2">
-        📅 Select Date:{BookingDate? "" + BookingDate : " Not Selected"}
-      </label>
-      <input 
-        type="date"
-        className="px-4 py-2 rounded-lg border border-[#0077B6]/40 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] text-[#03045E] bg-white"
-        onChange={(e) => setBookingDate(e.target.value)}
-      />
-    </motion.div>
-  </div>
+{/* Date Picker Section */}
+<div className="mt-6 relative z-10">
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="bg-gradient-to-r from-[#90E0EF] to-[#48CAE4] p-4 rounded-xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-3"
+  >
+    <label className="text-sm font-semibold text-[#03045E] flex items-center gap-2">
+      📅 Select Date: {BookingDate ? BookingDate : "Not Selected"}
+    </label>
+    <input
+      type="date"
+      className="px-4 py-2 rounded-lg border border-[#0077B6]/40 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] text-[#03045E] bg-white"
+      min={new Date().toISOString().split("T")[0]}  // ✅ Block past dates
+      onChange={(e) => setBookingDate(e.target.value)}
+    />
+  </motion.div>
+</div>
 
   {/* Ticket Summary */}
   <div className="mt-6 w-full flex justify-center relative z-10">
