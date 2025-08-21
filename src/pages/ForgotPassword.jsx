@@ -55,7 +55,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row font-roboto bg-gradient-to-br from-blue-100 via-cyan-50 to-blue-200 overflow-hidden">
+    <div className="min-h-screen flex flex-col lg:flex-row font-roboto  bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
 
       {/* Left Side - Form */}
       <motion.div

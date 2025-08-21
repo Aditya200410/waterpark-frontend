@@ -561,21 +561,28 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
             </div>
             </div>
 
-            {/* Price Section */}
+          
             
-            <div className="space-y-2">
-                <div className="flex flex-wrap items-baseline gap-2">
-                <span className="text-3xl font-extrabold text-[#0077B6]">
-                    ₹{product.childprice.toFixed(2)} for child ticket
+           {/* Price Section */}
+            <div className="space-y-2 sm:space-y-3">
+              <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
+                <span className="text-2xl sm:text-3xl font-bold text-blue-900">
+                  ₹{product.adultprice.toFixed(2)}
                 </span>
-                </div>
-                <div className="flex flex-wrap items-baseline gap-2">
-                <span className="text-3xl font-extrabold text-[#0077B6]">
-                    ₹{product.adultprice.toFixed(2)} for adult ticket
-                </span>
-                </div>
+                {product.regularPrice && product.regularPrice > product.adultprice && (
+                  <>
+                    <span className="text-lg sm:text-xl text-gray-400 line-through">
+                      ₹{product.regularPrice.toFixed(2)}
+                    </span>
+                    <span className="px-2 py-1 bg-red-100 text-red-600 text-xs font-medium rounded-full">
+                      {Math.round(((product.regularPrice - product.price) / product.regularPrice) * 100)}% OFF
+                    </span>
+                  </>
+                )}
+              </div>
+             
+        
             </div>
-
 
             { /* Product Description */}
             {/* Product Tabs - Water Park Theme */}

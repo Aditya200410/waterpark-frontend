@@ -1,13 +1,41 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Droplet, Star } from "lucide-react";
+import { Star, ArrowRight } from "lucide-react"; // Assuming you use lucide-react for icons
+
+import { Droplet } from "lucide-react";
 import config from "../config/config.js";
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
-  hover: { scale: 1.05, y: -5, transition: { type: "spring", stiffness: 300 } },
-};
+// Framer Motion variants for stagger animations
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 12,
+      },
+    },
+    hover: {
+      y: -10,
+      scale: 1.03,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+      },
+    },
+  };
 
 export default function BlogPage() {
   const [blogs, setBlogs] = useState([]);
@@ -44,107 +72,123 @@ export default function BlogPage() {
   }, []);
 
   return (
-       <div className="min-h-screen flex items-center justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
+      // The main container with a slightly more dynamic gradient
+    <div className="min-h-screen flex items-center justify-center relative font-sans bg-gradient-to-b from-blue-200 via-sky-400 to-blue-600 overflow-hidden">
+      
+      {/* Enhanced Animated Bubbles: Randomized for a more natural effect */}
+      {[...Array(15)].map((_, i) => {
+        const size = Math.random() * 20 + 10; // Random size between 10px and 30px
+        const duration = Math.random() * 10 + 8; // Random duration
+        const delay = Math.random() * 5; // Random start delay
+        return (
+          <motion.div
+            key={i}
+            initial={{ y: 100, x: 0, opacity: 0 }}
+            animate={{ y: -1000, x: [0, 20, -20, 0], opacity: [0, 0.7, 0] }}
+            transition={{
+              repeat: Infinity,
+              duration: duration,
+              ease: "linear",
+              delay: delay,
+            }}
+            className="absolute rounded-full bg-white/20"
+            style={{
+              width: `${size}px`,
+              height: `${size}px`,
+              left: `${Math.random() * 100}%`,
+              bottom: "-100px", // Start from below the screen
+            }}
+          />
+        );
+      })}
 
-      {/* Animated bubbles for water theme */}
-      {[...Array(10)].map((_, i) => (
-        <motion.div
-          key={i}
-          animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
-          transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
-          className="absolute w-6 h-6 rounded-full bg-blue-300 opacity-70"
-          style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
-        />
-      ))}
-    <section className="relative  min-h-screen overflow-hidden py-16 md:py-20">
-      {/* Floating Bubbles */}
-      {Array.from({ length: 10 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-6 h-6 md:w-8 md:h-8 text-blue-300"
-          style={{
-            top: `${Math.random() * 80 + 10}%`,
-            left: `${Math.random() * 90 + 5}%`,
-          }}
-          animate={{ y: [-10, 10, -10], x: [-5, 5, -5], rotate: [0, 15, -15, 0] }}
-          transition={{ repeat: Infinity, duration: 6 + Math.random() * 4, ease: "easeInOut" }}
-        >
-          <Droplet size={24} color="#60A5FA" />
-        </motion.div>
-      ))}
-
-      <div className="container mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12 md:mb-16"
-        >
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-600 mb-4">
-            Explore Our <span className="text-blue-400 italic font-serif">Blogs</span> ✨
-          </h1>
-          <div className="w-28 md:w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-4 rounded-full"></div>
-          <p className="text-base sm:text-lg md:text-xl text-blue-700 max-w-3xl mx-auto leading-relaxed">
-            Discover our top-performing and most-loved blog posts.
-          </p>
-        </motion.div>
-
-        {loading && <p className="text-center text-blue-600">Loading blogs...</p>}
-        {error && <p className="text-center text-red-500">{error}</p>}
-
-        {/* Blogs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogs.map((blog) => (
-            <motion.div
-              key={blog._id}
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              whileHover="hover"
-              viewport={{ once: true }}
-              className="relative bg-gradient-to-br from-white/80 to-blue-50 rounded-3xl p-6 shadow-lg border border-blue-200 overflow-hidden"
+      <section className="relative w-full min-h-screen overflow-y-auto py-20 md:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Header with improved animation */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ staggerChildren: 0.2 }}
+            className="text-center mb-16 md:mb-20"
+          >
+            <motion.h1
+              variants={{ hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0 } }}
+              className="text-4xl sm:text-5xl md:text-6xl font-extrabold  text-blue-600 mb-4"
+              style={{ textShadow: '2px 2px 8px rgba(0, 0, 0, 0.2)' }}
             >
-              {/* Floating Star Icon */}
+              Explore Our <span className="text-blue-400 italic font-serif">Insights</span> ✨
+            </motion.h1>
+            {/* Animated underline */}
+            <motion.div
+              initial={{ width: 0 }}
+              whileInView={{ width: "8rem" }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, ease: "easeInOut" }}
+              className="h-1 bg-sky-200 mx-auto mb-6 rounded-full"
+            ></motion.div>
+            <motion.p
+              variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}
+              className="text-base sm:text-lg md:text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed"
+            >
+              Discover our top-performing and most-loved blog posts.
+            </motion.p>
+          </motion.div>
+
+          {loading && <p className="text-center text-white text-lg">Loading blogs...</p>}
+          {error && <p className="text-center text-red-300 bg-red-900/50 p-4 rounded-lg">{error}</p>}
+
+          {/* Blogs Grid with stagger animation */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10"
+          >
+            {blogs.map((blog) => (
               <motion.div
-                className="absolute top-3 right-3 opacity-60"
-                animate={{ rotate: [0, 15, -15, 0], y: [0, 5, 0] }}
-                transition={{ repeat: Infinity, duration: 4 }}
+                key={blog._id}
+                variants={cardVariants}
+                whileHover="hover"
+                className="group relative bg-white/30 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-white/20"
               >
-                <Star size={28} color="#3B82F6" />
-              </motion.div>
-
-              {/* Blog Images (Up to 4) */}
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                {blog.images?.slice(0, 4).map((img, idx) => (
-                  <img
-                    key={idx}
-                    src={img || "https://via.placeholder.com/150"}
+                {/* Single, more impactful image with hover effect */}
+                <div className="overflow-hidden">
+                  <motion.img
+                    src={blog.images?.[0] || "https://via.placeholder.com/400x225"}
                     alt={blog.name}
-                    className="w-full h-24 object-cover rounded-lg"
+                    className="w-full h-48 object-cover"
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
                   />
-                ))}
-              </div>
+                </div>
 
-              {/* Blog Content */}
-              <h2 className="text-xl md:text-2xl font-bold text-blue-600 mb-2">{blog.name}</h2>
-              <p className="text-blue-700 text-sm md:text-base mb-3 leading-relaxed">
-                {blog.description?.slice(0, 100) || "No description available."}...
-              </p>
+                {/* Content with better padding and structure */}
+                <div className="p-6 bg-white">
+                  {/* Category/Tag */}
+                  <p className="text-sm font-medium text-blue-600 mb-2">{blog.category || 'General'}</p>
+                  
+                  <h2 className="text-xl font-bold text-gray-800 mb-3 truncate">{blog.name}</h2>
+                  
+                  <p className="text-gray-600 text-sm mb-4 h-20 overflow-hidden">
+                    {blog.description?.slice(0, 120) || "No description available."}...
+                  </p>
 
-              {/* Read More Button */}
-              <a
-                href={`/blog/${blog._id}`}
-                className="inline-block bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
-              >
-                Read More
-              </a>
-            </motion.div>
-          ))}
+                  {/* Enhanced "Read More" link */}
+                  <a
+                    href={`/blog/${blog._id}`}
+                    className="inline-flex items-center text-blue-600 font-semibold group-hover:text-blue-800 transition-colors duration-300"
+                  >
+                    Read More
+                    <ArrowRight className="ml-2 h-4 w-4 transform transition-transform duration-300 group-hover:translate-x-1" />
+                  </a>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
-      </div>
-    </section>
-        </div>
+      </section>
+    </div>
   );
-}
-  
+};

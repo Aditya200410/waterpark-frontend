@@ -531,7 +531,7 @@ const Account = () => {
                   <circle cx="7" cy="7" r="2" fill="#22d3ee" opacity=".6"/>
                 </svg>
                 <div>
-                  <h1 className="text-3xl font-extrabold tracking-tight text-cyan-900">My Aqua Account</h1>
+                  <h1 className="text-2xl font-extrabold tracking-tight text-cyan-900">My Aqua Account</h1>
                   <p className="text-cyan-700 mt-1">
                     Hey {user?.name || 'Guest'} — manage your profile & tickets. Surf’s up! 🏄‍♂️
                   </p>
@@ -544,8 +544,8 @@ const Account = () => {
                 disabled={isLoggingOut}
                 className="flex items-center space-x-2 px-6 py-3 bg-rose-500 text-white rounded-2xl hover:bg-rose-600 transition-colors shadow-lg"
               >
-                <ArrowLeftOnRectangleIcon className="h-5 w-5" />
-                <span>{isLoggingOut ? 'Signing out...' : 'Sign out'}</span>
+                <ArrowLeftOnRectangleIcon className="h-3 w-5" />
+                <span>{isLoggingOut ? 'Signing out...' : 'Signout'}</span>
               </motion.button>
             </div>
           </motion.div>

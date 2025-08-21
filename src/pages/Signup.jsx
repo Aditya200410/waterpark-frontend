@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
 import config from '../config/config';
-
+import WhyUs from "../components/MissionVision/MissionVision"
 const Signup = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -60,7 +60,7 @@ const Signup = () => {
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   return (
-    <div className="min-h-screen flex  justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
+    <div className="min-h-full w-full flex  font-roboto justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
 
       {/* Animated bubbles for water theme */}
       {[...Array(10)].map((_, i) => (
@@ -77,12 +77,12 @@ const Signup = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
-        className="bg-white/20 backdrop-blur-lg rounded-3xl shadow-lg p-10 w-full max-w-md relative z-10"
+        className="bg-white/20  mt-3 mb-10 backdrop-blur-lg rounded-3xl shadow-lg p-5 w-full max-w-md relative z-10"
       >
        <div className="max-w-md w-full space-y-8 mt-12">
           <div className="text-center">
-            <h2 className="text-4xl md:text-5xl font-poppins text-blue-900 drop-shadow-lg">
-             Sign  <span className="italic text-cyan-600">up</span>
+            <h2 className="text-4xl md:text-5xl font-['Baloo_2'] text-blue-900 drop-shadow-lg">
+             DIVE  <span className="italic text-cyan-600">INTO FUN </span>
             </h2>
             <p className="mt-2 text-sm md:text-base text-blue-800">
               Returing user ?{" "}
@@ -134,7 +134,10 @@ const Signup = () => {
             Sign Up
           </button>
         </form>
-
+{/* Why Us Section */}
+    <div className="lg:hidden flex mt-10">
+          <WhyUs  />
+          </div>
         {/* Decorative wave */}
         <svg className="absolute -bottom-6 left-0 w-full h-12" viewBox="0 0 1440 320" preserveAspectRatio="none">
           <path fill="rgba(255,255,255,0.2)" d="M0,64L48,90.7C96,117,192,171,288,197.3C384,224,480,224,576,197.3C672,171,768,117,864,101.3C960,85,1056,107,1152,122.7C1248,139,1344,149,1392,154.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
@@ -143,7 +146,7 @@ const Signup = () => {
     </div>
   );
 };
-
+ 
 const InputField = ({ id, label, icon, placeholder, value, onChange, disabled }) => (
   <div>
     <label htmlFor={id} className="block text-sm font-medium text-blue-50">{label}</label>

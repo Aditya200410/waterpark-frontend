@@ -38,17 +38,25 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row font-roboto bg-gradient-to-br from-blue-100 via-cyan-50 to-blue-200 overflow-hidden">
+    <div className="min-h-screen flex flex-col lg:flex-row font-roboto bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
+      
+    
       {/* Left Side - Form */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full lg:w-1/2 flex items-start lg:items-center justify-center px-4 sm:px-6 lg:px-12 py-12 lg:py-0"
+        className="w-full lg:w-1/2 flex  items-start lg:items-center justify-center px-3 sm:px-10 lg:px-1 py-12 lg:py-0"
       >
-        <div className="max-w-md w-full space-y-8">
+           <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
+        className="  bg-white/20  backdrop-blur-lg rounded-3xl shadow-lg p-6 w-full max-w-md relative z-10"
+      >
+        <div className="max-w-md w-full space-y-8 ">
           <div className="text-center">
-            <h2 className="text-4xl md:text-5xl font-poppins text-blue-900 drop-shadow-lg">
+            <h2 className="text-4xl md:text-5xl font-['Baloo_2'] text-blue-900 drop-shadow-lg">
               Welcome <span className="italic text-cyan-600">Back</span>
             </h2>
             <p className="mt-2 text-sm md:text-base text-blue-800">
@@ -155,7 +163,7 @@ const Login = () => {
               </label>
               <Link
                 to="/forgot-password"
-                className="text-sm font-medium text-cyan-600 hover:text-cyan-500"
+                className="text-sm font-medium text-blue-900 hover:text-cyan-900"
               >
                 Forgot your password?
               </Link>
@@ -172,6 +180,9 @@ const Login = () => {
           </form>
         </div>
       </motion.div>
+      
+</motion.div>
+
     {/* Why Us Section */}
     <div className="lg:hidden flex">
           <WhyUs  />
