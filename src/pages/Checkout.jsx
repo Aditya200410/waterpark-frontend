@@ -85,7 +85,7 @@ function CheckoutPage() {
     }
     try {
       const response = await axios.post(
-        "http://localhost:5175/api/coupons/validate",
+        "https://water-backend-fe1c.onrender.com/api/coupons/validate",
         {
           code: couponCode,
           cartTotal: paid, // Using original paid for validation
@@ -140,7 +140,7 @@ function CheckoutPage() {
       );
 
       const response = await axios.post(
-        "http://localhost:5175/api/bookings/create",
+        "https://water-backend-fe1c.onrender.com/api/bookings/create",
         {
           waterpark: resortId,
           waterparkName: resortName,
