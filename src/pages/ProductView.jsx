@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'; // Added useRef
 import { useParams, useNavigate } from 'react-router-dom';
-
+import { CalendarWithPricing } from './CalendarWithPricing'; // Adjust path if needed
+import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ShieldCheck } from "lucide-react"; // Added ShieldCheck for modal
 import { 
@@ -33,6 +34,7 @@ const ProductView = () => {
 
 const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or 'full'
   const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
   const [adultquantity, setadultQuantity] = useState(1); // Default to 1
   const [childquantity, setchildQuantity] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -210,7 +212,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
 
   // Handle opening the terms modal
   const handleOpenTermsModal = () => {
-    if (!BookingDate) {
+    if (!selectedDate) {
       toast.error("Please select a date for your booking.");
       return;
     }
@@ -232,7 +234,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
       resortName: product.name,
       adultCount: adultquantity,
       childCount: childquantity,
-      date: BookingDate,
+      date: format(selectedDate, 'PPP'),
       subtotal: adultquantity * product.adultprice + childquantity * product.childprice,
       deposit: adultquantity * product.adultprice + childquantity * product.childprice,
     };
@@ -972,16 +974,15 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
                     transition={{ duration: 0.5 }}
                     className="bg-gradient-to-r from-[#90E0EF] to-[#48CAE4] p-4 rounded-xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-3"
                 >
-                    <label className="text-sm font-semibold text-[#03045E] flex items-center gap-2">
-                    📅 Select Date:
-                    </label>
-                    <input
-                    type="date"
-                    value={BookingDate} // Controlled component
-                    className="px-4 py-2 rounded-lg border border-[#0077B6]/40 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0077B6] focus:border-[#0077B6] text-[#03045E] bg-white"
-                    min={new Date().toISOString().split("T")[0]}  // Block past dates
-                    onChange={(e) => setBookingDate(e.target.value)}
+
+                  <div className="w-full flex justify-center">
+                   <CalendarWithPricing   
+                    selectedDate={selectedDate}
+                    onDateChange={setSelectedDate}
+                     price={product.adultprice}
                     />
+                    </div>
+                   
                 </motion.div>
                 </div>
 
