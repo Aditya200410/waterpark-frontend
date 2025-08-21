@@ -35,8 +35,8 @@ function CheckoutPage() {
     childCount,
     date,
     resortName,
-    subtotal,
-    deposit,
+    paid,
+    totalamount,
     resortId,
   } = checkoutData;
 
@@ -47,7 +47,8 @@ function CheckoutPage() {
     email: "",
     city: "",
     createAccount: false,
-    total: subtotal,
+    total: totalamount,
+    advance:paid
   });
 
   useEffect(() => {
@@ -84,10 +85,10 @@ function CheckoutPage() {
     }
     try {
       const response = await axios.post(
-        "https://water-backend-fe1c.onrender.com/api/coupons/validate",
+        "http://localhost:5175/api/coupons/validate",
         {
           code: couponCode,
-          cartTotal: subtotal, // Using original subtotal for validation
+          cartTotal: paid, // Using original paid for validation
         }
       );
 
@@ -95,6 +96,7 @@ function CheckoutPage() {
         const { coupon, discountAmount, message } = response.data.data;
         setAppliedCoupon(coupon);
         setDiscountAmount(discountAmount);
+
         setCouponError(""); // Clear previous errors
         toast.success(message);
       } else {
@@ -112,8 +114,9 @@ function CheckoutPage() {
   // END: Handle Apply Coupon Function
 
   // Calculate final total after discount
-  const finalTotal = subtotal - discountAmount;
-  const remainingAmount = finalTotal - deposit;
+  const finalTotal = paid-discountAmount;
+  console.log(totalamount)
+  const remainingAmount = totalamount-paid;
 
   const handlePayment = async (e) => {
     e.preventDefault();
@@ -137,7 +140,7 @@ function CheckoutPage() {
       );
 
       const response = await axios.post(
-        "https://water-backend-fe1c.onrender.com/api/bookings/create",
+        "http://localhost:5175/api/bookings/create",
         {
           waterpark: resortId,
           waterparkName: resortName,
@@ -152,7 +155,7 @@ function CheckoutPage() {
           advanceAmount: finalTotal,
           paymentType: paymentMethod,
           
-          discountAmount: discountAmount,
+      
         }
       );
 
@@ -320,7 +323,7 @@ function CheckoutPage() {
                       Product
                     </th>
                     <th className="py-3 px-4 text-blue-700 font-medium">
-                      Subtotal
+                      paid
                     </th>
                   </tr>
                 </thead>
@@ -334,7 +337,7 @@ function CheckoutPage() {
                         {childCount}
                       </span>
                     </td>
-                    <td className="py-3 px-4">₹{subtotal}</td>
+                    <td className="py-3 px-4">₹{paid}</td>
                   </tr>
 
                   {/* START: Display Discount if Applied */}
@@ -343,26 +346,23 @@ function CheckoutPage() {
                       <td className="py-3 px-4">
                         Discount ({appliedCoupon?.code})
                       </td>
-                      <td className="py-3 px-4">- ₹{discountAmount}</td>
+                      <td className="py-3 px-4">- ₹{discountAmount.toFixed(2)}</td>
                     </tr>
                   )}
                   {/* END: Display Discount */}
 
                   <tr className="border-b">
-                    <td className="py-3 px-4">Deposit:</td>
-                    <td className="py-3 px-4">₹{deposit}</td>
+                    <td className="py-3 px-4">totalamount:</td>
+                    <td className="py-3 px-4">₹{totalamount}</td>
                   </tr>
                   <tr className="border-b">
-                    <td className="py-3 px-4">Remaining:</td>
+                    <td className="py-3 px-4">Remaining to be <br/>paid in waterpark:</td>
                     <td className="py-3 px-4">₹{remainingAmount}</td>
                   </tr>
-                  <tr>
-                    <td className="py-3 px-4 font-semibold">Total payable:</td>
-                    <td className="py-3 px-4 font-semibold">₹{finalTotal}</td>
-                  </tr>
+                 
                   <tr>
                     <td className="py-3 px-4 font-semibold text-cyan-700">
-                      Payable deposit:
+                      Payable totalamount:
                     </td>
                     <td className="py-3 px-4 font-semibold text-cyan-700">
                       ₹{finalTotal}

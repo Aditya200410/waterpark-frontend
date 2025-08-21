@@ -235,8 +235,8 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
       adultCount: adultquantity,
       childCount: childquantity,
       date: format(selectedDate, 'PPP'),
-      subtotal: adultquantity * product.adultprice + childquantity * product.childprice,
-      deposit: adultquantity * product.adultprice + childquantity * product.childprice,
+     paid:grandTotal,
+     totalamount:total,
     };
 
     // 3. Save the data to localStorage and navigate
@@ -397,6 +397,9 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
   };
 
   const grandTotal = adultquantity * product.advanceprice + childquantity * product.advanceprice;
+  const total= adultquantity * product.adultprice + childquantity * product.childprice;
+  console.log(total)
+  console.log(grandTotal)
 
   return (
     <motion.div 
