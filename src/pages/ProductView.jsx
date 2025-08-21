@@ -396,7 +396,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
     setIsImageModalOpen(false);
   };
 
-  const grandTotal = adultquantity * product.adultprice + childquantity * product.childprice;
+  const grandTotal = adultquantity * product.advanceprice + childquantity * product.advanceprice;
 
   return (
     <motion.div 
@@ -1048,7 +1048,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
                     🎟️ Ticket Summary
                     </div>
 
-                    {/* Table */}
+                    {/*price  Table */}
                     <table className="w-full text-sm text-white">
                     <thead className="bg-[#03045E]/80">
                         <tr>
@@ -1096,11 +1096,45 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
                         >
                         <td className="px-4 py-3 text-left" colSpan={3}>💰 Grand Total</td>
                         <td className="px-4 py-3 text-right">
-                            ₹{grandTotal.toFixed(2)}
+                           ₹{adultquantity * product.adultprice + childquantity * product.childprice.toFixed(2)}
                         </td>
                         </motion.tr>
                     </tfoot>
                     </table>
+                       {/*advnace   Table */}
+                        <table className="w-full text-sm text-white">
+                   
+                   <tbody>
+          {/* Adult */}
+          <motion.tr 
+            className=" bg-[#48CAE4] text-[#03045E] font-bold "
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <td className="px-4 py-3 font-bold">💰 Pay Now</td>
+            <td className="px-4 py-3 text-center"></td>
+            <td className="px-4 py-3 text-right"></td>
+            <td className="px-4 py-3 text-right">₹{adultquantity * product.advanceprice + childquantity * product.adultprice}</td>
+          </motion.tr>
+
+          {/* Child */}
+          <motion.tr 
+            className=" bg-[#48CAE4] text-[#03045E] font-bold transition"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <td className="px-4 py-3 font-bold">💰 Pay In Waterpark</td>
+            <td className="px-4 py-3 text-center"></td>
+            <td className="px-4 py-3 text-right"></td>
+            <td className="px-4 py-3 text-right">₹{(adultquantity * product.adultprice + childquantity * product.childprice )- (adultquantity * product.advanceprice + childquantity * product.adultprice)}</td>
+          </motion.tr>
+        </tbody>
+
+                   
+                    </table>
+                    
                 </motion.div>
                 </div>
                 
