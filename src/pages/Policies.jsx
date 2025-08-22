@@ -87,7 +87,7 @@ const Policies = () => {
         >
           <button
             onClick={() => toggleSection(sectionId)}
-            className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl hover:from-blue-100 hover:to-blue-200 transition-all duration-300 border border-blue-200"
+            className="w-full flex items-center justify-between p-4    rounded-xl hover:from-blue-100 hover:to-blue-200 transition-all duration-300 border border-blue-200"
           >
             <h3 className="text-lg font-semibold text-blue-800">{section.header}</h3>
             {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -116,7 +116,7 @@ const Policies = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
@@ -131,7 +131,7 @@ const Policies = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-700 py-20">
+      <div className="relative overflow-hidden bg-gradient-to-b from-blue-300 via-blue-400 to-blue-500 py-20">
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-6 backdrop-blur-sm border-4 border-blue-200 shadow-lg">
             <Shield size={40} className="text-blue-100" />

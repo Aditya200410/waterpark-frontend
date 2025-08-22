@@ -181,7 +181,7 @@ const Categories = () => {
               Ready to explore our complete collection?
             </p>
             <Link
-              to="/shop"
+              to="/waterpark"
               className="inline-flex items-center px-6 md:px-8 py-3 md:py-4 bg-[#0077B6] text-white font-medium rounded-lg hover:bg-[#005f8a] transition-all duration-300 group shadow-lg hover:shadow-xl"
             >
               View All Products

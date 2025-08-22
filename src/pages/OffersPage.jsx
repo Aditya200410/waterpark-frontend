@@ -51,29 +51,7 @@ export default function BlogPage() {
         />
       ))}
     <section className="relative min-h-screen overflow-hidden py-20">
-      {/* Floating Bubbles */}
-      {Array.from({ length: 12 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-5 h-5 md:w-7 md:h-7 text-blue-300"
-          style={{
-            top: `${Math.random() * 85 + 5}%`,
-            left: `${Math.random() * 90 + 5}%`,
-          }}
-          animate={{
-            y: [-12, 12, -12],
-            x: [-6, 6, -6],
-            rotate: [0, 20, -20, 0],
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 6 + Math.random() * 4,
-            ease: "easeInOut",
-          }}
-        >
-          <Droplet size={20} color="#3B82F6" />
-        </motion.div>
-      ))}
+  
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
         {/* Header */}

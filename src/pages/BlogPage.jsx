@@ -73,7 +73,7 @@ export default function BlogPage() {
 
   return (
       // The main container with a slightly more dynamic gradient
-    <div className="min-h-screen flex items-center justify-center relative font-sans bg-gradient-to-b from-blue-200 via-sky-400 to-blue-600 overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
       
       {/* Enhanced Animated Bubbles: Randomized for a more natural effect */}
       {[...Array(15)].map((_, i) => {

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import config from '../../config/config';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const isVideo = (url) => url && url.toLowerCase().endsWith('.mp4');
 
@@ -138,11 +139,11 @@ const Hero = () => {
   return (
     <div
       ref={containerRef}
-      className="relative overflow-hidden z-[1] bg-black"
+      className="relative overflow-hidden bg-black"
       style={containerHeight ? { height: containerHeight, maxHeight: '80vh' } : { height: 400, maxHeight: '80vh' }}
     >
       {/* Navigation Buttons */}
-      <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-4 z-20">
+      <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-4">
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -196,7 +197,7 @@ const Hero = () => {
           {/* --- CONTENT OVERLAY & ANIMATION --- */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
           <motion.div
-            className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-8 z-10"
+            className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-8 z-1"
             variants={textContainerVariants}
             initial="hidden"
             animate="visible"
@@ -215,24 +216,27 @@ const Hero = () => {
               </motion.p>
             )}
 
-            {currentItem.buttonText && currentItem.buttonLink && (
-              <motion.div variants={textItemVariants}>
+         {currentItem.buttonText && currentItem.buttonLink && (
+            <motion.div variants={textItemVariants}>
+              {/* FIX: Use the dynamic link from your data and let the Link component handle navigation. */}
+              <Link to="/shop">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={(e) => handleCtaClick(e, currentItem.buttonLink)}
-                  className="bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 shadow-xl"
+                
+                  className="bg-cyan-500 hover:bg-cyan-400 text-white cursor-pointer font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 shadow-xl z-10"
                 >
                   {currentItem.buttonText}
                 </motion.button>
-              </motion.div>
-            )}
+              </Link>
+            </motion.div>
+          )}
           </motion.div>
         </motion.div>
       </AnimatePresence>
 
       {/* Slide indicators */}
-      <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-2 z-20">
+      <div className="absolute  bottom-8 left-0 right-0 flex justify-center gap-2 z-20">
         {carouselData.map((_, index) => (
           <button
             key={index}

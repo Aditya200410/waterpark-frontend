@@ -58,22 +58,7 @@ const Gallery = () => {
         />
       ))}
     <section className="relative  min-h-screen overflow-hidden py-16 md:py-20">
-      {/* Floating Bubbles */}
-      {Array.from({ length: 10 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-6 h-6 md:w-8 md:h-8 text-blue-300"
-          style={{
-            top: `${Math.random() * 80 + 10}%`,
-            left: `${Math.random() * 90 + 5}%`,
-          }}
-          animate={{ y: [-10, 10, -10], x: [-5, 5, -5], rotate: [0, 15, -15, 0] }}
-          transition={{ repeat: Infinity, duration: 6 + Math.random() * 4, ease: "easeInOut" }}
-        >
-          <Droplet size={24} color="#60A5FA" />
-        </motion.div>
-      ))}
-
+     
       <div className="container mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
         {/* Header */}
         <motion.div
@@ -90,17 +75,7 @@ const Gallery = () => {
             Discover our gallery images.
           </p>
         </motion.div>
-      {/* Floating bubbles */}
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          animate={{ y: [0, -30, 0], x: [0, 20, -20, 0] }}
-          transition={{ repeat: Infinity, duration: 6 + i, ease: 'easeInOut' }}
-          className="absolute w-10 h-10 bg-blue-300/70 rounded-full opacity-90"
-          style={{ left: `${i * 15}%`, top: `${10 + i * 12}%` }}
-        />
-      ))}
-
+    
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-auto">
         {carouselData.map((item, idx) => (
           <motion.div

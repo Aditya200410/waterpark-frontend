@@ -71,10 +71,11 @@ const Contact = () => {
   return (
     <LazyMotion features={domAnimation}>
       {/* Set a min-height to prevent layout shifts while loading */}
-      <div className="font-sans bg-foam text-deep-blue w-full overflow-hidden min-h-screen">
+      <div className="font-sans  bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 text-deep-blue w-full overflow-hidden min-h-screen">
 
         {/* HERO SECTION */}
-        <section className="relative text-center py-20 px-4 sm:py-28 bg-water-blue overflow-hidden">
+        <section className="relative text-center py-20 px-4 sm:py-28 bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600overflow-hidden">
+          
           <motion.div
             className="relative z-10 max-w-4xl mx-auto"
             variants={containerVariants}
@@ -95,16 +96,11 @@ const Contact = () => {
               Got a question or ready to book your next splash-tastic adventure? We're all ears!
             </motion.p>
           </motion.div>
-          {/* Wavy Divider SVG */}
-          <div className="absolute bottom-[-1px] left-0 w-full">
-            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-              <path d="M0 100H1440V24.5C1217.5 43.5 984 -10.5 720 5.5C456 21.5 240 76.5 0 24.5V100Z" fill="#f0f9ff" />
-            </svg>
-          </div>
+        
         </section>
 
         {/* MAIN CONTENT - Using FLEXBOX for responsive stacking */}
-        <main className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+        <main className="py-4 sm:py-4 px-4 sm:px-4 lg:px-4  ">
           {/* Changed grid to flex for better responsive control, added flex-col-reverse */}
           <div className="max-w-7xl mx-auto flex flex-col-reverse lg:flex-row gap-12 lg:gap-16 items-start">
 
@@ -162,7 +158,7 @@ const Contact = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             >
-              <div className="bg-gradient-to-br from-water-blue to-water-blue-dark p-6 sm:p-10 rounded-3xl shadow-lg shadow-water-blue/20 text-white h-full">
+              <div className="bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 p-6 sm:p-10 rounded-3xl shadow-lg shadow-water-blue/20 text-white h-full">
                 <h3 className="text-2xl sm:text-3xl font-bold mb-8 text-white">Contact Info</h3>
                 <ul className="space-y-6">
                   <InfoItem icon={<Building />} label="Company" value={contactInfo.company} />

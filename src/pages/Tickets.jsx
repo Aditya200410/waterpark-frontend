@@ -33,7 +33,7 @@ const handleFetchTicket = async (e) => {
 
 
   return (
-    <div className="min-h-screen flex  justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
+    <div className="min-h-fit flex  justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
       {/* Animated bubbles */}
       {[...Array(10)].map((_, i) => (
         <motion.div
@@ -49,7 +49,7 @@ const handleFetchTicket = async (e) => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
-        className="bg-white/20 backdrop-blur-lg rounded-3xl shadow-lg p-10 w-full max-w-md relative z-10 mt-14 h-fit"
+        className="bg-white/20 mb-10 backdrop-blur-lg rounded-3xl shadow-lg p-10 w-full max-w-md relative z-10 mt-14 h-fit"
       >
         <div className="max-w-md w-full space-y-8 ">
           <div className="text-center">

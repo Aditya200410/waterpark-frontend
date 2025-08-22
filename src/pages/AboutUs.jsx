@@ -44,8 +44,18 @@ const AboutUs = () => {
         image="/waterpark-hero.jpg"
       />
 
+      {/* Animated bubbles for water theme */}
+      {[...Array(10)].map((_, i) => (
+        <motion.div
+          key={i}
+          animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
+          transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
+          className="absolute w-6 h-6 rounded-full bg-blue-300 opacity-70"
+          style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
+        />
+      ))}
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-b from-blue-500 via-cyan-400 to-blue-200 overflow-hidden">
+      <section className="relative py-20  overflow-hidden">
         <div className="absolute inset-0">
           <svg className="w-full h-full" viewBox="0 0 1440 320">
             <path fill="white" fillOpacity="0.2" d="M0,224L48,213.3C96,203,192,181,288,160C384,139,480,117,576,117.3C672,117,768,139,864,138.7C960,139,1056,117,1152,128C1248,139,1344,181,1392,202.7L1440,224L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
@@ -72,7 +82,7 @@ const AboutUs = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-gradient-to-b from-blue-500 via-cyan-400 to-blue-200">
+      <section className="py-16 ">
         <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
             <motion.div
@@ -91,7 +101,7 @@ const AboutUs = () => {
       </section>
 
       {/* Story Section */}
-      <section className="py-16    bg-gradient-to-b from-blue-500 via-cyan-400 to-blue-200">
+      <section className="py-16    ">
         <div className="container mx-auto px-4 md:px-0 grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -126,24 +136,24 @@ const AboutUs = () => {
       </section>
 
       {/* Values Section */}
-      <section className="py-16 ">
-        <div className="container mx-auto px-4 md:px-0 text-center">
+      <section className="py-16">
+        <div className="container mx-auto px-4 md:px-0 text-center ">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-3xl font-bold text-blue-900 mb-6"
+            className="text-3xl font-bold text-blue-900 mb-6 "
           >
             Our Values
           </motion.h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-8 ">
             {values.map((value, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gradient-to-b from-blue-500 via-cyan-400 to-blue-200 rounded-2xl p-6 shadow hover:shadow-lg transition-shadow text-center"
+                className=" rounded-2xl p-6 shadow hover:shadow-lg transition-shadow text-center  bg-white "
               >
                 <div className="text-4xl mb-4">{value.icon}</div>
                 <h3 className="text-xl font-semibold text-blue-900 mb-2">{value.title}</h3>
@@ -155,7 +165,7 @@ const AboutUs = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="py-16 bg-gradient-to-b from-blue-500 via-cyan-400 to-blue-200">
+      <section className="py-16 ">
         <div className="container mx-auto px-4 md:px-0 text-center">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
