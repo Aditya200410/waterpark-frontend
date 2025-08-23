@@ -35,7 +35,7 @@ const AboutUs = () => {
   ];
 
   return (
-    <div className="w-full font-roboto overflow-hidden">
+    <div className="w-full font-roboto overflow-hidden bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600">
       <SEO 
         title="About Water Park Chalo - Professional Water Adventures"
         description="Learn about Water Park Chalo, our mission to provide safe, fun, and professional water experiences."
@@ -44,32 +44,20 @@ const AboutUs = () => {
         image="/waterpark-hero.jpg"
       />
 
-      {/* Animated bubbles for water theme */}
-      {[...Array(10)].map((_, i) => (
-        <motion.div
-          key={i}
-          animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
-          transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
-          className="absolute w-6 h-6 rounded-full bg-blue-300 opacity-70"
-          style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
-        />
-      ))}
+     
       {/* Hero Section */}
       <section className="relative py-20  overflow-hidden">
         <div className="absolute inset-0">
-          <svg className="w-full h-full" viewBox="0 0 1440 320">
-            <path fill="white" fillOpacity="0.2" d="M0,224L48,213.3C96,203,192,181,288,160C384,139,480,117,576,117.3C672,117,768,139,864,138.7C960,139,1056,117,1152,128C1248,139,1344,181,1392,202.7L1440,224L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
-          </svg>
+         
         </div>
         <div className="container mx-auto px-4 relative z-10 text-center">
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="font-poppins text-4xl md:text-6xl font-bold text-white mb-6"
-          >
-            Professional Water Adventures
-          </motion.h1>
+              variants={{ hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0 } }}
+              className="text-4xl sm:text-5xl md:text-6xl font-extrabold  mb-4"
+            
+            >
+             <span className="text-blue-500 italic font-serif"> Professional Water Adventures</span> ✨
+            </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -94,7 +82,7 @@ const AboutUs = () => {
             >
               <stat.icon className="w-10 h-10 text-blue-600 mx-auto mb-4" />
               <h3 className="text-2xl font-bold text-blue-900">{stat.number}</h3>
-              <p className="text-blue mt-2">{stat.label}</p>
+              <p className="text-whitemt-2">{stat.label}</p>
             </motion.div>
           ))}
         </div>
@@ -109,13 +97,13 @@ const AboutUs = () => {
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-3xl font-bold text-blue-900 mb-6">Our Story</h2>
-            <p className="text-blue-800 mb-4 leading-relaxed">
+            <p className="text-white mb-4 leading-relaxed">
               Water Park Chalo was created to provide professional water park experiences, combining thrill, safety, and family fun in one location.
             </p>
-            <p className="text-blue-800 mb-4 leading-relaxed">
+            <p className="text-white mb-4 leading-relaxed">
               Our vision is to become the region’s leading water adventure park while maintaining the highest standards of service and hygiene.
             </p>
-            <p className="text-blue-800 leading-relaxed">
+            <p className="text-white leading-relaxed">
               We bring together expert staff, modern rides, and clean, eco-friendly facilities to ensure every visitor leaves with unforgettable memories.
             </p>
           </motion.div>
@@ -165,41 +153,48 @@ const AboutUs = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="py-16 ">
-        <div className="container mx-auto px-4 md:px-0 text-center">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-3xl font-bold text-blue-900 mb-6"
-          >
-            Contact Us
-          </motion.h2>
-          <p className="text-blue-800 mb-12 max-w-2xl mx-auto">
-            Reach out to us for bookings, inquiries, or more information about our professional water park services.
-          </p>
+    <section className="py-16">
+  <div className="container mx-auto px-4 md:px-0 text-center">
+    <motion.h2
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      className="text-3xl font-bold text-blue-900 mb-6"
+    >
+      Contact Us
+    </motion.h2>
+    <p className="text-white mb-12 max-w-2xl mx-auto">
+      Reach out to us for bookings, inquiries, or more information about our
+      professional water park services.
+    </p>
 
-          <div className="max-w-3xl mx-auto grid sm:grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition-shadow">
-              <MapPin className="w-6 h-6 text-blue-600 mb-3" />
-              <h3 className="font-semibold text-blue-900 mb-1">Address</h3>
-              <p className="text-blue-700">110, Lakshmi Apt, Near Kailash Darshan 1, Alkapuri, Nallasopara East 401209</p>
-            </div>
+    <div className="max-w-3xl mx-auto grid sm:grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Card 1: Address */}
+      <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition-shadow flex flex-col items-center">
+        <MapPin className="w-6 h-6 text-blue-600 mb-3" />
+        <h3 className="font-semibold text-blue-900 mb-1">Address</h3>
+        <p className="text-blue-700">
+          110, Lakshmi Apt, Near Kailash Darshan 1, Alkapuri, Nallasopara East
+          401209
+        </p>
+      </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition-shadow">
-              <Mail className="w-6 h-6 text-blue-600 mb-3" />
-              <h3 className="font-semibold text-blue-900 mb-1">Email</h3>
-              <p className="text-blue-700">care@waterparkchalo.com</p>
-            </div>
+      {/* Card 2: Email */}
+      <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition-shadow flex flex-col items-center">
+        <Mail className="w-6 h-6 text-blue-600 mb-3" />
+        <h3 className="font-semibold text-blue-900 mb-1">Email</h3>
+        <p className="text-blue-700">care@waterparkchalo.com</p>
+      </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition-shadow">
-              <Clock className="w-6 h-6 text-blue-600 mb-3" />
-              <h3 className="font-semibold text-blue-900 mb-1">Hours</h3>
-              <p className="text-blue-700">Mon - Sun: 10AM - 7PM</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Card 3: Hours */}
+      <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition-shadow flex flex-col items-center">
+        <Clock className="w-6 h-6 text-blue-600 mb-3" />
+        <h3 className="font-semibold text-blue-900 mb-1">Hours</h3>
+        <p className="text-blue-700">Mon - Sun: 10AM - 7PM</p>
+      </div>
+    </div>
+  </div>
+</section>
     </div>
   );
 };

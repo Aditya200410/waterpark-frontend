@@ -62,10 +62,10 @@ export default function BlogPage() {
           className="text-center mb-16"
         >
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-blue-700 mb-4 tracking-tight">
-            Featured <span className="text-blue-400 italic font-serif">Offers</span> ✨
+           <span className="text-blue-500 italic font-serif">Featured  Offers</span> ✨
           </h1>
           <div className="w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-6 rounded-full shadow-sm"></div>
-          <p className="text-lg sm:text-xl md:text-2xl text-blue-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg sm:text-xl md:text-2xl text-white max-w-3xl mx-auto leading-relaxed">
             Hand-picked featured articles you shouldn’t miss. Dive in for inspiration, tips, and exciting stories!
           </p>
         </motion.div>

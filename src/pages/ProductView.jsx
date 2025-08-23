@@ -408,9 +408,13 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
       className=" w-full h-full bg-[#00B4D8] overflow-hidden">
 
       <SEO {...productSEO} />
+
+      
       {/* Breadcrumb */}
   
       <div className="container mx-auto px-4 py-4 sm:py-6">
+         {/* Animated bubbles for water theme */}
+ 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
            {/* Product Images - Left Side */}
            <motion.div 

@@ -102,7 +102,7 @@ export default function BlogPage() {
         );
       })}
 
-      <section className="relative w-full min-h-screen overflow-y-auto py-20 md:py-24">
+      <section className="relative bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 w-full min-h-screen overflow-y-auto py-20 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Header with improved animation */}
           <motion.div
@@ -115,9 +115,9 @@ export default function BlogPage() {
             <motion.h1
               variants={{ hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0 } }}
               className="text-4xl sm:text-5xl md:text-6xl font-extrabold  text-blue-600 mb-4"
-              style={{ textShadow: '2px 2px 8px rgba(0, 0, 0, 0.2)' }}
+            
             >
-              Explore Our <span className="text-blue-400 italic font-serif">Insights</span> ✨
+             <span className="text-blue-500 italic font-serif">  Explore Our Insights</span> ✨
             </motion.h1>
             {/* Animated underline */}
             <motion.div

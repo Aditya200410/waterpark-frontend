@@ -45,7 +45,7 @@ const Testimonials = () => {
 
       <div className="w-full px-4 relative z-10 text-center mt-16">
          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-900 mb-4">
-            Read Our <span className="text-blue-900 italic font-serif">Reviews</span> ✨
+            <span className="text-blue-900 italic font-serif"> Read Our Reviews</span> ✨
           </h1>
 
         <Carousel

@@ -5,9 +5,9 @@ import { MapPin, Phone, Mail, Clock, Send, Waves, Building, Sun } from 'lucide-r
 const Contact = () => {
   const contactInfo = {
     company: 'Water Park Chalo',
-    address: 'Splash City, India',
-    phone: '+91 12345 67890',
-    email: 'hello@waterparkchalo.com',
+    address: ' 110, Lakshmi Apt 1, Alkapuri, Nallasopara',
+    phone: '+91 88477 14464',
+    email: 'wpc@waterparkchalo.com',
     officeHours: 'Mon - Sun: 9:00 AM - 6:00 PM',
   };
 
@@ -71,7 +71,7 @@ const Contact = () => {
   return (
     <LazyMotion features={domAnimation}>
       {/* Set a min-height to prevent layout shifts while loading */}
-      <div className="font-sans  bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 text-deep-blue w-full overflow-hidden min-h-screen">
+      <div className="font-sans   text-deep-blue w-full overflow-hidden min-h-screen">
 
         {/* HERO SECTION */}
         <section className="relative text-center py-20 px-4 sm:py-28 bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600overflow-hidden">
@@ -89,7 +89,7 @@ const Contact = () => {
             </motion.div>
 
             <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
-              Slide Into Our <span className="text-sun-yellow">DMs</span>
+              Slide Into Our <span className="text-white">DMs</span>
             </motion.h1>
 
             <motion.p variants={itemVariants} className="text-base sm:text-lg text-white/90 max-w-2xl mx-auto">
