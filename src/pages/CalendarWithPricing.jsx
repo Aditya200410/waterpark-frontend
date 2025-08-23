@@ -23,7 +23,8 @@ export function CalendarWithPricing(props) {
         mode="single"
         selected={selectedDate}
         onSelect={onDateChange}
-        hidden={{before: new Date()}} // Disable past dates
+      disabled={{ before: new Date() }} 
+        
         fromDate={new Date()} // Disables past dates
       
         className="bg-gradient-to-br from-[#E0F7FA] to-white p-4 rounded-xl shadow-lg"
