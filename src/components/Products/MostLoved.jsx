@@ -169,7 +169,7 @@ export default function MostLoved() {
               to="/shop"
               className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-[#0077B6] to-[#0077B6] hover:from-[#0077B6] hover:to-[#6a2847] transition-all duration-300 shadow-lg hover:shadow-xl"
             >
-              View More Products
+              View More parks
             </Link>
           </motion.div>
         )}

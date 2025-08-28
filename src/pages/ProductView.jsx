@@ -1127,9 +1127,8 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <td className="px-4 py-3 font-bold">💰 Pay Now</td>
-            <td className="px-4 py-3 text-center"></td>
-            <td className="px-4 py-3 text-right"></td>
+            <td className="px-4 py-3 font-bold text-left" colSpan={3}>💰 Pay Now</td>
+           
             <td className="px-4 py-3 text-right">₹{adultquantity * product.advanceprice + childquantity * product.advanceprice}</td>
           </motion.tr>
 
@@ -1140,9 +1139,8 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <td className="px-4 py-3 font-bold">💰 Pay In Waterpark</td>
-            <td className="px-4 py-3 text-center"></td>
-            <td className="px-4 py-3 text-right"></td>
+            <td className="px-4 py-3 font-bold"colSpan={3}>💰 Pay In Waterpark</td>
+            
             <td className="px-4 py-3 text-right">₹{(adultquantity * product.adultprice + childquantity * product.childprice )- (adultquantity * product.advanceprice + childquantity * product.advanceprice)}</td>
           </motion.tr>
         </tbody>
