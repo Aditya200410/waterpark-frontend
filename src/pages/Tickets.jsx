@@ -16,7 +16,7 @@ const handleFetchTicket = async (e) => {
   setTicket(null);
 
   try {
-    const res = await fetch(`http://localhost:5175/api/bookings/${ticketId}`);
+    const res = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${ticketId}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) throw new Error(data.message || "Ticket not found");

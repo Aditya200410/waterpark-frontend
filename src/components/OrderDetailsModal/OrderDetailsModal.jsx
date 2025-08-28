@@ -42,7 +42,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
       setLoading(true);
       setError(null);
 
-      const res = await fetch(`http://localhost:5175/api/bookings/${orderId}`);
+      const res = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${orderId}`);
       const data = await res.json();
       console.log("Raw API response:", data);
 

@@ -85,7 +85,7 @@ function CheckoutPage() {
     }
     try {
       const response = await axios.post(
-        "http://localhost:5175/api/coupons/validate",
+        `${import.meta.env.VITE_APP_API_BASE_URL}/api/coupons/validate`,
         {
           code: couponCode,
           cartTotal: paid, // Using original paid for validation
@@ -140,7 +140,7 @@ function CheckoutPage() {
       );
 
       const response = await axios.post(
-        "http://localhost:5175/api/bookings/create",
+        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/create`,
         {
           waterpark: resortId,
           waterparkName: resortName,
