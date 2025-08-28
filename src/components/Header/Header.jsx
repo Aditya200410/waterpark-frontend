@@ -268,8 +268,7 @@ const Header = () => {
             */}
             <motion.button
               onClick={navigateToHome}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+           
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:static lg:transform-none"
               aria-label="Go to homepage"
             >
