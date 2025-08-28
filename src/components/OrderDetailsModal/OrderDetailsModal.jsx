@@ -42,7 +42,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
       setLoading(true);
       setError(null);
 
-      const res = await fetch(`https://water-backend-fe1c.onrender.com/api/bookings/${orderId}`);
+      const res = await fetch(`http://localhost:5175/api/bookings/${orderId}`);
       const data = await res.json();
       console.log("Raw API response:", data);
 

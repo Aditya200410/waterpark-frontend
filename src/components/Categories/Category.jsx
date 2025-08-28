@@ -33,7 +33,7 @@ const categoryImages = {
   "water park delhi": "/images/categories/jewellery.jpg"
 };
 
-const Categories = () => {
+const Category = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,38 +42,36 @@ const Categories = () => {
     fetchCategories();
   }, []);
 
-const fetchCategories = async () => {
-  try {
-    const response = await axios.get(config.API_URLS.CATEGORIES);
-    const apiCategories = response.data.categories || [];
-    
-    const processedCategories = apiCategories.map(category => ({
-      id: category._id || category.id,
-      name: category.name,
-      description: category.description,
-      image: category.video || category.image || categoryImages[category.name] || '/images/categories/default.jpg',
-      isVideo: !!category.video,
-      sortOrder: category.sortOrder || 0
-    }));
-    
-    processedCategories.sort((a, b) => a.sortOrder - b.sortOrder);
-    
-    // ✅ Only take first 4 categories
-    setCategories(processedCategories.slice(0, 4));
-    setLoading(false);
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    const fallbackCategories = staticCategories.map(category => ({
-      id: category.name.toLowerCase().replace(/\s+/g, '-'),
-      name: category.name,
-      image: categoryImages[category.name] || '/images/categories/default.jpg',
-      isVideo: false
-    }));
-    // ✅ Only take first 4 fallback categories
-    setCategories(fallbackCategories.slice(0, 4));
-    setLoading(false);
-  }
-};
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(config.API_URLS.CATEGORIES);
+      const apiCategories = response.data.categories || [];
+      
+      const processedCategories = apiCategories.map(category => ({
+        id: category._id || category.id,
+        name: category.name,
+        description: category.description,
+        image: category.video || category.image || categoryImages[category.name] || '/images/categories/default.jpg',
+        isVideo: !!category.video,
+        sortOrder: category.sortOrder || 0
+      }));
+      
+      processedCategories.sort((a, b) => a.sortOrder - b.sortOrder);
+      
+      setCategories(processedCategories);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      const fallbackCategories = staticCategories.map(category => ({
+        id: category.name.toLowerCase().replace(/\s+/g, '-'),
+        name: category.name,
+        image: categoryImages[category.name] || '/images/categories/default.jpg',
+        isVideo: false
+      }));
+      setCategories(fallbackCategories);
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -173,36 +171,10 @@ const fetchCategories = async () => {
           ))}
         </motion.div>
 
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mt-6 md:mt-8 lg:mt-10"
-        >
-          <div className="max-w-md mx-auto">
-            <p className="text-gray-600 text-sm md:text-base mb-4 md:mb-6">
-              Ready to explore our complete collection?
-            </p>
-            <Link
-              to="/category"
-              className="inline-flex items-center px-6 md:px-8 py-3 md:py-4 bg-[#0077B6] text-white font-medium rounded-lg hover:bg-[#005f8a] transition-all duration-300 group shadow-lg hover:shadow-xl"
-            >
-              View All Location
-              <svg 
-                className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-          </div>
-        </motion.div>
+    
       </div>
     </section>
   );
 };
 
-export default Categories;
+export default Category;

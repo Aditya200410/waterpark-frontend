@@ -84,15 +84,15 @@ export default function MissionVission() {
       whileHover="hover"
       viewport={{ once: true }}
       className="flex flex-col items-center justify-center rounded-2xl p-6 text-center 
-                 bg-gradient-to-br from-blue-50 to-blue-100 
-                 shadow-lg hover:shadow-2xl transition-transform duration-300"
+               
+                "
     >
       {/* Bigger Image */}
       <div className="w-32 h-32 flex items-center justify-center mb-4">
         <img
           src={blog.images?.[0] || "https://via.placeholder.com/150"}
           alt={blog.name}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-contain rounded-2xl"
         />
       </div>
 

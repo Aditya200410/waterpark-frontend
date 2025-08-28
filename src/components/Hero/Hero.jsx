@@ -195,43 +195,7 @@ const Hero = () => {
           )}
 
           {/* --- CONTENT OVERLAY & ANIMATION --- */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-          <motion.div
-            className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-8 z-1"
-            variants={textContainerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-        
-
-            {currentItem.title && (
-              <motion.h1 variants={textItemVariants} className="text-4xl md:text-6xl lg:text-7xl font-extrabold my-2 md:my-4 drop-shadow-lg">
-                {currentItem.title}
-              </motion.h1>
-            )}
-            
-            {currentItem.description && (
-              <motion.p variants={textItemVariants} className="max-w-xl text-base md:text-lg mb-6 md:mb-8 text-gray-200">
-                {currentItem.description}
-              </motion.p>
-            )}
-
-         {currentItem.buttonText && currentItem.buttonLink && (
-            <motion.div variants={textItemVariants}>
-              {/* FIX: Use the dynamic link from your data and let the Link component handle navigation. */}
-              <Link to="/shop">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                
-                  className="bg-cyan-500 hover:bg-cyan-400 text-white cursor-pointer font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 shadow-xl z-10"
-                >
-                  {currentItem.buttonText}
-                </motion.button>
-              </Link>
-            </motion.div>
-          )}
-          </motion.div>
+       
         </motion.div>
       </AnimatePresence>
 

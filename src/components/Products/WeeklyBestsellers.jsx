@@ -177,13 +177,13 @@ export default function WeeklyBestsellers() {
           >
             <div className="max-w-md mx-auto">
               <p className="text-gray-600 text-sm mb-4 md:mb-6">
-                Discover more bestseller products in our collection
+                Discover more  in our collection
               </p>
               <Link 
                 to="/shop" 
-                className="inline-flex items-center px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-[#0077B6] text-white rounded-xl font-semibold hover:from-[#0077B6] hover:to-[#6a2847] transition-all duration-300 text-sm shadow-lg hover:shadow-xl"
+                className="inline-flex items-center px-6 md:px-8 py-3 md:py-4 bg-[#0077B6] text-white rounded-xl font-semibold hover:from-[#0077B6] hover:to-[#6a2847] transition-all duration-300 text-sm shadow-lg hover:shadow-xl"
               >
-                View More Products
+                View More Parks
                 <svg 
                   className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" 
                   fill="none" 

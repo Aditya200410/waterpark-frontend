@@ -43,7 +43,7 @@ export default function OurPartners() {
   }, []);
 
   return (
-    <section className="py-10 bg-gradient-to-r from-blue-400 to-blue-600 md:py-14 lg:py-20">
+    <section className="py-10 md:py-14 lg:py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-10">
          <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -68,7 +68,7 @@ export default function OurPartners() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        className="group bg-white/95 backdrop-blur-sm rounded-2xl p-5 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-500 flex-shrink-0 w-40 h-42 flex flex-col items-center justify-between"
+        className="  rounded-2xl p-5  hover:scale-105 transition-all duration-500 flex-shrink-0 w-40 h-42 flex flex-col items-center justify-between"
       >
         {/* Image */}
         <div className="flex-1 flex items-center justify-center">

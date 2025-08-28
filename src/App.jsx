@@ -45,6 +45,7 @@ import Blogview from './pages/Blogview';
 import Gallery from './pages/Gallery';
 import WaterparkTicket from './pages/Ticket';
 import Tickets from './pages/Tickets';
+import Category from './components/Categories/Category';
 
 
 // Protected Route component
@@ -185,6 +186,7 @@ function AppContent() {
         } />
      
         <Route path="/blog" element={<BlogPage/>} />
+        <Route path="/category" element={<Category/>} />
         <Route path="/Offers" element={<OffersPage />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactPage />} />
