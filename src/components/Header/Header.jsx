@@ -245,7 +245,7 @@ const Header = () => {
 
       {/* NEW: Shorter, Modern Header */}
       <header
-        className={`fixed top-0 left-0 w-full z-[10000] transition-all duration-300 ease-in-out mb-10 ${isScrolled ? 'bg-white/80 backdrop-blur-lg shadow-lg' : 'bg-transparent'
+        className={`fixed top-0 left-0 w-full z-[10] transition-all duration-300 ease-in-out mb-10 ${isScrolled ? 'bg-white/80 backdrop-blur-lg shadow-lg' : 'bg-transparent'
           }`}
       >
         <div className="container mx-auto px-4 sm:px-6">
@@ -340,7 +340,7 @@ const Header = () => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMobileMenuOpen(false)} className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[20000]" />
             <motion.div
               variants={mobileMenuVariants} initial="closed" animate="open" exit="closed"
-              className="fixed top-0 left-0 h-full w-full max-w-sm bg-gradient-to-br from-cyan-400 to-blue-600 z-[20001] flex flex-col shadow-2xl"
+              className="fixed top-0 left-0 h-full w-full max-w-sm bg-transparent backdrop-blur-sm z-[20001] flex flex-col shadow-2xl"
             >
               <div className="flex items-center justify-between p-5 border-b border-white/20">
                 <Link to="/" onClick={() => setIsMobileMenuOpen(false)}><img src={logo} alt="Waterpark Chalo" className="h-12 w-auto" /></Link>
