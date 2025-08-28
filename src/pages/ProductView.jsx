@@ -982,7 +982,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
             {/* -------------------- NEW BOOKING SECTION REF -------------------- */}
             <div ref={bookingSectionRef} className="space-y-6 pt-4 border-t-2 border-dashed border-[#0096C7]">
                 {/* Date Picker Section */}
-                <div className="mt-6 relative z-10">
+                <div className="mt-6 relative z-5">
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -1051,7 +1051,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
                 </div>
 
                 {/* Ticket Summary */}
-                <div className="w-full flex justify-center relative z-10">
+                <div className="w-full flex justify-center relative z-5">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
