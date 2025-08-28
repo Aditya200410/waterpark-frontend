@@ -583,9 +583,10 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
                     </span>
                   </>
                 )}
+
               </div>
              
-        
+        <p>{product.sd}</p>
             </div>
 
             { /* Product Description */}
