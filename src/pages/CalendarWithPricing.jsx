@@ -7,7 +7,7 @@ export function CalendarWithPricing(props) {
   const { price, selectedDate, onDateChange } = props;
 
   return (
-    <div className="flex flex-col items-center mb-4">
+    <div className="flex flex-col justify-center items-center ">
       <DayPicker
         mode="single"
         selected={selectedDate}
@@ -19,7 +19,7 @@ export function CalendarWithPricing(props) {
       
       
       {selectedDate && price > 0 && (
-        <div className="flex items-center text-xl text-blue-700 font-bold mt-5">
+        <div className="flex items-center justify-center text-sm text-blue-700 font-bold mt-5">
        
           Price for {format(selectedDate, 'PPP')}: ₹{price.toFixed(2)}
         </div>
