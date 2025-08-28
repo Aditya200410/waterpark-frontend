@@ -22,6 +22,7 @@ import ReviewList from '../components/ReviewList';
 import ReviewService from '../services/reviewService';
 import SEO from '../components/SEO/SEO';
 import { seoConfig } from '../config/seo';
+import WhatsAppButton from '../components/Whatsapp.jsx';
 
 const ProductView = () => {
   const { id } = useParams();
@@ -567,27 +568,35 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
 
           
             
-           {/* Price Section */}
-            <div className="space-y-2 sm:space-y-3">
-              <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
-                <span className="text-2xl sm:text-3xl font-bold text-blue-900">
-                  ₹{product.adultprice.toFixed(2)}
-                </span>
-                {product.regularPrice && product.regularPrice > product.adultprice && (
-                  <>
-                    <span className="text-lg sm:text-xl text-gray-400 line-through">
-                      ₹{product.regularPrice.toFixed(2)}
-                    </span>
-                    <span className="px-2 py-1 bg-red-100 text-red-600 text-xs font-medium rounded-full">
-                      {Math.round(((product.regularPrice - product.price) / product.regularPrice) * 100)}% OFF
-                    </span>
-                  </>
-                )}
+   
 
-              </div>
-             
-        <p>{product.sd}</p>
-            </div>
+
+{/* Price Section */}
+<div className="space-y-2 sm:space-y-3">
+  <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
+    <span className="text-2xl sm:text-3xl font-bold text-blue-900">
+      ₹{product.adultprice.toFixed(2)}
+    </span>
+    {product.regularPrice && product.regularPrice > product.adultprice && (
+      <>
+        <span className="text-lg sm:text-xl text-gray-400 line-through">
+          ₹{product.regularPrice.toFixed(2)}
+        </span>
+        <span className="px-2 py-1 bg-red-100 text-red-600 text-xs font-medium rounded-full">
+          {Math.round(((product.regularPrice - product.adultprice) / product.regularPrice) * 100)}% OFF
+        </span>
+      </>
+    )}
+  </div>
+  
+  <p>{product.sd}</p>
+
+  {/* --- ADD THE WHATSAPP BUTTON HERE --- */}
+  <WhatsAppButton
+    phoneNumber="911234567890" // <-- IMPORTANT: Replace with your number (country code + number)
+    product={product} 
+  />
+</div>
 
             { /* Product Description */}
             {/* Product Tabs - Water Park Theme */}
