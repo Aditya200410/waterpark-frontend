@@ -245,7 +245,7 @@ const Header = () => {
 
       {/* NEW: Shorter, Modern Header */}
       <header
-        className={`fixed top-0 left-0 w-full z-[10] transition-all duration-300 ease-in-out mb-10 ${isScrolled ? 'bg-white/80 backdrop-blur-lg shadow-lg' : 'bg-transparent'
+        className={`fixed top-0 left-0 w-full z-[40] transition-all duration-300 ease-in-out mb-10 ${isScrolled ? 'bg-white/80 backdrop-blur-lg shadow-lg' : 'bg-transparent'
           }`}
       >
         <div className="container mx-auto px-4 sm:px-6">
