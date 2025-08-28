@@ -49,7 +49,7 @@ export default function MissionVission() {
     />
   ))}
 
-  <div className="container relative z-10 h-fit">
+  <div className="container relative  h-fit">
     {/* Header */}
     <motion.div
       initial={{ opacity: 0, y: -20 }}
