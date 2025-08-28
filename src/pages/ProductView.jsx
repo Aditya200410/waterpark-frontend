@@ -1006,6 +1006,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
                      price={product.adultprice}
                     />
                     </div>
+                    
                    
                 </motion.div>
                 </div>
