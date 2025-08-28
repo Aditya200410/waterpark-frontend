@@ -191,7 +191,7 @@ function CheckoutPage() {
             try {
               // Verify payment on backend
               const verifyResponse = await axios.post(
-                "https://water-backend-fe1c.onrender.com/api/bookings/verify",
+                `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
                 {
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
