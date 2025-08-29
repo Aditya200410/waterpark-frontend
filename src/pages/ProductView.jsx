@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { CalendarWithPricing } from './CalendarWithPricing'; // Adjust path if needed
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ShieldCheck } from "lucide-react"; // Added ShieldCheck for modal
+import { ChevronDown, ShieldCheck, Video } from "lucide-react"; // Added ShieldCheck for modal
 import { 
   HeartIcon, ShoppingCartIcon, ShareIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon, XMarkIcon,
   DocumentTextIcon, CogIcon, TruckIcon, ChatBubbleLeftRightIcon 
@@ -62,6 +62,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
     { id: 'specifications', label: 'Specifications', icon: CogIcon },
     { id: 'FAQ', label: 'FAQ', icon: TruckIcon },
     { id: 'reviews', label: 'Reviews', icon: ChatBubbleLeftRightIcon },
+    { id: 'video', label: 'video', icon: Video },
   ];
 
   // Detect screen size
@@ -997,6 +998,44 @@ if (isSunday) {
             
                   )}
             
+
+            {/* --- Videos Tab --- */}
+{activeTab === 'video' && (
+  
+  <motion.div
+    key="videos"
+    initial={{ opacity: 0, y: 30 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -30 }}
+    transition={{ duration: 0.4 }}
+    className="pt-4"
+  > {console.log('VIDEOS ARRAY:', product.videos)} {/* <-- Add this line */}
+    {/* Check if there are any videos to display */}
+    {product.videos && product.videos.length > 0 ? (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Map over the video URLs and create a video player for each */}
+        {product.videos.map((videoUrl, index) => (
+          
+          <div key={index} className="bg-gray-100 rounded-lg overflow-hidden shadow-lg">
+            <video
+              src={videoUrl}
+              controls
+              className="w-full h-auto"
+              preload="metadata" // Helps load the video dimensions and first frame faster
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        ))}
+      </div>
+    ) : (
+      // Display a message if no videos are available
+      <div className="text-center py-10 text-gray-500">
+        <p>No videos available for this product.</p>
+      </div>
+    )}
+  </motion.div>
+)}
                 </AnimatePresence>
             
               </div>
@@ -1256,7 +1295,7 @@ if (isSunday) {
     className="flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-[#03045E] to-[#0077B6] text-white font-bold text-lg rounded-full shadow-2xl hover:shadow-blue-400/50 transition-all duration-300 transform hover:-translate-y-1"
     >
     <span>Book Now</span>
-    <span className="hidden md:inline-block">-</span>
+   
     
     </button>
 </motion.div>
