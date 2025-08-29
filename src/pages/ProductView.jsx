@@ -236,7 +236,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
       resortName: product.name,
       adultCount: adultquantity,
       childCount: childquantity,
-      date: format(selectedDate, 'PPP'),
+      date: selectedDate,
      paid:grandTotal,
      totalamount:total,
     };
