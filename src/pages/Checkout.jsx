@@ -140,18 +140,18 @@ function CheckoutPage() {
       );
 
       const response = await axios.post(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/create`,
+       "http://localhost:5175/api/bookings/create",
         {
           waterpark: resortId,
           waterparkName: resortName,
           name: `${billingDetails.firstName} ${billingDetails.lastName}`,
           email: billingDetails.email,
           phone: billingDetails.phone,
-          date: date,
+           date: new Date(date.replace(/(st|nd|rd|th)/, "")).toISOString(),
           adults: adultCount,
           children: childCount,
           // MODIFIED: Send discounted total and coupon info
-          total: finalTotal,
+          total: totalamount,
           advanceAmount: finalTotal,
           paymentType: paymentMethod,
           
@@ -191,7 +191,7 @@ function CheckoutPage() {
             try {
               // Verify payment on backend
               const verifyResponse = await axios.post(
-                `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
+                "http:localhost:5175/api/bookings/verify",
                 {
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
