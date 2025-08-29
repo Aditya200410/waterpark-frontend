@@ -15,7 +15,7 @@ const Policies = () => {
 
   const fetchPolicies = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/api/data-page`);
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/data-page`);
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data)) {

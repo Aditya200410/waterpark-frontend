@@ -46,6 +46,7 @@ import Gallery from './pages/Gallery';
 import WaterparkTicket from './pages/Ticket';
 import Tickets from './pages/Tickets';
 import Category from './components/Categories/Category';
+import WhatsAppButton from './components/Whatsappicon';
 
 
 // Protected Route component
@@ -214,7 +215,9 @@ function AppContent() {
 
       </Routes>
       <Footer />
+      
       <ScrollToTop />
+      
        <Toaster position="top-right" />
       {toast && (
         <Toast
@@ -223,6 +226,7 @@ function AppContent() {
           onClose={() => setToast(null)}
         />
       )}
+        <WhatsAppButton />
     </div>
   );
 }

@@ -71,11 +71,11 @@ export default function OurPartners() {
         className="  rounded-2xl p-5  hover:scale-105 transition-all duration-500 flex-shrink-0 w-40 h-42 flex flex-col items-center justify-between"
       >
         {/* Image */}
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center rounded-lg">
           <img
             src={partner.image}
             alt={partner.name}
-            className="max-h-16 object-contain"
+            className="max-h-16 object-contain rounded-lg"
           />
         </div>
 
@@ -98,19 +98,19 @@ export default function OurPartners() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
-      className="group bg-white/95 backdrop-blur-sm rounded-2xl p-5 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-500 flex flex-col items-center justify-between w-full h-40 sm:h-48 md:h-52"
+      className=" p-5  hover:scale-105 transition-all duration-500 flex flex-col items-center justify-between w-full h-40 sm:h-48 md:h-52"
     >
       {/* Image */}
       <div className="flex-1 flex items-center justify-center">
         <img
           src={partner.image}
           alt={partner.name}
-          className="max-h-16 sm:max-h-20 md:max-h-24 object-contain"
+          className="max-h-16 sm:max-h-20 md:max-h-24 object-contain rounded-lg"
         />
       </div>
 
       {/* Text */}
-      <div className="mt-3 text-center text-gray-800 font-semibold text-sm sm:text-base group-hover:text-green-600 transition-colors duration-300">
+      <div className="mt-3 text-center text-gray-800 font-semibold text-sm sm:text-base group-hover:text-blue-600 transition-colors duration-300">
         {partner.name}
       </div>
     </motion.div>

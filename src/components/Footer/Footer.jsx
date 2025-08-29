@@ -77,7 +77,7 @@ export default function Footer() {
                 </li>
                 <li className="flex items-center">
                     <span className="w-1.5 h-1.5 bg-yellow-300 rounded-full mr-3"></span>
-                    <AnimatedLink to="/policies">Policies</AnimatedLink>
+                    <AnimatedLink to="/policies">Terms and condition</AnimatedLink>
                 </li>
                 <li className="flex items-center">
                     <span className="w-1.5 h-1.5 bg-yellow-300 rounded-full mr-3"></span>
@@ -139,7 +139,7 @@ export default function Footer() {
               <ul className="space-y-2 text-lg">
                 <li><AnimatedLink to="/about">About Us</AnimatedLink></li>
                 <li><AnimatedLink to="/contact">Contact Us</AnimatedLink></li>
-                <li><AnimatedLink to="/policies">Policies</AnimatedLink></li>
+                <li><AnimatedLink to="/policies">Terms and condition</AnimatedLink></li>
                 <li><AnimatedLink to="/gallery">Gallery</AnimatedLink></li>
                 <li><AnimatedLink to="/blog">Blog</AnimatedLink></li>
                 <li><AnimatedLink to="/tickets">Tickets</AnimatedLink></li>
