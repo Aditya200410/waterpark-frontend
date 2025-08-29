@@ -399,7 +399,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
 
  // Assuming you already have a date value (e.g., from a Date picker or new Date())
 const today = new Date(); // replace with your booking date if needed
-const isSunday = today.getDay() === 4; // Sunday = 0 in JavaScript
+const isSunday = today.getDay() === 0; // Sunday = 0 in JavaScript
 
 let grandTotal, total;
 
@@ -1091,7 +1091,7 @@ if (isSunday) {
 
     {/* JS: decide pricing logic */}
     {(() => {
-      const isSunday = selectedDate && new Date(selectedDate).getDay() === 4;
+      const isSunday = selectedDate && new Date(selectedDate).getDay() === 0;
 
       const grandTotal = isSunday
         ? adultquantity * product.weekendprice + childquantity * product.price
