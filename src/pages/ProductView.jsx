@@ -23,6 +23,7 @@ import ReviewService from '../services/reviewService';
 import SEO from '../components/SEO/SEO';
 import { seoConfig } from '../config/seo';
 import WhatsAppButton from '../components/Whatsapp.jsx';
+import MapEmbed from '../components/Mapembeded.jsx';
 
 const ProductView = () => {
   const { id } = useParams();
@@ -63,6 +64,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
     { id: 'FAQ', label: 'FAQ', icon: TruckIcon },
     { id: 'reviews', label: 'Reviews', icon: ChatBubbleLeftRightIcon },
     { id: 'video', label: 'video', icon: Video },
+       { id: 'map', label: 'map', icon: MapPin },
   ];
 
   // Detect screen size
@@ -606,11 +608,16 @@ if (isSunday) {
     )}
   </div>
   
-  <p>{product.sd}</p>
+<p className="text-lg font-semibold text-blue-600 tracking-wide">
+  {product.sd}
+</p>
+<p className="text-md font-medium text-blue-500">
+  Waterpark Number: <span className="font-bold text-blue-700">{product.waterparknumber}</span>
+</p>
 
   {/* --- ADD THE WHATSAPP BUTTON HERE --- */}
   <WhatsAppButton
-    phoneNumber="911234567890" // <-- IMPORTANT: Replace with your number (country code + number)
+    phoneNumber="+918847714464" // <-- IMPORTANT: Replace with your number (country code + number)
     product={product} 
   />
 </div>
@@ -1036,6 +1043,14 @@ if (isSunday) {
     )}
   </motion.div>
 )}
+
+        {/* --- Map tab --- */}
+{activeTab === 'map' && (
+  
+ <p><iframe src={product.maplink}></iframe></p>
+
+)}
+console.log(product.maplink)
                 </AnimatePresence>
             
               </div>
@@ -1287,7 +1302,7 @@ if (isSunday) {
     animate={{ y: 0, opacity: 1 }}
     transition={{ delay: 0.5, type: 'spring', stiffness: 100 }}
     // Positioned from the left, no longer stretching full-width
-    className="fixed bottom-20 left-6 md:bottom-6 md:left-6 z-40" 
+    className="fixed bottom-20 left-6 md:bottom-6 md:left-6 z-[4000]" 
     >
     <button
     onClick={scrollToBooking}
