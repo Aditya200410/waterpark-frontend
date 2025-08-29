@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'; // Added useRef
 import { useParams, useNavigate } from 'react-router-dom';
-import { CalendarWithPricing } from './CalendarWithPricing'; // Adjust path if needed
+import CustomCalendar from './CalendarWithPricing'; // Adjust path if needed
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ShieldCheck, Video } from "lucide-react"; // Added ShieldCheck for modal
@@ -1069,13 +1069,13 @@ console.log(product.maplink)
                     className="bg-gradient-to-r from-[#90E0EF] to-[#48CAE4] p-4 rounded-xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-3"
                 >
 
-                  <div className="w-full flex justify-center">
-                   <CalendarWithPricing   
-                    selectedDate={selectedDate}
-                    onDateChange={setSelectedDate}
-                     price={product.adultprice}
-                    />
-                    </div>
+                  <CustomCalendar
+        selectedDate={selectedDate}
+        onDateChange={(d) => setSelectedDate(d)}
+        price={product.adultprice}
+      />
+  
+                   
                     
                    
                 </motion.div>
