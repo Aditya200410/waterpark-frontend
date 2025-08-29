@@ -1,9 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { CalendarDays, Image as ImageIcon, Loader2 } from "lucide-react";
+import { CalendarDays, AlertTriangle, Loader2 } from "lucide-react";
 import config from "../config/config";
 import { motion } from "framer-motion";
-import { Droplet } from "lucide-react";
+
+// --- Framer Motion Animation Variants ---
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15, delayChildren: 0.2 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 100 },
+  },
+};
+
+const imageVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { type: "spring", stiffness: 120, damping: 10 },
+  },
+};
+
+// --- Main Component ---
 const BlogView = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -19,7 +47,7 @@ const BlogView = () => {
         const endpoint = `${config.API_URLS.BLOG}/${id}`;
         const response = await fetch(endpoint);
 
-        if (!response.ok) throw new Error("Blog not found");
+        if (!response.ok) throw new Error("Whoops! We couldn't find that blog post.");
 
         const data = await response.json();
         const foundProduct =
@@ -27,12 +55,14 @@ const BlogView = () => {
           (Array.isArray(data.products) ? data.products[0] : null) ||
           (data._id ? data : null);
 
-        if (!foundProduct) throw new Error("Blog not found");
+        if (!foundProduct) throw new Error("Blog post data seems to be missing.");
 
         setProduct({
           ...foundProduct,
           id: foundProduct._id || foundProduct.id,
           images: foundProduct.images || [foundProduct.image],
+          // Use 'name' as a fallback for 'title'
+          title: foundProduct.title || foundProduct.name, 
         });
       } catch (err) {
         setError(err.message);
@@ -44,96 +74,113 @@ const BlogView = () => {
     if (id) fetchProduct();
   }, [id]);
 
+  // --- Loading State ---
   if (loading)
     return (
-      <div className="flex justify-center items-center h-screen bg-blue-100">
-        <Loader2 className="w-12 h-12 animate-spin text-blue-500" />
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-sky-200">
+        <Loader2 className="w-16 h-16 animate-spin text-blue-500" />
       </div>
     );
 
+  // --- Error State ---
   if (error)
     return (
-      <div className="text-center text-red-500 font-semibold mt-10 bg-yellow-50 p-6 rounded-xl shadow-md">
-        {error}
+      <div className="flex justify-center items-center min-h-screen bg-red-50 p-4">
+        <div className="text-center bg-white p-8 rounded-2xl shadow-lg border border-red-200">
+            <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-red-700 mb-2">An Error Occurred</h2>
+            <p className="text-red-600">{error}</p>
+        </div>
       </div>
     );
-
-  return (
-    <div className=" min-h-screen font-sans overflow-hidden">
-
   
-        {/* Animated bubbles for water theme */}
-        {[...Array(10)].map((_, i) => (
+  // --- Main Content ---
+  return (
+    <div className="min-h-screen font-sans bg-gradient-to-br from-blue-50 via-sky-100 to-blue-200 overflow-hidden relative">
+      {/* Enhanced Randomized Bubbles */}
+      {[...Array(15)].map((_, i) => {
+        const size = Math.random() * 30 + 10;
+        const duration = Math.random() * 10 + 10;
+        const delay = Math.random() * 5;
+        return (
           <motion.div
             key={i}
-            animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
-            transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
-            className="absolute w-6 h-6 rounded-full bg-blue-300 opacity-70"
-            style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: -1000, opacity: [0, 0.6, 0] }}
+            transition={{ repeat: Infinity, duration, ease: "linear", delay }}
+            className="absolute rounded-full bg-white/30"
+            style={{
+              width: `${size}px`,
+              height: `${size}px`,
+              left: `${Math.random() * 100}%`,
+              bottom: "-150px",
+            }}
           />
-        ))}
-      {/* Wave Header */}
-      <div className="relative">
-        <svg
-          className="absolute top-0 left-0 w-full h-32"
-          viewBox="0 0 1440 320"
-          preserveAspectRatio="none"
-        >
-          <path
-            fill="#3b82f6"
-            fillOpacity="1"
-            d="M0,96L48,122.7C96,149,192,203,288,213.3C384,224,480,192,576,165.3C672,139,768,117,864,128C960,139,1056,181,1152,197.3C1248,213,1344,203,1392,197.3L1440,192V0H0Z"
-          ></path>
-        </svg>
-        <div className="pt-20 pb-10 text-center relative z-10">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-blue-800 drop-shadow-lg flex justify-center items-center gap-3">
-            <ImageIcon className="text-white bg-blue-500 p-1 rounded-full w-12 h-12" />
-            {product.title}
-          </h1>
-          <div className="flex justify-center items-center gap-2 mt-4 text-blue-700 font-medium">
-            <CalendarDays className="w-5 h-5 text-blue-500" />
-            <span>
-              {new Date(product.createdAt || Date.now()).toLocaleDateString()}
-            </span>
-          </div>
-        </div>
-      </div>
+        );
+      })}
 
-      {/* Blog Content */}
-      <div className="max-w-5xl mx-auto px-6 md:px-12 py-10 bg-white shadow-2xl rounded-3xl -mt-10 relative z-20">
-        <p className="text-lg md:text-xl text-gray-700 leading-relaxed mb-10">
-          {product.description}
-        </p>
-
-        {/* Image Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-          {product.images?.slice(0, 4).map((img, idx) => (
-            <div
-              key={idx}
-              className="relative overflow-hidden rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 border-4 border-blue-200"
-            >
-              <img
-                src={img}
-                alt={`Blog Image ${idx + 1}`}
-                className="w-full h-64 object-cover"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Bottom Wave */}
-      <svg
-        className="w-full h-32 mt-16"
-        viewBox="0 0 1440 320"
-        preserveAspectRatio="none"
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative"
       >
-        <path
-          fill="#60a5fa"
-          fillOpacity="1"
-          d="M0,160L48,176C96,192,192,224,288,208C384,192,480,128,576,128C672,128,768,192,864,186.7C960,181,1056,107,1152,80C1248,53,1344,75,1392,85.3L1440,96V320H0Z"
-        ></path>
-      </svg>
+        {/* Header Section */}
+        <header className="py-24 md:py-32 text-center relative">
+            <motion.h1 variants={itemVariants} className="text-2xl sm:text-2xl md:text-3xl font-extrabold text-slate-800 drop-shadow-md mb-4 px-4">
+                {product.title}
+            </motion.h1>
+            <motion.div variants={itemVariants} className="flex justify-center items-center gap-3 text-slate-500 font-medium">
+                <CalendarDays className="w-5 h-5 text-blue-500" />
+                <span>Published on {new Date(product.createdAt || Date.now()).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            </motion.div>
+        </header>
+
+        {/* Main Content Article */}
+        <motion.article 
+            variants={itemVariants} 
+            className="max-w-4xl mx-auto px-4 sm:px-8 py-10 bg-white/70 backdrop-blur-lg shadow-2xl rounded-3xl -mt-16 relative z-10"
+        >
+          {/* Enhanced Typography for Description */}
+          <div className="prose prose-lg lg:prose-xl max-w-none text-slate-700 leading-relaxed">
+            <p className="first-letter:text-5xl first-letter:font-bold first-letter:text-blue-600 first-letter:mr-3 first-letter:float-left">
+              {product.description}
+            </p>
+          </div>
+
+          {/* Dynamic Image Grid */}
+          <div className="mt-12">
+            <h3 className="text-2xl font-bold text-slate-800 mb-6 border-l-4 border-blue-500 pl-4">
+              Related Images
+            </h3>
+            <motion.div 
+                variants={containerVariants}
+                className="grid grid-cols-2 md:grid-cols-3 gap-4"
+            >
+              {product.images?.slice(0, 5).map((img, idx) => (
+                <motion.div
+                  key={idx}
+                  variants={imageVariants}
+                  whileHover={{ scale: 1.05, y: -5, transition: { type: "spring", stiffness: 300 } }}
+                  // Dynamic grid spanning for a more interesting layout
+                  className={`relative overflow-hidden rounded-2xl shadow-lg border-2 border-white
+                    ${idx === 0 ? 'col-span-2 md:col-span-3 h-80' : ''}
+                    ${idx > 0 ? 'h-52' : ''}
+                  `}
+                >
+                  <img
+                    src={img}
+                    alt={`Blog view ${idx + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-black/10"></div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </motion.article>
+      </motion.div>
+      <div className="h-32"></div> {/* Spacer for bottom */}
     </div>
   );
 };

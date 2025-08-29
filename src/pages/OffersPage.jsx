@@ -1,12 +1,38 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Droplet, Star } from "lucide-react";
+import { Star, ArrowRight } from "lucide-react"; // Added ArrowRight
 import config from "../config/config.js";
+
+// Framer Motion variants from the first example for staggering and card animation
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
 
 const cardVariants = {
   hidden: { opacity: 0, y: 50 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
-  hover: { scale: 1.06, y: -5, transition: { type: "spring", stiffness: 320 } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 12,
+    },
+  },
+  hover: {
+    y: -10,
+    scale: 1.03,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+    },
+  },
 };
 
 export default function BlogPage() {
@@ -25,7 +51,10 @@ export default function BlogPage() {
 
         const data = await res.json();
         const allBlogs = Array.isArray(data) ? data : data.products || [];
-        const featuredBlogs = allBlogs.filter((blog) => blog.isFeatured === true);
+        // Keep the logic to filter for featured blogs
+        const featuredBlogs = allBlogs.filter(
+          (blog) => blog.isFeatured === true
+        );
         setBlogs(featuredBlogs);
       } catch (err) {
         setError(err.message || "Error fetching blogs");
@@ -37,10 +66,8 @@ export default function BlogPage() {
   }, []);
 
   return (
-
-       <div className="min-h-screen flex items-center justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
-
-      {/* Animated bubbles for water theme */}
+    <div className="min-h-screen flex items-center justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
+      {/* Animated bubbles from the second example */}
       {[...Array(10)].map((_, i) => (
         <motion.div
           key={i}
@@ -50,76 +77,91 @@ export default function BlogPage() {
           style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
         />
       ))}
-    <section className="relative min-h-screen overflow-hidden py-20">
-  
+      <section className="relative min-h-screen overflow-hidden py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+          {/* Header from the second example */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-blue-700 mb-4 tracking-tight">
+              <span className="text-blue-500 italic font-serif">
+                Featured Offers
+              </span>{" "}
+              ✨
+            </h1>
+            <div className="w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-6 rounded-full shadow-sm"></div>
+            <p className="text-lg sm:text-xl md:text-2xl text-white max-w-3xl mx-auto leading-relaxed">
+              Hand-picked featured articles you shouldn’t miss. Dive in for
+              inspiration, tips, and exciting stories!
+            </p>
+          </motion.div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-blue-700 mb-4 tracking-tight">
-           <span className="text-blue-500 italic font-serif">Featured  Offers</span> ✨
-          </h1>
-          <div className="w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-6 rounded-full shadow-sm"></div>
-          <p className="text-lg sm:text-xl md:text-2xl text-white max-w-3xl mx-auto leading-relaxed">
-            Hand-picked featured articles you shouldn’t miss. Dive in for inspiration, tips, and exciting stories!
-          </p>
-        </motion.div>
+          {loading && (
+            <p className="text-center text-blue-600 text-lg">
+              Loading Offers...
+            </p>
+          )}
+          {error && <p className="text-center text-red-500 text-lg">{error}</p>}
 
-        {loading && <p className="text-center text-blue-600 text-lg">Loading Offers...</p>}
-        {error && <p className="text-center text-red-500 text-lg">{error}</p>}
+          {/* Blogs Grid with stagger animation from the first example */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10"
+          >
+            {blogs.map((blog) => (
+              // --- Copied Card Design Starts Here ---
+              <motion.div
+                key={blog._id}
+                variants={cardVariants}
+                whileHover="hover"
+                className="group relative bg-white/30 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-white/20"
+              >
+                {/* Image with hover effect */}
+                <div className="overflow-hidden">
+                  <motion.img
+                    src={blog.images?.[0] || "https://via.placeholder.com/400x225"}
+                    alt={blog.name}
+                    className="w-full h-48 object-cover"
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                  />
+                </div>
 
-        {/* Blogs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {blogs.map((blog) => (
-            <motion.div
-              key={blog._id}
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              whileHover="hover"
-              viewport={{ once: true }}
-              className="relative rounded-3xl overflow-hidden shadow-2xl border border-blue-100 transition-transform duration-500 bg-white/90 flex flex-col"
-            >
-              {/* Image Section */}
-              <div className="relative h-56 md:h-64 w-full overflow-hidden rounded-t-3xl">
-                <img
-                  src={blog.images?.[0] || "https://via.placeholder.com/300"}
-                  alt={blog.name}
-                  className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
-                <motion.div
-                  className="absolute top-4 right-4 opacity-70"
-                  animate={{ rotate: [0, 15, -15, 0], y: [0, 5, 0] }}
-                  transition={{ repeat: Infinity, duration: 4 }}
-                >
-                  <Star size={28} color="#3B82F6" />
-                </motion.div>
-              </div>
+                {/* Content with better padding and structure */}
+                <div className="p-6 bg-white">
+                  <p className="text-sm font-medium text-blue-600 mb-2">
+                    {blog.category || "General"}
+                  </p>
+                  
+                  <h2 className="text-xl font-bold text-gray-800 mb-3 truncate">
+                    {blog.name}
+                  </h2>
+                  
+                  <p className="text-gray-600 text-sm mb-4 h-20 overflow-hidden">
+                    {blog.description?.slice(0, 120) || "No description available."}...
+                  </p>
 
-              {/* Content Section */}
-              <div className="p-6 flex flex-col flex-grow">
-                <h2 className="text-2xl md:text-3xl font-bold text-blue-700 mb-3">{blog.name}</h2>
-                <p className="text-blue-600 text-sm md:text-base mb-5 flex-grow leading-relaxed">
-                  {blog.description?.slice(0, 120) || "No description available."}...
-                </p>
-                <a
-                  href={`/blog/${blog._id}`}
-                  className="inline-block bg-blue-500 text-white font-semibold px-5 py-2 rounded-xl hover:bg-blue-600 shadow-md transition-all duration-300 text-center"
-                >
-                  Read More
-                </a>
-              </div>
-            </motion.div>
-          ))}
+                  {/* Enhanced "Read More" link */}
+                  <a
+                    href={`/blog/${blog._id}`}
+                    className="inline-flex items-center text-blue-600 font-semibold group-hover:text-blue-800 transition-colors duration-300"
+                  >
+                    Read More
+                    <ArrowRight className="ml-2 h-4 w-4 transform transition-transform duration-300 group-hover:translate-x-1" />
+                  </a>
+                </div>
+              </motion.div>
+              // --- Copied Card Design Ends Here ---
+            ))}
+          </motion.div>
         </div>
-      </div>
-    </section>
+      </section>
     </div>
   );
 }
