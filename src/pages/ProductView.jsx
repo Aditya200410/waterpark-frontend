@@ -397,10 +397,26 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
     setIsImageModalOpen(false);
   };
 
-  const grandTotal = adultquantity * product.advanceprice + childquantity * product.advanceprice;
-  const total= adultquantity * product.adultprice + childquantity * product.childprice;
-  console.log(total)
-  console.log(grandTotal)
+ // Assuming you already have a date value (e.g., from a Date picker or new Date())
+const today = new Date(); // replace with your booking date if needed
+const isSunday = today.getDay() === 4; // Sunday = 0 in JavaScript
+
+let grandTotal, total;
+
+if (isSunday) {
+  // If Sunday, use weekend price for adult and normal price for child
+  grandTotal = adultquantity * product.weekendprice + childquantity * product.price;
+  total = adultquantity * product.weekendadvance + childquantity * product.weekendadvance;
+
+  
+
+} else {
+  // Default calculation (weekday logic)
+  grandTotal = (adultquantity * product.advanceprice )+ childquantity * product.advanceprice;
+  total = adultquantity * product.adultprice + childquantity * product.childprice;
+  
+}
+
 
   return (
     <motion.div 
@@ -1060,106 +1076,129 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
                     </div>
                 </div>
 
-                {/* Ticket Summary */}
-                <div className="w-full flex justify-center relative z-5">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="w-full max-w-lg bg-gradient-to-br from-[#00B4D8] via-[#0096C7] to-[#0077B6] rounded-2xl shadow-xl overflow-hidden"
-                >
-                    {/* Header */}
-                    <div className="bg-[#023E8A] text-white text-center py-3 text-lg font-bold tracking-wide flex items-center justify-center gap-2">
-                    🎟️ Ticket Summary
-                    </div>
+               {/* Ticket Summary */}
+<div className="w-full flex justify-center relative z-5">
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="w-full max-w-lg bg-gradient-to-br from-[#00B4D8] via-[#0096C7] to-[#0077B6] rounded-2xl shadow-xl overflow-hidden"
+  >
+    {/* Header */}
+    <div className="bg-[#023E8A] text-white text-center py-3 text-lg font-bold tracking-wide flex items-center justify-center gap-2">
+      🎟️ Ticket Summary
+    </div>
 
-                    {/*price  Table */}
-                    <table className="w-full text-sm text-white">
-                    <thead className="bg-[#03045E]/80">
-                        <tr>
-                        <th className="px-4 py-3 text-left">Ticket Type</th>
-                        <th className="px-4 py-3 text-center">Qty</th>
-                        <th className="px-4 py-3 text-right">Price</th>
-                        <th className="px-4 py-3 text-right">Total</th>
-                        </tr>
-                    </thead>
-                   <tbody>
-          {/* Adult */}
-          <motion.tr 
-            className="border-t border-white/30 hover:bg-white/10 transition"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <td className="px-4 py-3 font-medium">👨 Adult above 8 year</td>
-            <td className="px-4 py-3 text-center">{adultquantity}</td>
-            <td className="px-4 py-3 text-right">₹{product.adultprice}</td>
-            <td className="px-4 py-3 text-right">₹{adultquantity * product.adultprice}</td>
-          </motion.tr>
+    {/* JS: decide pricing logic */}
+    {(() => {
+      const isSunday = selectedDate && new Date(selectedDate).getDay() === 4;
 
-          {/* Child */}
-          <motion.tr 
-            className="border-t border-white/30 hover:bg-white/10 transition"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <td className="px-4 py-3 font-medium">👧 Child 3 to 8 year</td>
-            <td className="px-4 py-3 text-center">{childquantity}</td>
-            <td className="px-4 py-3 text-right">₹{product.childprice}</td>
-            <td className="px-4 py-3 text-right">₹{childquantity * product.childprice}</td>
-          </motion.tr>
-        </tbody>
+      const grandTotal = isSunday
+        ? adultquantity * product.weekendprice + childquantity * product.price
+        : adultquantity * product.adultprice + childquantity * product.childprice;
 
-                    {/* Footer */}
-                    <tfoot>
-                        <motion.tr 
-                        className="bg-[#48CAE4] text-[#03045E] font-bold text-base"
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.6 }}
-                        >
-                        <td className="px-4 py-3 text-left" colSpan={3}>💰 Grand Total</td>
-                        <td className="px-4 py-3 text-right">
-                           ₹{adultquantity * product.adultprice + childquantity * product.childprice.toFixed(2)}
-                        </td>
-                        </motion.tr>
-                    </tfoot>
-                    </table>
-                       {/*advnace   Table */}
-                        <table className="w-full text-sm text-white">
-                   
-                   <tbody>
-          {/* Adult */}
-          <motion.tr 
-            className=" bg-[#48CAE4] text-[#03045E] font-bold "
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <td className="px-4 py-3 font-bold text-left" colSpan={3}>💰 Pay Now</td>
-           
-            <td className="px-4 py-3 text-right">₹{adultquantity * product.advanceprice + childquantity * product.advanceprice}</td>
-          </motion.tr>
+      const payNow = isSunday
+        ? adultquantity * product.weekendadvance + childquantity * product.weekendadvance
+        : adultquantity * product.advanceprice + childquantity * product.advanceprice;
 
-          {/* Child */}
-          <motion.tr 
-            className=" bg-[#48CAE4] text-[#03045E] font-bold transition"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <td className="px-4 py-3 font-bold"colSpan={3}>💰 Pay In Waterpark</td>
-            
-            <td className="px-4 py-3 text-right">₹{(adultquantity * product.adultprice + childquantity * product.childprice )- (adultquantity * product.advanceprice + childquantity * product.advanceprice)}</td>
-          </motion.tr>
-        </tbody>
+      const payLater = grandTotal - payNow;
 
-                   
-                    </table>
-                    
-                </motion.div>
-                </div>
+      return (
+        <>
+          {/* Price Table */}
+          <table className="w-full text-sm text-white">
+            <thead className="bg-[#03045E]/80">
+              <tr>
+                <th className="px-4 py-3 text-left">Ticket Type</th>
+                <th className="px-4 py-3 text-center">Qty</th>
+                <th className="px-4 py-3 text-right">Price</th>
+                <th className="px-4 py-3 text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* Adult */}
+              <motion.tr 
+                className="border-t border-white/30 hover:bg-white/10 transition"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <td className="px-4 py-3 font-medium">👨 Adult above 8 year</td>
+                <td className="px-4 py-3 text-center">{adultquantity}</td>
+                <td className="px-4 py-3 text-right">
+                  ₹{isSunday ? product.weekendprice : product.adultprice}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  ₹{isSunday 
+                    ? adultquantity * product.weekendprice 
+                    : adultquantity * product.adultprice}
+                </td>
+              </motion.tr>
+
+              {/* Child */}
+              <motion.tr 
+                className="border-t border-white/30 hover:bg-white/10 transition"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <td className="px-4 py-3 font-medium">👧 Child 3 to 8 year</td>
+                <td className="px-4 py-3 text-center">{childquantity}</td>
+                <td className="px-4 py-3 text-right">
+                  ₹{isSunday ? product.price : product.childprice}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  ₹{isSunday 
+                    ? childquantity * product.price 
+                    : childquantity * product.childprice}
+                </td>
+              </motion.tr>
+            </tbody>
+
+            {/* Footer */}
+            <tfoot>
+              <motion.tr 
+                className="bg-[#48CAE4] text-[#03045E] font-bold text-base"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                <td className="px-4 py-3 text-left" colSpan={3}>💰 Grand Total</td>
+                <td className="px-4 py-3 text-right">₹{grandTotal}</td>
+              </motion.tr>
+            </tfoot>
+          </table>
+
+          {/* Advance Table */}
+          <table className="w-full text-sm text-white">
+            <tbody>
+              <motion.tr 
+                className=" bg-[#48CAE4] text-[#03045E] font-bold "
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <td className="px-4 py-3 font-bold text-left" colSpan={3}>💰 Pay Now</td>
+                <td className="px-4 py-3 text-right">₹{payNow}</td>
+              </motion.tr>
+
+              <motion.tr 
+                className=" bg-[#48CAE4] text-[#03045E] font-bold transition"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <td className="px-4 py-3 font-bold" colSpan={3}>💰 Pay In Waterpark</td>
+                <td className="px-4 py-3 text-right">₹{payLater}</td>
+              </motion.tr>
+            </tbody>
+          </table>
+        </>
+      );
+    })()}
+  </motion.div>
+</div>
+
                 
                 {/* MODIFIED: Book button now opens the terms modal */}
                 <div className="flex items-center gap-4">
@@ -1218,9 +1257,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
     >
     <span>Book Now</span>
     <span className="hidden md:inline-block">-</span>
-    <div className="px-3 py-1 bg-white/20 rounded-full text-sm">
-        ₹{grandTotal.toFixed(2)}
-    </div>
+    
     </button>
 </motion.div>
 
@@ -1489,7 +1526,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
                     <h5 className="font-bold text-[#023E8A] mb-2">Your Booking Summary</h5>
                     <div className="flex justify-between items-center text-md">
                         <span className="text-gray-700">Total Amount Payable:</span>
-                        <span className="font-extrabold text-2xl text-[#0077B6]">₹{grandTotal.toFixed(2)}</span>
+                        <span className="font-extrabold text-2xl text-[#0077B6]">₹{total.toFixed(2)}</span>
                     </div>
                      <p className="text-xs text-center text-gray-500 mt-2">You will be redirected to the payment gateway.</p>
                 </div>
