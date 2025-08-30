@@ -220,7 +220,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
             <div className="flex justify-center p-6 rounded-b-3xl">
               <button
                 onClick={handleDownload}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r  from-blue-400 via-blue-600 text-white font-bold rounded-full hover:scale-105 transition-transform"
+                className="flex items-center gap-2 px-6 py-3 bg-blue-400  text-white font-bold rounded-full hover:scale-105 transition-transform"
               >
                 <Download className="w-5 h-5" /> Download Ticket
               </button>

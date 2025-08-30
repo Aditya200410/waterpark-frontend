@@ -19,32 +19,23 @@ const AnimatedLink = ({ to, children, className }) => (
 
 export default function Footer() {
   return (
-    <footer className="relative text-white w-f bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 overflow-hidden">
-      {/* Animated Waves */}
-      <div className="absolute bottom-0 left-0 w-full h-24">
-        <svg className="absolute bottom-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-          <path fill="#ffffff" fillOpacity="0.1" d="M0,160L48,176C96,192,192,224,288,224C384,224,480,192,576,181.3C672,171,768,181,864,197.3C960,213,1056,235,1152,229.3C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-        </svg>
-      </div>
+    <footer className="relative text-white overflow-hidden">
+      {/* Background Video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline // Important for iOS devices
+        className="absolute top-0 left-0 w-full h-full object-cover z-0"
+        src="/footer.webm" // Make sure footer.mp4 is in your /public folder
+      >
+        Your browser does not support the video tag.
+      </video>
 
-      {/* Floating bubbles */}
-      <motion.div
-        className="absolute top-10 left-5 w-3 h-3 bg-white/20 rounded-full"
-        animate={{ y: [0, -20, 0], x: [0, 5, 0] }}
-        transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute top-1/2 left-1/4 w-4 h-4 bg-white/20 rounded-full"
-        animate={{ y: [0, 15, 0] }}
-        transition={{ repeat: Infinity, duration: 8, ease: "easeInOut", delay: 1 }}
-      />
-      <motion.div
-        className="absolute top-20 right-10 w-2 h-2 bg-white/30 rounded-full"
-        animate={{ y: [0, -15, 0], x: [0, -5, 0] }}
-        transition={{ repeat: Infinity, duration: 7, ease: "easeInOut" }}
-      />
+      {/* Overlay for better text readability */}
+      <div className="absolute top-0 left-0 w-full h-full  z-0"></div>
 
-      {/* Main Content Container */}
+      {/* Main Content Container - z-10 ensures it's on top of the video and overlay */}
       <div className="container mx-auto px-6 py-12 md:py-16 relative z-10">
         {/* Desktop Layout */}
         <div className="hidden md:grid md:grid-cols-3 md:gap-12">
@@ -177,9 +168,9 @@ export default function Footer() {
           <p className="text-white/70 text-sm">
             © {new Date().getFullYear()} All Rights Reserved by Water Park Chalo.
           </p>
-          <p className="text-white/70 text-sm mt-1">
+          <p className="text-blue-900 text-sm mt-1">
             Made by{" "}
-            <a href="https://www.appzeto.com/" target="_blank" rel="noopener noreferrer" className="text-yellow-300 hover:text-white font-semibold transition-colors">
+            <a href="https://www.appzeto.com/" target="_blank" rel="noopener noreferrer" className="text-blue-900 hover:text-white font-semibold transition-colors">
               Appzeto
             </a>
           </p>
