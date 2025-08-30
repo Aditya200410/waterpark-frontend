@@ -174,7 +174,7 @@ export default function CustomCalendar({ selectedDate, onDateChange, price }) {
                 
                 {/* Price inside selected circle or dot for today */}
                 {isSelected && price > 0 ? (
-                  <span className="text-[10px] font-normal opacity-90 mt-1">
+                  <span className="text-[8px] font-normal opacity-90 mt-1">
                     ₹{Number(price).toFixed(0)}
                   </span>
                 ) : (
