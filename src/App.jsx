@@ -167,7 +167,7 @@ function AppContent() {
         muted
         playsInline // Important for iOS compatibility
         className="fixed top-100 left-0 w-full h-full object-cover z-[-100000]"
-        src="/back2.mp4" // Assumes back.mp4 is in your /public folder
+        src="/back2.webm" // Assumes back.mp4 is in your /public folder
       />
       
    <div className="relative z-10">
