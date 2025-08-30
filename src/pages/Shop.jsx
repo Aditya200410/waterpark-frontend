@@ -63,7 +63,7 @@ const Shop = () => {
         
         // Calculate maximum price from products
         if (productsArray.length > 0) {
-          const maxProductPrice = Math.max(...productsArray.map(product => product.price || 0));
+          const maxProductPrice = Math.max(...productsArray.map(product => product.adultprice || 0));
           setMaxPrice(maxProductPrice);
           setPriceRange([0, maxProductPrice]);
         }
@@ -140,7 +140,7 @@ const Shop = () => {
 
     // Price filter
     filtered = filtered.filter(
-      (product) => product.price >= priceRange[0] && product.price <= priceRange[1]
+      (product) => product.adultprice >= priceRange[0] && product.adultprice <= priceRange[1]
     );
 
     // Category filter
