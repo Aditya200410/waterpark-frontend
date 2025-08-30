@@ -1576,14 +1576,7 @@ console.log(product.maplink)
                 
                  </div>
                  {/* Summary inside modal */}
-                <div className="bg-[#CAF0F8] p-4 rounded-lg border border-[#90E0EF]">
-                    <h5 className="font-bold text-[#023E8A] mb-2">Your Booking Summary</h5>
-                    <div className="flex justify-between items-center text-md">
-                        <span className="text-gray-700">Total Amount Payable:</span>
-                        <span className="font-extrabold text-2xl text-[#0077B6]">₹{total.toFixed(2)}</span>
-                    </div>
-                     <p className="text-xs text-center text-gray-500 mt-2">You will be redirected to the payment gateway.</p>
-                </div>
+            
               </div>
 
               {/* Footer Actions */}
