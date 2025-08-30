@@ -13,7 +13,11 @@ const containerVariants = {
     },
   },
 };
-
+const cardVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
+  hover: { scale: 1.06, y: -5, transition: { type: "spring", stiffness: 320 } },
+};
 // Child item variants
 const itemVariants = {
   hidden: { opacity: 0, scale: 0.8, y: 20 },
@@ -77,22 +81,31 @@ export default function OurPartners() {
           viewport={{ once: true }}
           className="sm:hidden flex gap-4 overflow-x-auto pb-4 px-2 -mx-2 scrollbar-hide"
         >
-          {blogs.map((partner) => (
+          {blogs.map((blog) => (
             <motion.div
-              key={partner.name}
-              variants={itemVariants}
-              className="group flex-shrink-0 w-40 h-40 rounded-2xl p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-in-out flex flex-col items-center justify-center"
+              key={blog._id}
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              whileHover="hover"
+              viewport={{ once: true }}
+              className="flex flex-col items-center justify-center rounded-2xl p-6 text-center 
+                       
+                        "
             >
-              <div className="flex-grow flex items-center justify-center overflow-hidden w-full"> {/* Added overflow-hidden and w-full */}
+              {/* Bigger Image */}
+              <div className="w-32 h-32 flex items-center justify-center mb-4">
                 <img
-                  src={partner.image}
-                  alt={partner.name}
-                  className="max-h-12 object-contain transition-transform duration-300 group-hover:scale-125" // Smaller initial max-h and added group-hover:scale-125
+                  src={blog.images?.[0] || "https://via.placeholder.com/150"}
+                  alt={blog.name}
+                  className="w-full h-full object-contain rounded-2xl"
                 />
               </div>
-              <div className="mt-3 text-center text-gray-800 font-semibold text-sm transition-colors duration-300">
-                {partner.name}
-              </div>
+        
+              {/* Smaller Text */}
+              <h2 className="text-sm md:text-base font-medium text-blue-800 tracking-wide">
+                {blog.name}
+              </h2>
             </motion.div>
           ))}
         </motion.div>
@@ -109,7 +122,7 @@ export default function OurPartners() {
             <motion.div
               key={partner.name}
               variants={itemVariants}
-              className="group h-48 md:h-52 rounded-2xl p-5   shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-in-out flex flex-col items-center justify-center "
+              className="group h-48 md:h-52 rounded-2xl p-5   align-center shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-in-out flex flex-col items-center justify-center "
             >
               <div className="flex-grow flex items-center justify-center overflow-hidden w-full"> {/* Added overflow-hidden and w-full */}
                 <img
@@ -118,9 +131,9 @@ export default function OurPartners() {
                   className="max-h-16 md:max-h-20 rounded-2xl object-contain transition-transform duration-300 group-hover:scale-125" // Smaller initial max-h and added group-hover:scale-125
                 />
               </div>
-              <div className="mt-3 text-center text-gray-800 font-semibold sm:text-base transition-colors duration-300">
-                {partner.name}
-              </div>
+             <h2 className="text-sm md:text-base font-medium text-blue-800 tracking-wide">
+        {partner.name}
+      </h2>
             </motion.div>
           ))}
         </motion.div>

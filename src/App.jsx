@@ -124,7 +124,7 @@ function AppContent() {
     if (path === '/login') return seoConfig.login;
     if (path === '/signup') return seoConfig.signup;
     if (path === '/policies') return seoConfig.policies;
-    if (path === '/seller') return seoConfig.seller;
+   
     
     return defaultSEO;
   };
@@ -159,7 +159,18 @@ function AppContent() {
     <div className="min-h-screen relative z-0 pt-20 mt-20 bg-transparent">
       <SEO {...seoData} />
       <Header/>
-     
+     <div>
+      {/* 1. Background Video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline // Important for iOS compatibility
+        className="fixed top-100 left-0 w-full h-full object-cover z-[-100000]"
+        src="/back2.mp4" // Assumes back.mp4 is in your /public folder
+      />
+      
+   <div className="relative z-10">
       <Routes>
         <Route path="/" element={
           <main>
@@ -184,8 +195,10 @@ function AppContent() {
               <MissionVision />
             </ErrorBoundary>
           </main>
+         
         } />
      
+    
         <Route path="/blog" element={<BlogPage/>} />
         <Route path="/category" element={<Category/>} />
         <Route path="/Offers" element={<OffersPage />} />
@@ -199,10 +212,9 @@ function AppContent() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
         <Route path="/wishlist" element={<Wishlist />} />
-        <Route path='/seller' element={<Becomeseller/>}/>
-        <Route path='/seller/auth' element={<SellerAuth/>}/>
+      
         <Route path='/gallery' element={<Gallery />} />
-        <Route path='/seller/profile' element={<SellerProfile/>}/>
+    
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
@@ -228,11 +240,14 @@ function AppContent() {
       )}
         <WhatsAppButton />
     </div>
+    </div>
+     </div>
   );
 }
 
 function App() {
   return (
+    <div className="relative z-[1000]">
     <ErrorBoundary>
       <CartProvider>
         <AuthProvider>
@@ -244,6 +259,7 @@ function App() {
         </AuthProvider>
       </CartProvider>
     </ErrorBoundary>
+    </div>
   );
 }
 

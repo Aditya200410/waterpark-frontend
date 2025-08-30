@@ -66,7 +66,7 @@ export default function BlogPage() {
   }, []);
 
   return (
-    <div className="h-screen flex items-center justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
+    <div className="h-screen flex items-center justify-center relative font-sans  overflow-hidden">
       {/* Animated bubbles from the second example */}
       {[...Array(10)].map((_, i) => (
         <motion.div

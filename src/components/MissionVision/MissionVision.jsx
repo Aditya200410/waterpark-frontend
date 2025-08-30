@@ -63,8 +63,7 @@ export default function MissionVission() {
       <div className="w-28 md:w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-4 rounded-full"></div>
       <p className="text-base sm:text-lg md:text-xl text-blue-700 max-w-3xl mx-auto leading-relaxed">
         we offer a unique blend of adventure, relaxation, and unforgettable
-        experiences. Our mission is to create a waterpark that caters to all
-        ages, ensuring everyone has a splashing good time.
+        experiences.
       </p>
     </motion.div>
 

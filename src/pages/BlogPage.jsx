@@ -73,7 +73,7 @@ export default function BlogPage() {
 
   return (
       // The main container with a slightly more dynamic gradient
-    <div className="min-h-screen flex items-center justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center relative font-sans  overflow-hidden">
       
       {/* Enhanced Animated Bubbles: Randomized for a more natural effect */}
       {[...Array(15)].map((_, i) => {
@@ -102,7 +102,7 @@ export default function BlogPage() {
         );
       })}
 
-      <section className="relative bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 w-full min-h-screen overflow-y-auto py-20 md:py-24">
+      <section className="relative  w-full min-h-screen overflow-y-auto py-20 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Header with improved animation */}
           <motion.div

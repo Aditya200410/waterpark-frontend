@@ -35,7 +35,7 @@ const AboutUs = () => {
   ];
 
   return (
-    <div className="w-full font-roboto overflow-hidden bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600">
+    <div className="w-full font-roboto overflow-hidden ">
       <SEO 
         title="About Water Park Chalo - Professional Water Adventures"
         description="Learn about Water Park Chalo, our mission to provide safe, fun, and professional water experiences."
