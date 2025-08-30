@@ -887,7 +887,7 @@ const Account = () => {
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
     >
-      <OrdersTab />
+    
     </motion.div>
   )}
 
