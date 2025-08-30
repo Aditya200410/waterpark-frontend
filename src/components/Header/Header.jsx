@@ -37,7 +37,7 @@ const Header = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10); // Trigger effect slightly after scroll starts
+      setIsScrolled(window.scrollY > 10);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -100,7 +100,7 @@ const Header = () => {
           setSearchError('Failed to fetch products');
           setSearchLoading(false);
         });
-    }, 300); // Added a debounce for better performance
+    }, 300);
 
     return () => clearTimeout(debounceSearch);
   }, [searchQuery]);
@@ -160,7 +160,6 @@ const Header = () => {
 
   const isActive = (path) => location.pathname === path;
 
-  // REFINED: Combined menu items for a cleaner desktop nav
   const menuItems = [
     { name: 'Home', path: '/' },
     { name: 'Waterparks', path: '/waterparks' },
@@ -172,7 +171,6 @@ const Header = () => {
     { name: 'Contact', path: '/contact' }
   ];
 
-  // REFINED: Kept mobile menu comprehensive
   const MmenuItems = [
     { name: 'Home', path: '/' },
     { name: 'Waterparks', path: '/waterparks' },
@@ -190,16 +188,21 @@ const Header = () => {
 
   return (
     <>
-      {/* Search Overlay - Unchanged Logic, Refined Styling */}
+      {/* HERE'S THE FIX: This placeholder div has the same height as your fixed header.
+        It sits in the normal document flow and pushes all subsequent content down,
+        preventing the overlap.
+      */}
+      <div className="h-20" />
+
+      {/* Search Overlay - Unchanged */}
       <AnimatePresence>
-        
         {isSearchOpen && (
           <motion.div
             initial={{ y: -60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -60, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="fixed top-0 left-0 w-full z-[20000] bg-white/80 backdrop-blur-lg shadow-2xl border-b border-gray-200 px-4 py-4 flex flex-col items-center mb-10"
+            className="fixed top-0 left-0 w-full z-[20000] bg-white/80 backdrop-blur-lg shadow-2xl border-b border-gray-200 px-4 py-4 flex flex-col items-center"
             ref={searchBarRef}
           >
             <form onSubmit={handleSearch} className="w-full max-w-2xl relative flex">
@@ -243,16 +246,15 @@ const Header = () => {
         )}
       </AnimatePresence>
 
-      {/* NEW: Shorter, Modern Header */}
+      {/* Header (remains fixed) */}
       <header
-        className={`fixed top-0 left-0 w-full z-[40] transition-all duration-300 ease-in-out mb-10 ${isScrolled ? 'bg-white/80 backdrop-blur-lg shadow-lg' : 'bg-transparent'
+        className={`fixed top-0 left-0 w-full z-[40] transition-all duration-300 ease-in-out ${isScrolled ? 'bg-white/80 backdrop-blur-lg shadow-lg' : 'bg-transparent'
           }`}
       >
         <div className="container mx-auto px-4 sm:px-6">
-          {/* MODIFIED: Added `relative` for positioning context */}
-          <div className="relative flex items-center justify-between h-20"> {/* Shorter height */}
+          <div className="relative flex items-center justify-between h-20">
 
-            {/* NEW: Left side (Mobile): Hamburger Menu */}
+            {/* Left side (Mobile): Hamburger Menu */}
             <motion.button
               onClick={() => setIsMobileMenuOpen(true)}
               className={`lg:hidden flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-300 ${isScrolled ? "text-gray-700 hover:bg-gray-200" : "text-white hover:bg-white/20"}`}
@@ -262,13 +264,10 @@ const Header = () => {
             >
               <Menu size={24} />
             </motion.button>
-            
-          {/* FIXED: Centered on mobile, left on desktop.
-              Changed responsive classes from a complex "lg:relative..." to a simpler and more robust "lg:static lg:transform-none".
-            */}
+
+            {/* Logo */}
             <motion.button
               onClick={navigateToHome}
-           
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:static lg:transform-none"
               aria-label="Go to homepage"
             >
@@ -292,18 +291,15 @@ const Header = () => {
               ))}
             </nav>
 
-          
-      
             {/* Right side: Icons and Auth */}
             <div className="flex items-center space-x-4">
-              {/* 🔍 Search Icon (Mobile + Desktop) */}
+              {/* Search Icon */}
               <motion.button
                 onClick={handleSearchIconClick}
-                className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-300 ${
-                  isScrolled
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-300 ${isScrolled
                     ? "text-gray-700 hover:bg-gray-200"
                     : "text-white hover:bg-white/20"
-                }`}
+                  }`}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 aria-label="Open search"
@@ -311,15 +307,14 @@ const Header = () => {
                 <Search size={22} />
               </motion.button>
 
-              {/* 👤 User Icon (Mobile + Desktop) */}
+              {/* User Icon */}
               <Link
                 to={user ? "/account" : "/login"}
                 className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-200 
-                          md:gap-2 md:px-3 md:py-2 md:w-auto md:h-auto ${
-                            isScrolled
-                              ? "text-gray-700 hover:bg-gray-200"
-                              : "text-white hover:bg-white/20"
-                          }`}
+                                  md:gap-2 md:px-3 md:py-2 md:w-auto md:h-auto ${isScrolled
+                    ? "text-gray-700 hover:bg-gray-200"
+                    : "text-white hover:bg-white/20"
+                  }`}
               >
                 <User size={22} />
                 <span className="hidden md:inline font-medium">
@@ -331,8 +326,7 @@ const Header = () => {
         </div>
       </header>
 
-
-      {/* Mobile Menu Overlay - Refined Styling */}
+      {/* Mobile Menu Overlay - Unchanged */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -410,8 +404,7 @@ const Header = () => {
         )}
       </AnimatePresence>
 
-
-      {/* Mobile Bottom Navigation - Refined Styling */}
+      {/* Mobile Bottom Navigation - Unchanged */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 border-t border-gray-200 z-[9999] backdrop-blur-lg">
         <nav className="flex justify-around items-center h-16 px-2">
           <Link to="/" className="flex flex-col items-center justify-center text-gray-600 hover:text-cyan-500 transition-colors duration-200 w-1/4">
@@ -419,7 +412,7 @@ const Header = () => {
             <span className="text-xs mt-1 font-medium">Home</span>
           </Link>
           <Link to="/waterparks" className="flex flex-col items-center justify-center text-gray-600 hover:text-cyan-500 transition-colors duration-200 w-1/4">
-            <WavesIcon className="w-6 h-6" /> {/* Using ShoppingCart for consistency */}
+            <WavesIcon className="w-6 h-6" />
             <span className="text-xs mt-1 font-medium">Parks</span>
           </Link>
           <Link to="/offers" className="flex flex-col items-center justify-center text-gray-600 hover:text-cyan-500 transition-colors duration-200 relative w-1/4">
