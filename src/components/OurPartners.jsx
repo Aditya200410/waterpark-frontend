@@ -79,7 +79,7 @@ export default function OurPartners() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="sm:hidden flex gap-4 overflow-x-auto pb-4 px-2 -mx-2 scrollbar-hide"
+          className="sm:hidden flex gap-4 overflow-x-auto pb-4 px-2 -mx-2 scrollbar-hide overflow-y-hidden"
         >
           {blogs.map((blog) => (
             <motion.div
