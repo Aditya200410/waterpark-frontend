@@ -865,47 +865,14 @@ if (isSunday) {
             
                       <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
             
-                        <h4 className="font-bold text-[#03045E] mb-3 text-lg">🌞 Park Information</h4>
-            
-                        <ul className="space-y-2 text-[#023E8A]">
-            
-                          <li>• Opening Hours: 10:00 AM – 7:00 PM</li>
-            
-                          <li>• Tickets available online & gate</li>
-            
-                          <li>• Free entry for kids below 3 yrs</li>
-            
-                          <li>• Lockers & changing rooms</li>
-            
-                          <li>• Food courts inside park</li>
-            
-                        </ul>
-            
+                        <h4 className="font-bold text-[#03045E] mb-3 text-lg">FAQ</h4>
+            <div dangerouslySetInnerHTML={{ __html:product.faq.replace(/\n/g, "<br/>") }} />
+
                       </div>
             
                      
             
-                      {/* Safety */}
-            
-                      <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-            
-                        <h4 className="font-bold text-[#03045E] mb-3 text-lg">🛟 Safety & Policies</h4>
-            
-                        <ul className="space-y-2 text-[#023E8A]">
-            
-                          <li>• Swimwear is mandatory</li>
-            
-                          <li>• Outside food not allowed</li>
-            
-                          <li>• Follow lifeguards at all times</li>
-            
-                          <li>• Pregnant women avoid rides</li>
-            
-                          <li>• First aid available on-site</li>
-            
-                        </ul>
-            
-                      </div>
+                    
             
                     </motion.div>
             
@@ -1576,7 +1543,7 @@ console.log(product.maplink)
                 
                  </div>
                  {/* Summary inside modal */}
-            
+
               </div>
 
               {/* Footer Actions */}

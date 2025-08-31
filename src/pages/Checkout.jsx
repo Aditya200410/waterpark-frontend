@@ -40,12 +40,14 @@ function CheckoutPage() {
     resortId,
   } = checkoutData;
 
+const formattedDate = new Date(date).toISOString().split("T")[0];
   const [billingDetails, setBillingDetails] = useState({
     firstName: "",
     lastName: "",
     phone: "",
     email: "",
     city: "",
+     date: formattedDate, // ✅ sending ISO-supported date
     createAccount: false,
     total: totalamount,
     advance:paid
@@ -147,7 +149,7 @@ function CheckoutPage() {
           name: `${billingDetails.firstName} ${billingDetails.lastName}`,
           email: billingDetails.email,
           phone: billingDetails.phone,
-          date: date,
+          date: formattedDate,
           adults: adultCount,
           children: childCount,
           // MODIFIED: Send discounted total and coupon info
