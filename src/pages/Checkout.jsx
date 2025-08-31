@@ -23,8 +23,11 @@ function CheckoutPage() {
       return location.state;
     }
     const dataFromStorage = localStorage.getItem("checkoutData");
+   console.log(dataFromStorage)
     if (dataFromStorage) {
+     
       return JSON.parse(dataFromStorage);
+     
     }
     return {};
   };
@@ -38,7 +41,7 @@ function CheckoutPage() {
     paid,
     totalamount,
     resortId,
-    waterparknumber,
+    waternumber,
   } = checkoutData;
 
 const formattedDate = new Date(date).toISOString().split("T")[0];
@@ -46,6 +49,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
     firstName: "",
     lastName: "",
     phone: "",
+   waternumber: waternumber,
     email: "",
     city: "",
      date: formattedDate, // ✅ sending ISO-supported date
@@ -146,7 +150,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/create`,
         {
           waterpark: resortId,
-          waterparknumber:waterparknumber,
+          waternumber: waternumber,
           waterparkName: resortName,
           name: `${billingDetails.firstName} ${billingDetails.lastName}`,
           email: billingDetails.email,

@@ -193,8 +193,9 @@ const ProductView = () => {
       resortId: product._id, resortName: product.name,
       adultCount: adultquantity, childCount: childquantity,
       date: selectedDate, paid: advanceTotal,
-      totalamount: grandTotal, waterparknumber: product.waterparknumber
+      totalamount: grandTotal, waternumber: product.waternumber
     };
+    console.log(checkoutData)
     try {
       localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
       navigate('/checkout', { state: checkoutData });
@@ -315,7 +316,7 @@ const ProductView = () => {
                 )}
               </div>
               <p className="text-lg font-semibold text-blue-600 tracking-wide">{product.sd}</p>
-              <p className="text-md font-medium text-blue-500">Waterpark Number: <span className="font-bold text-blue-700">{product.waterparknumber}</span></p>
+              <p className="text-md font-medium text-blue-500">Waterpark Number: <span className="font-bold text-blue-700">{product.waternumber}</span></p>
               <WhatsAppButton phoneNumber="+918847714464" product={product} />
             </div>
 
