@@ -1037,12 +1037,12 @@ console.log(product.maplink)
                     className="bg-gradient-to-r from-[#90E0EF] to-[#48CAE4] p-4 rounded-xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-3"
                 >
 
-                  <CustomCalendar
-        selectedDate={selectedDate}
-        onDateChange={(d) => setSelectedDate(d)}
-        price={product.adultprice}
-      />
-  
+          <CustomCalendar
+  selectedDate={selectedDate}
+  onDateChange={(d) => setSelectedDate(d)}
+  normalPrice={product.adultprice}   // Pass the normal price
+  weekendPrice={product.weekendprice} // Pass the weekend price
+/>
                    
                     
                    
