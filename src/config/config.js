@@ -18,10 +18,10 @@ const config = {
     ORDERS: '/api/bookings',
     CATEGORIES: '/api/categories',
     PRODUCTS: '/api/products',
-    SELLER: '/api/seller',
+    SETTINGS :'/api/settings',
     COUPONS: '/api/coupons',
     HERO_CAROUSEL: '/api/hero-carousel',
-    REGISTER: '/api/seller/register',
+ 
     REVIEWS: '/api/reviews',
     LOVED: '/api/loved',
     BESTSELLER: '/api/bestseller',

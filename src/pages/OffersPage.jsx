@@ -66,7 +66,7 @@ export default function BlogPage() {
   }, []);
 
   return (
-    <div className="h-screen flex items-center justify-center relative font-sans  overflow-hidden">
+    <div className=" flex items-center justify-center relative font-sans overflow-hidden">
       {/* Animated bubbles from the second example */}
       {[...Array(10)].map((_, i) => (
         <motion.div
@@ -77,7 +77,7 @@ export default function BlogPage() {
           style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
         />
       ))}
-      <section className="relative min-h-screen overflow-hidden py-20">
+      <section className="relative overflow-hidden py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
           {/* Header from the second example */}
           <motion.div

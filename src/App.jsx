@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useSearc
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider, useCart } from './context/CartContext';
-import { SellerProvider } from './context/SellerContext';
+
 import Loader from './components/Loader';
 import Header from './components/Header/Header';
 import Hero from './components/Hero/Hero';
@@ -31,9 +31,8 @@ import Toast from './components/Toast/Toast';
 import ForgotPassword from './pages/ForgotPassword';
 import AboutUs from './pages/AboutUs';
 import OrderConfirmation from './pages/OrderConfirmation';
-import Becomeseller from './pages/BecomeSeller';
-import SellerAuth from './pages/SellerAuth';
-import SellerProfile from './pages/SellerProfile';
+
+
 import Policies from './pages/Policies';
 import PaymentStatus from './pages/PaymentStatus';
 import SEO from './components/SEO/SEO';
@@ -156,7 +155,7 @@ function AppContent() {
   const seoData = getSEOConfig();
   
   return (
-    <div className="min-h-screen relative z-0 pt-20 mt-20 bg-transparent">
+    <div className="min-h-screen relative z-0 pt-20 bg-transparent">
       <SEO {...seoData} />
       <Header/>
      <div>
@@ -236,6 +235,7 @@ function AppContent() {
           message={toast.message}
           type={toast.type}
           onClose={() => setToast(null)}
+          className="z-[1111111111111]"
         />
       )}
         <WhatsAppButton />
@@ -251,11 +251,11 @@ function App() {
     <ErrorBoundary>
       <CartProvider>
         <AuthProvider>
-          <SellerProvider>
+       
             <Router>
               <AppContent />
             </Router>
-          </SellerProvider>
+        
         </AuthProvider>
       </CartProvider>
     </ErrorBoundary>

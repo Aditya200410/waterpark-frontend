@@ -119,7 +119,7 @@ const Account = () => {
       navigate('/login');
     } else {
       setLoading(false);
-      if (user?.name) toast.success(`Welcome back, ${user?.name}!`);
+      
     }
   }, [isAuthenticated, navigate, user]);
 
