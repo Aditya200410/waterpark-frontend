@@ -163,12 +163,7 @@ const WaterparkTicket = () => {
             </div>
           </div>
           
-          {/* Package Inclusion */}
-          <div className="text-center bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200 shadow-inner">
-             <h3 className="font-serif font-bold text-blue-800 text-lg mb-1">Exclusive Package</h3>
-             <p className="text-base text-gray-700">Breakfast + Lunch + Evening Tea</p>
-           </div>
-
+        
           {/* Payment Info Banner */}
           <div className="text-center font-serif font-extrabold text-xl p-5 rounded-xl bg-gradient-to-r from-green-100 to-lime-100 text-green-800 border-2 border-green-300 shadow-md transform hover:scale-101 transition-transform">
             Pay at Waterpark: ₹{remainingAmount.toLocaleString("en-IN")}/-

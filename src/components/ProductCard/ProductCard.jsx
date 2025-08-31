@@ -119,7 +119,7 @@ const ProductCard = ({ product }) => {
           </h3>
           <p className="text-sm text-gray-500">{product.category}</p>
           <div className="flex items-baseline justify-center gap-2">
-            <span className="text-xl font-bold text-[#0077B6]">₹{Math.round(product.price)}</span>
+            <span className="text-xl font-bold text-[#0077B6]">₹{Math.round(product.adultprice)}</span>
             {product.regularPrice && product.regularPrice > product.price && (
               <span className="text-base text-gray-400 line-through">₹{Math.round(product.regularPrice)}</span>
             )}

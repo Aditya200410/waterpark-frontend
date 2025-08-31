@@ -166,7 +166,7 @@ function AppContent() {
         loop
         muted
         playsInline // Important for iOS compatibility
-        className="fixed top-100 left-0 w-full h-full object-cover z-[-100000]"
+        className="hidden lg:visible fixed top-100 left-0 w-full h-full object-cover z-[-100000]"
         src="/back2.webm" // Assumes back.mp4 is in your /public folder
       />
       
