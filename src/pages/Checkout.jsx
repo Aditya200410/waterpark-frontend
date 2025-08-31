@@ -38,6 +38,7 @@ function CheckoutPage() {
     paid,
     totalamount,
     resortId,
+    waterparknumber,
   } = checkoutData;
 
 const formattedDate = new Date(date).toISOString().split("T")[0];
@@ -145,6 +146,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/create`,
         {
           waterpark: resortId,
+          waterparknumber:waterparknumber,
           waterparkName: resortName,
           name: `${billingDetails.firstName} ${billingDetails.lastName}`,
           email: billingDetails.email,

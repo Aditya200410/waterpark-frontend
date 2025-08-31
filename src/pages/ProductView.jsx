@@ -241,6 +241,7 @@ const [paymentOption, setPaymentOption] = useState('advance'); // 'advance' or '
       date: selectedDate,
      paid:grandTotal,
      totalamount:total,
+     waterparknumber:product.waterparknumber
     };
 
     // 3. Save the data to localStorage and navigate
