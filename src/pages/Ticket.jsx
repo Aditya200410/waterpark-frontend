@@ -89,9 +89,7 @@ const WaterparkTicket = () => {
             <div className="bg-gray-100 p-2 rounded-lg shadow-inner">
               {/* You would replace this with an actual QR code component */}
               {/* <QRCode value={booking._id} size={80} level="H" /> */}
-              <div className="w-20 h-20 bg-white flex items-center justify-center text-xs text-gray-400 border border-dashed border-gray-300 rounded-md">
-                QR Code
-              </div>
+              
             </div>
           </div>
 
