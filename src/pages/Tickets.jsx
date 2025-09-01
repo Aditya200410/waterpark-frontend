@@ -16,9 +16,12 @@ const Ticket = () => {
     setLoading(true);
     setError("");
     setTicket(null);
-
+if(ticketId.includes("#")){
     try {
-      const res = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${ticketId}`);
+      const ticketId1=ticketId.slice(1)
+       const res = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${ticketId1}`);
+      console.log(ticketId)
+    
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({ message: "An unknown error occurred" }));
         throw new Error(errorData.message || "Ticket not found");
@@ -36,7 +39,33 @@ const Ticket = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+else 
+  try {
+      
+       const res = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${ticketId}`);
+      
+    
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ message: "An unknown error occurred" }));
+        throw new Error(errorData.message || "Ticket not found");
+      }
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.message || "Ticket not found");
+      }
+      setTicket(data.booking);
+      toast.success("Ticket fetched successfully!");
+    } catch (err) {
+      setError(err.message || "Failed to fetch ticket");
+      toast.error(err.message || "Failed to fetch ticket");
+      setTicket(null);
+    } finally {
+      setLoading(false);
+    }
+  }
+  ;
 const handleDownload = () => {
   const ticketElement = ticketRef.current; // Use the ref's current property
   if (ticketElement) {

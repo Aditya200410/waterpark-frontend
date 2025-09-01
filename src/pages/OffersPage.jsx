@@ -87,7 +87,7 @@ export default function BlogPage() {
             className="text-center mb-16"
           >
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-blue-700 mb-4 tracking-tight">
-              <span className="text-blue-500 italic font-serif">
+              <span className="text-white italic font-serif">
                 Featured Offers
               </span>{" "}
               ✨

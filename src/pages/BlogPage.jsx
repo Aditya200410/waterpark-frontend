@@ -100,7 +100,7 @@ export default function BlogPage() {
               className="text-4xl sm:text-5xl md:text-6xl font-extrabold  text-blue-600 mb-4"
             
             >
-             <span className="text-blue-500 italic font-serif">  Explore Our Insights</span> ✨
+             <span className="text-white italic font-serif">  Explore Our Insights</span> ✨
             </motion.h1>
             {/* Animated underline */}
             <motion.div

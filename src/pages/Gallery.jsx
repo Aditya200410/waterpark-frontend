@@ -68,7 +68,7 @@ const Gallery = () => {
           className="text-center mb-12 md:mb-16"
         >
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-600 mb-4">
-         <span className="text-blue-500 italic font-serif">   Explore Our  Gallery</span> ✨
+         <span className="text-white italic font-serif">   Explore Our  Gallery</span> ✨
           </h1>
           <div className="w-28 md:w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-4 rounded-full"></div>
           <p className="text-base sm:text-lg md:text-xl text-white max-w-3xl mx-auto leading-relaxed">

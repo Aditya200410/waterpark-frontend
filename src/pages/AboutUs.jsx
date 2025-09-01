@@ -64,7 +64,7 @@ const AboutUs = () => {
       <section className="relative py-16 sm:py-20 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight break-words">
-            <span className="text-blue-500 italic font-serif">
+            <span className="text-white italic font-serif">
               Professional Water Adventures
             </span>{" "}
             ✨
