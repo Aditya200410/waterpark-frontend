@@ -96,14 +96,14 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed top-20 inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm"
       >
         <motion.div
           initial={{ scale: 0.95, y: 40 }}
           animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0.95, y: 40 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl bg-gray-100 flex flex-col font-sans"
+          className="relative w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl shadow-2xl bg-gray-100 flex flex-col font-sans"
         >
           {/* Header */}
           <div className="sticky   bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 flex justify-between items-center rounded-t-xl shadow-md z-20">
@@ -182,7 +182,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
               
 
                 {/* Amount Pay Banner */}
-                <div className="text-center font-serif font-extrabold text-xl p-5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg relative z-10">
+                <div className="text-center font-serif font-extrabold text-xl p-5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg relative ">
                   AMOUNT PAY ON WATERPARK - ₹{remainingAmount.toLocaleString("en-IN")}/-
                 </div>
 
