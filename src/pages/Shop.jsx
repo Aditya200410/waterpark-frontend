@@ -232,6 +232,7 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen py-12">
+      
       <div className="container mx-auto px-4">
         {/* Mobile Filter Button */}
         <div className="md:hidden mb-6">

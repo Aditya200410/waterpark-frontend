@@ -72,10 +72,18 @@ const Contact = () => {
     <LazyMotion features={domAnimation}>
       {/* Set a min-height to prevent layout shifts while loading */}
       <div className="font-sans   text-deep-blue w-full overflow-hidden min-h-screen">
-
+ 
         {/* HERO SECTION */}
         <section className="relative text-center py-20 px-4 sm:py-28 bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600overflow-hidden">
-          
+          {[...Array(10)].map((_, i) => (
+    <motion.div
+      key={i}
+      animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
+      transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
+      className="absolute w-6 h-6 rounded-full bg-blue-300 "
+      style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
+    />
+  ))}
           <motion.div
             className="relative z-10 max-w-4xl mx-auto"
             variants={containerVariants}

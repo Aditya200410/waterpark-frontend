@@ -74,35 +74,18 @@ export default function BlogPage() {
   return (
       // The main container with a slightly more dynamic gradient
     <div className="min-h-screen flex items-center justify-center relative font-sans  overflow-hidden">
+       {[...Array(10)].map((_, i) => (
+    <motion.div
+      key={i}
+      animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
+      transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
+      className="absolute w-6 h-6 rounded-full bg-blue-300 "
+      style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
+    />
+  ))}
       
-      {/* Enhanced Animated Bubbles: Randomized for a more natural effect */}
-      {[...Array(15)].map((_, i) => {
-        const size = Math.random() * 20 + 10; // Random size between 10px and 30px
-        const duration = Math.random() * 10 + 8; // Random duration
-        const delay = Math.random() * 5; // Random start delay
-        return (
-          <motion.div
-            key={i}
-            initial={{ y: 100, x: 0, opacity: 0 }}
-            animate={{ y: -1000, x: [0, 20, -20, 0], opacity: [0, 0.7, 0] }}
-            transition={{
-              repeat: Infinity,
-              duration: duration,
-              ease: "linear",
-              delay: delay,
-            }}
-            className="absolute rounded-full bg-white/20"
-            style={{
-              width: `${size}px`,
-              height: `${size}px`,
-              left: `${Math.random() * 100}%`,
-              bottom: "-100px", // Start from below the screen
-            }}
-          />
-        );
-      })}
-
       <section className="relative  w-full min-h-screen overflow-y-auto py-20 md:py-24">
+        
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Header with improved animation */}
           <motion.div

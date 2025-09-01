@@ -348,15 +348,13 @@ const ProductView = () => {
   >
     {/* Basic Info Section */}
     <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-      <h4 className="font-bold text-[#03045E] mb-3 text-lg">ℹ️ Basic Information</h4>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-         <div>
-          <span className="text-lg font-bold mb-10 text-gray-600">Product Descrption</span>
-          <p className="text-base font-semibold text-[#023E8A]">{product.description || 'No description available.'}</p>
-        </div>
+      <h4 className="font-bold text-[#03045E] mb-1 text-lg">ℹ️ Basic Information</h4>
+      
+      <div className="grid grid-cols-1 md:grid-cols-1  gap-4">
+         
         <div>
-          <span className="text-lg font-bold mb-10 text-gray-600">Product Name</span>
-          <p className="text-base font-semibold text-[#023E8A]">{product.name}</p>
+          <span className="text-lg font-bold mb-10 text-gray-600">Product description</span>
+          <p className="text-base font-semibold text-[#023E8A]">{product.description}</p>
         </div>
         <div>
           <span className="text-lg font-bold mb-10 text-gray-600">Location</span>

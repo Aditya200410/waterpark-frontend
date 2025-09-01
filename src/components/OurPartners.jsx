@@ -58,6 +58,7 @@ export default function OurPartners() {
 
   return (
     <section className="py-10 md:py-14 lg:py-20 ">
+      
       <div className="container mx-auto px-4 sm:px-6 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}

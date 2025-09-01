@@ -160,14 +160,7 @@ function AppContent() {
       <Header/>
      <div>
       {/* 1. Background Video */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline // Important for iOS compatibility
-        className="hidden lg:visible fixed top-100 left-0 w-full h-full object-cover z-[-100000]"
-        src="/back2.webm" // Assumes back.mp4 is in your /public folder
-      />
+      
       
    <div className="relative z-10">
       <Routes>
