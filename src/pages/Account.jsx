@@ -504,7 +504,7 @@ const Account = () => {
   return (
     <>
       {/* Water-park header backdrop */}
-      <div className="min-h-screen bg-gradient-to-b from-sky-50 via-cyan-50 to-white relative">
+      <div className="min-h-screen relative">
         {/* top waves */}
         <div className="absolute inset-x-0 -top-1">
           <svg viewBox="0 0 1440 80" className="w-full h-16">
