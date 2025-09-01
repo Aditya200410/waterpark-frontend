@@ -248,7 +248,7 @@ const Header = () => {
 
       {/* Header (remains fixed) */}
       <header
-        className={`fixed top-0 left-0 w-full z-[10] transition-all duration-300 ease-in-out ${isScrolled ? 'bg-white/80 backdrop-blur-lg shadow-lg' : 'bg-transparent'
+        className={`fixed top-0 left-0 w-full z-[16] transition-all duration-300 ease-in-out ${isScrolled ? 'bg-white/80 backdrop-blur-lg shadow-lg' : 'bg-transparent'
           }`}
       >
         <div className="container mx-auto px-4 sm:px-6">
@@ -268,7 +268,7 @@ const Header = () => {
             {/* Logo */}
             <motion.button
               onClick={navigateToHome}
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:static lg:transform-none"
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:static lg:transform-none z-[16]"
               aria-label="Go to homepage"
             >
               <img src={logo} alt="Waterpark Chalo" className={`h-16 w-auto transition-all duration-300 ${isScrolled ? '' : 'drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)]'}`} />
