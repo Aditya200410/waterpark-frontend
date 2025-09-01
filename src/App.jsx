@@ -151,7 +151,11 @@ function AppContent() {
       </div>
     );
   }
-
+// 👇 Add this useEffect
+  useEffect(() => {
+    window.history.scrollRestoration = "manual"; // disable browser scroll restore
+    window.scrollTo(0, 0); // always go to top on reload
+  }, []);
   const seoData = getSEOConfig();
   
   return (
