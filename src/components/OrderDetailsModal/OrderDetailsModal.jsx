@@ -185,7 +185,6 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
                 <div className="text-center font-serif font-extrabold text-xl p-5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg relative ">
                   AMOUNT PAY ON WATERPARK - ₹{remainingAmount.toLocaleString("en-IN")}/-
                 </div>
-
                 {/* Terms and Conditions */}
                 <div className="p-6 pt-4 bg-gray-50 border-b border-gray-200">
                   <h4 className="font-serif font-bold text-center mb-4 text-gray-700 text-lg">TERM & CONDITION</h4>
@@ -198,11 +197,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
                   </ul>
                 </div>
 
-                {/* My Resort Booking text */}
-                <div className="text-center py-4 bg-gradient-to-b from-gray-50 to-white border-t border-gray-200">
-                  <p className="text-xl font-serif font-extrabold text-blue-700">~My Resort Booking~</p>
-                </div>
-
+              
                 {/* Final Amount Details */}
                 <div className="p-6 text-gray-800 grid grid-cols-2 gap-y-4 gap-x-8 border-t border-gray-200 bg-gray-50 rounded-b-xl">
                   <div>
