@@ -905,9 +905,9 @@ const Account = () => {
       </div>
 
       {/* Order Details Modal */}
-      <AnimatePresence>
+      <AnimatePresence >
         {selectedOrderId && (
-          <OrderDetailsModal
+          <OrderDetailsModal 
             orderId={selectedOrderId}
             onClose={() => setSelectedOrderId(null)}
           />
