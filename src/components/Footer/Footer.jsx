@@ -36,7 +36,7 @@ export default function Footer() {
       <div className="absolute top-0 left-0 w-full h-full  z-0"></div>
 
       {/* Main Content Container - z-10 ensures it's on top of the video and overlay */}
-      <div className="container mx-auto px-6 py-12 md:py-16 relative z-10">
+      <div className="container mx-auto px-6 py-12 md:py-16 relative z-2">
         {/* Desktop Layout */}
         <div className="hidden md:grid md:grid-cols-3 md:gap-12">
 
