@@ -108,7 +108,7 @@ const handleDownload = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="bg-black/20 backdrop-blur-lg rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-lg relative z-10"
+        className="bg-black/20 backdrop-blur-lg rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-lg relative"
       >
         {/* Verification Form View */}
         {!ticket && (

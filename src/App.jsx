@@ -162,7 +162,7 @@ function AppContent() {
       {/* 1. Background Video */}
       
       
-   <div className="relative z-10">
+   <div className="relative">
       <Routes>
         <Route path="/" element={
           <main>
@@ -240,7 +240,7 @@ function AppContent() {
 
 function App() {
   return (
-    <div className="relative z-[1000]">
+    <div className="relative z-[15]">
     <ErrorBoundary>
       <CartProvider>
         <AuthProvider>
