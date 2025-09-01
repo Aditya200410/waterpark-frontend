@@ -330,10 +330,10 @@ const Header = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMobileMenuOpen(false)} className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[20000]" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMobileMenuOpen(false)} className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[40]" />
             <motion.div
               variants={mobileMenuVariants} initial="closed" animate="open" exit="closed"
-              className="fixed top-0 left-0 h-full w-full max-w-sm bg-transparent backdrop-blur-sm z-[20001] flex flex-col shadow-2xl"
+              className="fixed top-0 left-0 h-full w-full max-w-sm bg-transparent backdrop-blur-sm z-[201] flex flex-col shadow-2xl"
             >
               <div className="flex items-center justify-between p-5 border-b border-white/20">
                 <Link to="/" onClick={() => setIsMobileMenuOpen(false)}><img src={logo} alt="Waterpark Chalo" className="h-12 w-auto" /></Link>
@@ -405,7 +405,7 @@ const Header = () => {
       </AnimatePresence>
 
       {/* Mobile Bottom Navigation - Unchanged */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 border-t border-gray-200 z-[9999] backdrop-blur-lg">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 border-t border-gray-200 z-[109] backdrop-blur-lg">
         <nav className="flex justify-around items-center h-16 px-2">
           <Link to="/" className="flex flex-col items-center justify-center text-gray-600 hover:text-cyan-500 transition-colors duration-200 w-1/4">
             <Home className="w-6 h-6" />

@@ -56,7 +56,7 @@ const ProductView = () => {
   const [isSpecialDay, setIsSpecialDay] = useState(false);
 
   const tabs = [
-    { id: 'description', label: 'specifications', icon: DocumentTextIcon },
+    { id: 'description', label: 'Specifications', icon: DocumentTextIcon },
     { id: 'specifications', label: 'Description', icon: CogIcon },
     { id: 'FAQ', label: 'FAQ', icon: TruckIcon },
     { id: 'reviews', label: 'Reviews', icon: ChatBubbleLeftRightIcon },

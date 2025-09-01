@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react"; 
 import { motion } from "framer-motion";
 import { ArrowLeftIcon, TicketIcon, ArrowDownTrayIcon } from "@heroicons/react/24/solid";
 import toast from "react-hot-toast";
 import html2canvas from "html2canvas";
 
 const Ticket = () => {
+ const ticketRef = useRef(null); // Create the ref here
   const [ticketId, setTicketId] = useState("");
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -36,31 +37,30 @@ const Ticket = () => {
       setLoading(false);
     }
   };
-
-  const handleDownload = () => {
-    const ticketElement = document.getElementById("ticket-to-download");
-    if (ticketElement) {
-      toast.loading("Preparing download...", { duration: 1000 });
-      html2canvas(ticketElement, {
-        scale: 2.5, // Higher resolution for clarity
-        useCORS: true, // Needed for external images
-        backgroundColor: '#ffffff', // Ensures the background is not transparent
-      }).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.href = imgData;
-        link.download = `resort-ticket-${ticket?._id || "details"}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      });
-    }
-  };
+const handleDownload = () => {
+  const ticketElement = ticketRef.current; // Use the ref's current property
+  if (ticketElement) {
+    toast.loading("Preparing download...", { duration: 1000 });
+    html2canvas(ticketElement, {
+      scale: 0.8,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = imgData;
+      link.download = `resort-ticket-${ticket?._id || "details"}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  }
+};
 
   const remainingAmount = ticket ? ticket.totalAmount - ticket.advanceAmount : 0;
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 font-sans overflow-hidden relative">
+    <div className="min-h-screen w-full flex mt-10 flex-col items-center justify-start p-4 font-sans overflow-hidden relative">
       {/* Animated bubbles for water theme */}
   {[...Array(10)].map((_, i) => (
     <motion.div
@@ -110,6 +110,7 @@ const Ticket = () => {
         {/* Render the compact ticket design */}
         {ticket && (
           <motion.div
+          ref={ticketRef}
             id="ticket-to-download"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -164,7 +165,7 @@ const Ticket = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex items-center space-x-4 mt-6">
-            <a href="/" className="text-sm text-slate-300 hover:text-white flex items-center transition-colors">
+            <a href="/tickets" className="text-sm text-white hover:text-white flex items-center transition-colors">
               <ArrowLeftIcon className="h-4 w-4 mr-1.5" /> Back to Search
             </a>
             <button
