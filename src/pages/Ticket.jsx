@@ -69,7 +69,7 @@ const WaterparkTicket = () => {
       key={i}
       animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
       transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
-      className="absolute w-6 h-6 rounded-full bg-blue-300 "
+      className="absolute w-6 h-6 rounded-full bg-blue-300 z-[-1] "
       style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
     />
   ))} {/* Ticket Container */}

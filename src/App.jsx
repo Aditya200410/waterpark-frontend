@@ -228,7 +228,7 @@ function AppContent() {
           message={toast.message}
           type={toast.type}
           onClose={() => setToast(null)}
-          className="z-[1111111111111]"
+          className="z-[91111]"
         />
       )}
         <WhatsAppButton />
