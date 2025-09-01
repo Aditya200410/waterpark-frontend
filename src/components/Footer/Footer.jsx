@@ -161,8 +161,8 @@ export default function Footer() {
         <div className="border-t border-white/20 mt-10 pt-6 text-center">
           <div className="flex justify-center space-x-4 mb-4">
             <a href="https://www.facebook.com/people/Waterpark-chalo/61568891087635" target="_blank" rel="noopener noreferrer" className="p-2.5 bg-white/10 rounded-full hover:bg-blue-600 hover:scale-110 transition-all duration-300"><FaFacebookF /></a>
-            <a href="https://wa.me/9146869202" target="_blank" rel="noopener noreferrer" className="p-2.5 bg-white/10 rounded-full hover:bg-green-500 hover:scale-110 transition-all duration-300"><FaWhatsapp /></a>
-            <a href="https://www.instagram.com/waterpark_chalo/" target="_blank" rel="noopener noreferrer" className="p-2.5 bg-white/10 rounded-full hover:bg-pink-500 hover:scale-110 transition-all duration-300"><FaInstagram /></a>
+            <a href="https://wa.me/918847714464" target="_blank" rel="noopener noreferrer" className="p-2.5 bg-white/10 rounded-full hover:bg-green-500 hover:scale-110 transition-all duration-300"><FaWhatsapp /></a>
+            <a href="https://www.instagram.com/waterpark_chalo/?igshid=OGQ5ZDc2ODk2ZA%3D%3D" target="_blank" rel="noopener noreferrer" className="p-2.5 bg-white/10 rounded-full hover:bg-pink-500 hover:scale-110 transition-all duration-300"><FaInstagram /></a>
             <a href="https://www.youtube.com/@Waterparkchalo" target="_blank" rel="noopener noreferrer" className="p-2.5 bg-white/10 rounded-full hover:bg-red-500 hover:scale-110 transition-all duration-300"><FaYoutube /></a>
           </div>
           <p className="text-white/70 text-sm">
