@@ -728,10 +728,7 @@ const Account = () => {
                           <label className="block text-sm font-medium text-cyan-700 mb-1">Phone</label>
                           <p className="text-lg font-medium text-cyan-900">{user?.phone || 'Not provided'}</p>
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-cyan-700 mb-1">Address</label>
-                          <p className="text-lg font-medium text-cyan-900">{user?.address || 'Not provided'}</p>
-                        </div>
+                      
                       </div>
                     )}
                   </motion.div>
