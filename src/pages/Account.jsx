@@ -531,8 +531,8 @@ const Account = () => {
                   <circle cx="7" cy="7" r="2" fill="#22d3ee" opacity=".6"/>
                 </svg>
                 <div>
-                  <h1 className="text-2xl font-extrabold tracking-tight text-cyan-900">My Aqua Account</h1>
-                  <p className="text-cyan-700 mt-1">
+                  <h1 className="text-2xl font-extrabold tracking-tight text-white">My Aqua Account</h1>
+                  <p className="text-white mt-1">
                     Hey {user?.name || 'Guest'} — manage your profile & tickets. Surf’s up! 🏄‍♂️
                   </p>
                 </div>

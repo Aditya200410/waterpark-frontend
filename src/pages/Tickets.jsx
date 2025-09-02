@@ -94,12 +94,12 @@ const handleDownload = () => {
           <div className="w-full space-y-6">
             <div className="text-center">
               <h2 className="text-4xl font-bold text-white drop-shadow-lg">Ticket Verification</h2>
-              <p className="mt-2 text-slate-300">Enter your Ticket ID to view details.</p>
+              <p className="mt-2 text-white">Enter your Ticket ID to view details.</p>
             </div>
             {error && <p className="text-red-400 bg-red-900/50 p-3 rounded-lg text-sm text-center">{error}</p>}
             <form className="space-y-4" onSubmit={handleFetchTicket}>
               <div>
-                <label htmlFor="ticketId" className="block text-sm font-medium text-slate-300 mb-1">Ticket ID</label>
+                <label htmlFor="ticketId" className="block text-sm font-medium text-white mb-1">Ticket ID</label>
                 <input
                   id="ticketId" type="text" required value={ticketId}
                   onChange={(e) => setTicketId(e.target.value)}
