@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import html2canvas from "html2canvas";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
@@ -11,6 +11,7 @@ const WaterparkTicket = () => {
   const queryParams = new URLSearchParams(location.search);
   const bookingId = queryParams.get("bookingId");
 
+  // This useEffect fetches the booking data
   useEffect(() => {
     if (!initialBooking && bookingId) {
       axios
@@ -26,12 +27,13 @@ const WaterparkTicket = () => {
     }
   }, [bookingId, initialBooking]);
 
-  if (!booking) {
-    return <div className="text-center text-gray-600 mt">Loading or no booking information available...</div>;
-  }
-
-  const handleDownload = () => {
+  // The download handler is wrapped in useCallback for optimization
+  const handleDownload = useCallback(() => {
+    // Make sure booking data and the ticket element are available
+    if (!booking) return;
     const ticketElement = document.getElementById("ticket");
+    if (!ticketElement) return;
+
     html2canvas(ticketElement, {
       scale: 2,
       useCORS: true,
@@ -39,19 +41,41 @@ const WaterparkTicket = () => {
       const imgData = canvas.toDataURL("image/png");
       const link = document.createElement("a");
       link.href = imgData;
-      link.download = "waterpark-ticket.png";
+      // Use a unique filename for the downloaded ticket
+      link.download = `ticket-${booking.customBookingId}.png`;
+      document.body.appendChild(link); // Append link to body for Firefox compatibility
       link.click();
+      document.body.removeChild(link); // Clean up by removing the link
     });
-  };
+  }, [booking]); // This function now depends on the booking data
+
+  // This new useEffect triggers the download automatically
+  useEffect(() => {
+    // Only run this effect if booking data has been loaded
+    if (booking) {
+      // A short timeout ensures the component has fully rendered with the data
+      // before html2canvas tries to capture it.
+      const timer = setTimeout(() => {
+        handleDownload();
+      }, 500); // 500ms delay
+
+      // Clean up the timeout if the component unmounts before it fires
+      return () => clearTimeout(timer);
+    }
+  }, [booking, handleDownload]); // It runs when booking or handleDownload changes
+
+  if (!booking) {
+    return <div className="text-center text-gray-600 mt">Loading or no booking information available...</div>;
+  }
 
   return (
     <div className="flex flex-col items-center bg-gray-100 py-10 pb-24">
-      {/* Download Button */}
+      {/* The download button is kept as a manual fallback */}
       <button
         onClick={handleDownload}
         className="flex items-center gap-2 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-900 mt-24 px-5 py-2 rounded-xl border border-gray-300 shadow-sm hover:shadow-md transition-all duration-300 font-serif"
       >
-        ⬇ Download Ticket
+        ⬇ Download Ticket Again
       </button>
 
       {/* Ticket */}
@@ -78,7 +102,7 @@ const WaterparkTicket = () => {
           <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
             <p>
               <span className="font-semibold">Booking Id:</span>
-              <span className="block break-words">{booking._id}</span>
+              <span className="block break-words">{booking.customBookingId}</span>
             </p>
             <p>
               <span className="font-semibold">Payment Id:</span>{" "}
