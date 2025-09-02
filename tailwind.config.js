@@ -19,6 +19,11 @@ module.exports = {
         'primary-dark': '#005a8e',
         secondary: '#f0f9ff',
         accent: '#ffb703',
+
+        'brand-navy': '#0D1B2A',
+        'brand-gold': '#C09A58',
+        'brand-cream': '#F1E9DB',
+
         blue: {
           400: '#38b6ff',
           500: '#0077be',
@@ -61,6 +66,9 @@ module.exports = {
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
       },
+         backgroundImage: {
+        'gold-gradient': 'linear-gradient(145deg, #E6C68A, #B48B4D)',
+      }
     },
   },
   plugins: [],
