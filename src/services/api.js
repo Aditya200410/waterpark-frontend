@@ -58,11 +58,11 @@ export const orderAPI = {
 };
 
 // Coupon endpoints
-const validateCoupon = (data) => {
-  return axios.post(`${config.API_BASE_URL}/api/coupons/validate`, data);
+export const validateCoupon = (data) => {
+  return axios.post(`${import.meta.env.VITE_APP_API_BASE_URL}/api/coupons/validate`, data);
 };
 
-const applyCoupon = (data) => {
+export const applyCoupon = (data) => {
   return axios.post(`${config.API_BASE_URL}/api/coupons/apply`, data);
 };
 

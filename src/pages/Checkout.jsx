@@ -23,7 +23,7 @@ function CheckoutPage() {
       return location.state;
     }
     const dataFromStorage = localStorage.getItem("checkoutData");
-   console.log(dataFromStorage)
+  
     if (dataFromStorage) {
      
       return JSON.parse(dataFromStorage);
@@ -93,6 +93,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_APP_API_BASE_URL}/api/coupons/validate`,
+     
         {
           code: couponCode,
           cartTotal: paid, // Using original paid for validation
@@ -122,7 +123,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
 
   // Calculate final total after discount
   const finalTotal = paid-discountAmount;
-  console.log(totalamount)
+ 
   const remainingAmount = totalamount-paid;
 
   const handlePayment = async (e) => {
@@ -139,12 +140,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
     }
 
     try {
-      console.log(
-        "Order placed with details:",
-        billingDetails,
-        paymentMethod,
-        resortId
-      );
+     
 
       const response = await axios.post(
         `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/create`,
@@ -198,7 +194,8 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           handler: async function (response) {
             try {
               // Verify payment on backend
-              const verifyResponse = await axios.post(
+              const verifyResponse = await 
+              axios.post(
                 `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
                 {
                   razorpay_order_id: response.razorpay_order_id,
