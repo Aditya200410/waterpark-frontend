@@ -116,7 +116,7 @@ export default function WeeklyBestsellers() {
           className="text-center mb-6 md:mb-8 lg:mb-10"
         >
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
               <span className="font-serif italic"> Weekly Best Booked</span>
             </h2>
          

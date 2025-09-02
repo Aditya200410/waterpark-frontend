@@ -45,8 +45,8 @@ const Testimonials = () => {
 
       <div className="w-full px-4 relative text-center mt-16">
          
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight mb-4 text-gray-900 ">
-              <span className="font-serif italic mb-10">Read our projects</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight mb-4 text-gray-900 ">
+              <span className="font-serif italic mb-10">Read our Reviews</span>
             </h2>
            
             <div className="w-16 md:w-20 h-0.5 bg-[#0077B6] mx-auto"></div>

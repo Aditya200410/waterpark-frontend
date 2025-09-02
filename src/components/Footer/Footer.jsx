@@ -189,7 +189,7 @@ export default function Footer() {
               Appzeto
             </a>
           </p>
-          <div className="flex justify-center mt-5 space-x-4 mb-4">
+          <div className="flex justify-center mt-5 space-x-4 mb-8 md:mb-0">
             <a href="https://www.facebook.com/people/Waterpark-chalo/61568891087635" target="_blank" rel="noopener noreferrer" className="p-2.5  rounded-full bg-blue-600 hover:scale-110 transition-all duration-300"><FaFacebookF /></a>
             <a href="https://wa.me/918847714464" target="_blank" rel="noopener noreferrer" className="p-2.5  rounded-full bg-green-500 hover:scale-110 transition-all duration-300"><FaWhatsapp /></a>
             <a href="https://www.instagram.com/waterpark_chalo/?igshid=OGQ5ZDc2ODk2ZA%3D%3D" target="_blank" rel="noopener noreferrer" className="p-2.5  rounded-full bg-pink-500 hover:scale-110 transition-all duration-300"><FaInstagram /></a>

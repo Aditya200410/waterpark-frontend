@@ -104,7 +104,7 @@ export default function FeaturedProducts() {
       <section className="py-6 md:py-10 lg:py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 md:mb-8 lg:mb-10">
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
               <span className="font-serif italic"> Featured Products</span>
             </h2>
           </div>
@@ -132,7 +132,7 @@ export default function FeaturedProducts() {
           className="text-center mb-6 md:mb-8 lg:mb-10"
         >
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
             Featured <span className="font-serif italic">Parks</span>
           </h2>
           

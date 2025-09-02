@@ -43,7 +43,7 @@ export default function OurPartners() {
           viewport={{ once: true }}
           className="text-center mb-12 md:mb-16"
         >
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
             <span className="font-serif italic">Explore Our Partners</span>
           </h2>
           <div className="w-16 md:w-20 h-0.5 bg-[#0077B6] mx-auto"></div>
