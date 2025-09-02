@@ -505,12 +505,7 @@ const Account = () => {
     <>
       {/* Water-park header backdrop */}
       <div className="min-h-screen relative">
-        {/* top waves */}
-        <div className="absolute inset-x-0 -top-1">
-          <svg viewBox="0 0 1440 80" className="w-full h-16">
-            <path fill="#e0f2fe" d="M0,64L60,53.3C120,43,240,21,360,16C480,11,600,21,720,37.3C840,53,960,75,1080,69.3C1200,64,1320,32,1380,16L1440,0L1440,0L0,0Z"></path>
-          </svg>
-        </div>
+       
 
         {/* floating bubbles around */}
         <Bubble className="h-24 w-24 right-6 top-24" />
