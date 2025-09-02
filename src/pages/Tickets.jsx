@@ -50,7 +50,7 @@ const handleDownload = () => {
   if (ticketElement) {
     toast.loading("Preparing download...", { duration: 1000 });
     html2canvas(ticketElement, {
-      scale: 0.8,
+      scale: 2.5,
       useCORS: true,
       backgroundColor: '#ffffff',
     }).then((canvas) => {
@@ -172,9 +172,9 @@ const handleDownload = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex items-center space-x-4 mt-6">
+            className="flex items-center space-x-4 mt-6 text-white">
             <a href="/tickets" className="text-sm text-white hover:text-white flex items-center transition-colors">
-              <ArrowLeftIcon className="h-4 w-4 mr-1.5" /> Back to Search
+              <ArrowLeftIcon className="h-4 w-4 mr-1.5 text-white" /> Back to Search
             </a>
             <button
                 onClick={handleDownload}
