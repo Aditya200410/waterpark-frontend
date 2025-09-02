@@ -55,7 +55,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-fit flex flex-col lg:flex-row font-roboto  bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
+    <div className="h-screen flex flex-col lg:flex-row font-roboto  bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
 
       {/* Left Side - Form */}
       <motion.div
@@ -162,9 +162,7 @@ const ForgotPassword = () => {
           {step === 3 && (
             <div className="text-center space-y-4">
               <p className="text-green-700 font-semibold">Password reset successful!</p>
-              <Link to="/login" className="text-cyan-600 hover:text-cyan-500 flex items-center justify-center">
-                <ArrowLeftIcon className="h-5 w-5 mr-1" /> Back to Sign In
-              </Link>
+             
             </div>
           )}
 

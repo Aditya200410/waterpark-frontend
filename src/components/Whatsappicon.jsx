@@ -19,7 +19,7 @@ const WhatsAppButton = () => {
 
       <button
            onClick={handleClick}
-          className=" fixed bottom-20 left-6 z-[100] w-16 h-16 bg-green-500 text-white  rounded-full shadow-lg hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          className=" fixed bottom-[100px] left-6 z-[100] w-16 h-16 bg-green-500 text-white  rounded-full shadow-lg hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
           aria-label="Scroll to top"
         >
           <FaWhatsapp className="w-10 h-10" />
