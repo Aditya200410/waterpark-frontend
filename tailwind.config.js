@@ -10,7 +10,8 @@ module.exports = {
     extend: {
       fontFamily: {
         // Updated default font family to Nunito
-        sans: ['Nunito', 'sans-serif'],
+                sans: ['Inter', 'sans-serif'], // Sets Inter as the default body font
+        display: ['Poppins', 'sans-serif'],
       },
       colors: {
         // Your old palette

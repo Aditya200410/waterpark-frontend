@@ -60,8 +60,8 @@ const ProductView = () => {
     { id: 'specifications', label: 'Description', icon: CogIcon },
     { id: 'FAQ', label: 'FAQ', icon: TruckIcon },
     { id: 'reviews', label: 'Reviews', icon: ChatBubbleLeftRightIcon },
-    { id: 'video', label: 'video', icon: Video },
-    { id: 'map', label: 'map', icon: MapPin },
+    { id: 'video', label: 'Video', icon: Video },
+    { id: 'map', label: 'Map', icon: MapPin },
   ];
 
   // --- DATA FETCHING HOOKS ---
@@ -336,64 +336,149 @@ const ProductView = () => {
             </div>
             
             <div className="py-8">
-              <AnimatePresence mode="wait">
-                  {activeTab === 'description' && (<motion.div key="description" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.4 }} className="grid grid-cols-1 md:grid-cols-2 gap-6"><div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg"><h4 className="font-bold text-[#03045E] mb-3 text-lg">💡 Features</h4><div className="space-y-2 text-sm text-[#023E8A]">{product.utility ? product.utility.split(/\r?\n/).map((line, index) => (<p key={index} className="font-medium">{line.trim()}</p>)) : <p>N/A</p>}</div></div><div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg"><h4 className="font-bold text-[#03045E] mb-3 text-lg">🏝️ Facility</h4><p className="text-sm text-[#023E8A] whitespace-pre-line">{product.care || 'Care instructions not available'}</p></div></motion.div>)}
-{activeTab === 'specifications' && (
-  <motion.div 
-    key="specifications" 
-    initial={{ opacity: 0, y: 30 }} 
-    animate={{ opacity: 1, y: 0 }} 
-    exit={{ opacity: 0, y: -30 }} 
-    transition={{ duration: 0.4 }} 
-    className="space-y-6"
-  >
-    {/* Basic Info Section */}
-    <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-      <h4 className="font-bold text-[#03045E] mb-1 text-lg">ℹ️ Basic Information</h4>
-      
-      <div className="grid grid-cols-1 md:grid-cols-1  gap-4">
-         
-        <div>
-          <span className="text-lg font-bold mb-10 text-gray-600">Product description</span>
-          <p className="text-base font-semibold text-[#023E8A]">{product.description}</p>
-        </div>
-        <div>
-          <span className="text-lg font-bold mb-10 text-gray-600">Location</span>
-          <p className="text-base font-semibold text-[#023E8A]">{product.category}</p>
+           <AnimatePresence mode="wait">
+  {activeTab === 'description' && (
+    <motion.div 
+      key="description" 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      exit={{ opacity: 0, y: -20 }} 
+      transition={{ duration: 0.3 }} 
+      className="grid grid-cols-1 md:grid-cols-2 gap-8"
+    >
+      {/* Features Panel */}
+      <div className="p-6 rounded-3xl bg-white/60 backdrop-blur-lg border border-sky-200/50 shadow-2xl shadow-sky-900/10">
+        <h4 className="font-display font-bold text-sky-900 mb-4 text-xl flex items-center gap-2">
+          💡 Features
+        </h4>
+        <div className="space-y-3 font-sans text-sky-800 leading-relaxed">
+          {product.utility ? product.utility.split(/\r?\n/).map((line, index) => (
+            <p key={index} className="font-medium">{line.trim()}</p>
+          )) : <p>N/A</p>}
         </div>
       </div>
-    </div>
+      {/* Facility Panel */}
+      <div className="p-6 rounded-3xl bg-white/60 backdrop-blur-lg border border-sky-200/50 shadow-2xl shadow-sky-900/10">
+        <h4 className="font-display font-bold text-sky-900 mb-4 text-xl flex items-center gap-2">
+          🏝️ Facility
+        </h4>
+        <p className="font-sans text-sky-800 whitespace-pre-line leading-relaxed">
+          {product.care || 'Facility information not available'}
+        </p>
+      </div>
+    </motion.div>
+  )}
 
-    {/* Pricing Section */}
-    <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CAF0F8] to-[#ADE8F4] shadow-lg">
-      <h4 className="font-bold text-[#03045E] mb-3 text-lg">💵 Pricing</h4>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <span className="text-xs text-gray-600">Adult Ticket</span>
-          <p className="font-bold text-xl text-[#0077B6]">₹{product.adultprice?.toFixed(2) || 'N/A'}</p>
-        </div>
-        <div>
-          <span className="text-xs text-gray-600">Child Ticket</span>
-          <p className="font-bold text-xl text-[#0077B6]">₹{product.childprice?.toFixed(2) || 'N/A'}</p>
+  {activeTab === 'specifications' && (
+    <motion.div 
+      key="specifications" 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      exit={{ opacity: 0, y: -20 }} 
+      transition={{ duration: 0.3 }} 
+      className="space-y-8"
+    >
+      {/* Basic Info Panel */}
+      <div className="p-6 rounded-3xl bg-white/60 backdrop-blur-lg border border-sky-200/50 shadow-2xl shadow-sky-900/10">
+        <h4 className="font-display font-bold text-sky-900 mb-4 text-xl flex items-center gap-2">
+          ℹ️ Basic Information
+        </h4>
+        <div className="space-y-4">
+          <div>
+            <h5 className="font-display text-lg font-bold mb-2 text-sky-900">Description</h5>
+            <p className="font-sans text-sky-800 leading-relaxed">{product.description}</p>
+          </div>
+          <div>
+            <h5 className="font-display text-lg font-bold mb-2 text-sky-900">Location</h5>
+            <p className="font-sans text-sky-800 leading-relaxed">{product.category}</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    
-  </motion.div>
-)}                  {activeTab === 'FAQ' && (<motion.div key="FAQ" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.4 }} dangerouslySetInnerHTML={{ __html: product.faq?.replace(/\n/g, "<br/>") }} />)}
-                  {activeTab === 'video' && (<motion.div key="video" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.4 }}>{product.videos?.length > 0 ? (<div className="grid grid-cols-1 md:grid-cols-2 gap-6">{product.videos.map((videoUrl, index) => (<div key={index} className="bg-gray-100 rounded-lg overflow-hidden shadow-lg"><video src={videoUrl} controls className="w-full h-auto" preload="metadata" /></div>))}</div>) : (<p>No videos available.</p>)}</motion.div>)}
-                  {activeTab === 'map' && (<motion.div key="map" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.4 }}><iframe title="map" src={product.maplink} width="100%" height="450" style={{border:0}} allowFullScreen="" loading="lazy"></iframe></motion.div>)}
-                  {activeTab === 'reviews' && (<motion.div key="reviews" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.4 }} className="space-y-6">{reviewsLoading ? <p>Loading reviews...</p> : (<><ReviewForm productId={product._id} existingReview={userReview} onReviewSubmitted={handleReviewSubmitted} onReviewUpdated={handleReviewUpdated} onReviewDeleted={handleReviewDeleted} /><ReviewList reviews={reviews} /></>)}</motion.div>)}
-              </AnimatePresence>
+      {/* Pricing Panel */}
+      <div className="p-6 rounded-3xl bg-white/60 backdrop-blur-lg border border-sky-200/50 shadow-2xl shadow-sky-900/10">
+        <h4 className="font-display font-bold text-sky-900 mb-4 text-xl flex items-center gap-2">
+          💵 Pricing
+        </h4>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div>
+            <span className="font-sans text-sm font-medium text-sky-700">Adult Ticket</span>
+            <p className="font-display font-bold text-3xl text-cyan-600 mt-1">₹{product.adultprice?.toFixed(0) || 'N/A'}</p>
+          </div>
+          <div>
+            <span className="font-sans text-sm font-medium text-sky-700">Child Ticket</span>
+            <p className="font-display font-bold text-3xl text-cyan-600 mt-1">₹{product.childprice?.toFixed(0) || 'N/A'}</p>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )}
+
+  {activeTab === 'FAQ' && (
+    <motion.div 
+      key="FAQ" 
+      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}
+      className="p-6 rounded-3xl bg-white/60 backdrop-blur-lg border border-sky-200/50 shadow-2xl shadow-sky-900/10 font-sans text-sky-800 leading-relaxed"
+      dangerouslySetInnerHTML={{ __html: product.faq?.replace(/\n/g, "<br/>") }} 
+    />
+  )}
+
+  {activeTab === 'video' && (
+    <motion.div key="video" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+      {product.videos?.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {product.videos.map((videoUrl, index) => (
+            <div key={index} className="rounded-2xl overflow-hidden shadow-xl">
+              <video src={videoUrl} controls className="w-full h-auto" preload="metadata" />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="font-sans text-center p-8">No videos available.</p>
+      )}
+    </motion.div>
+  )}
+
+  {activeTab === 'map' && (
+    <motion.div key="map" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+      <iframe 
+        title="map" 
+        src={product.maplink} 
+        width="100%" 
+        height="450" 
+        className="border-0 rounded-2xl shadow-xl"
+        allowFullScreen="" 
+        loading="lazy">
+      </iframe>
+    </motion.div>
+  )}
+
+  {activeTab === 'reviews' && (
+    <motion.div 
+      key="reviews" 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      exit={{ opacity: 0, y: -20 }} 
+      transition={{ duration: 0.3 }} 
+      className="space-y-8"
+    >
+      {reviewsLoading ? <p>Loading reviews...</p> : (
+        <>
+          <ReviewForm productId={product._id} existingReview={userReview} onReviewSubmitted={handleReviewSubmitted} onReviewUpdated={handleReviewUpdated} onReviewDeleted={handleReviewDeleted} />
+          <ReviewList reviews={reviews} />
+        </>
+      )}
+    </motion.div>
+  )}
+</AnimatePresence>
             </div>
             
             {/* Booking Section */}
             <div ref={bookingSectionRef} className="space-y-6 pt-4 border-t-2 border-dashed border-[#0096C7]">
-              <div className="mt-6 relative z-5">
+              <div className=" relative z-5">
                 <CustomCalendar selectedDate={selectedDate} onDateChange={(d) => setSelectedDate(d)} normalPrice={product.adultprice} weekendPrice={product.weekendprice} specialDates={weekendSetting?.value?.dates || []} isPricingActive={weekendSetting?.value?.status || false} />
               </div>
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center  justify-center gap-10">
                   <div className="flex items-center gap-2">
                       <label className="text-sm font-medium text-gray-700">👨 Adult:</label>
                       <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
@@ -402,7 +487,7 @@ const ProductView = () => {
                           <button onClick={() => handleadultQuantityChange(adultquantity + 1)} className="px-3 py-2 hover:bg-[#CAF0F8] transition-colors">+</button>
                       </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 ">
                       <label className="text-sm font-medium text-gray-700">👧 Child:</label>
                       <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
                           <button onClick={() => handlechildQuantityChange(childquantity - 1)} className="px-3 py-2 hover:bg-[#CAF0F8] transition-colors disabled:opacity-50" disabled={childquantity <= 0}>-</button>
@@ -424,20 +509,22 @@ const ProductView = () => {
                     </tbody>
                     <tfoot><motion.tr className="bg-[#48CAE4] text-[#03045E] font-bold text-base"><td className="px-4 py-3 text-left" colSpan={3}>💰 Grand Total</td><td className="px-4 py-3 text-right">₹{grandTotal.toFixed(2)}</td></motion.tr></tfoot>
                   </table>
-                  <table className="w-full text-sm text-white">
+                  <table className="w-full text-sm text-white ">
                       <tbody>
                           <motion.tr className=" bg-[#48CAE4] text-[#03045E] font-bold "><td className="px-4 py-3 font-bold text-left" colSpan={3}>💰 Pay Now</td><td className="px-4 py-3 text-right">₹{advanceTotal.toFixed(2)}</td></motion.tr>
                           <motion.tr className=" bg-[#48CAE4] text-[#03045E] font-bold transition"><td className="px-4 py-3 font-bold" colSpan={3}>💰 Pay In Waterpark</td><td className="px-4 py-3 text-right">₹{(grandTotal - advanceTotal).toFixed(2)}</td></motion.tr>
                       </tbody>
                   </table>
+
+             
                 </motion.div>
               </div>
-
-              {/* Action Buttons */}
+      {/* Action Buttons */}
               <div className="flex items-center gap-4">
                   <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={handleOpenTermsModal} disabled={isOutOfStock} className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-full font-bold text-lg transition-all shadow-lg ${isOutOfStock ? 'bg-gray-400 text-gray-600 cursor-not-allowed' : 'bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white hover:shadow-xl'}`}>{isOutOfStock ? 'CURRENTLY UNAVAILABLE' : 'BOOK NOW'}</motion.button>
-                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="p-4 bg-white border border-gray-300 rounded-full hover:bg-[#CAF0F8] transition-colors shadow-md" onClick={handleShare}><ShareIcon className="h-5 w-5 text-gray-600" /></motion.button>
+                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className=" p-4 bg-white border border-gray-300 rounded-full hover:bg-[#CAF0F8] transition-colors shadow-md" onClick={handleShare}><ShareIcon className="h-5 w-5 text-gray-600" /></motion.button>
               </div>
+             
             </div>
           </motion.div>
         </div>
