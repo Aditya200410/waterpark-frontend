@@ -74,13 +74,13 @@ const Contact = () => {
       <div className="font-sans   text-deep-blue w-full overflow-hidden min-h-screen">
  
         {/* HERO SECTION */}
-        <section className="relative text-center py-20 px-4 sm:py-28 bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600overflow-hidden">
+        <section className="relative text-center py-20 px-4 sm:py-28 overflow-hidden">
           {[...Array(10)].map((_, i) => (
     <motion.div
       key={i}
       animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
       transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
-      className="absolute w-6 h-6 rounded-full bg-blue-300 "
+      className="absolute w-6 h-6 rounded-full bg-blue-300 z-[-1] "
       style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
     />
   ))}
@@ -90,18 +90,13 @@ const Contact = () => {
             initial="hidden"
             animate="visible"
           >
-            <motion.div variants={itemVariants} className="flex justify-center items-center gap-3 mb-6">
-              <Waves className="text-white/80" size={32} />
-              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-wider">Get In Touch</h2>
-              <Waves className="text-white/80" size={32} />
-            </motion.div>
-
-            <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
-              Slide Into Our <span className="text-white">DMs</span>
+        
+            <motion.h1 variants={itemVariants} className="text-4xl italic font-serif sm:text-5xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
+              Slide Into Our DMs <span className="text-white"></span>
             </motion.h1>
 
             <motion.p variants={itemVariants} className="text-base sm:text-lg text-white/90 max-w-2xl mx-auto">
-              Got a question or ready to book your next splash-tastic adventure? We're all ears!
+              Got a question or ready to book your next splash-tastic adventure? 
             </motion.p>
           </motion.div>
         
@@ -166,7 +161,7 @@ const Contact = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             >
-              <div className="bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 p-6 sm:p-10 rounded-3xl shadow-lg shadow-water-blue/20 text-white h-full">
+              <div className="bg-gradient-to-b from-blue-900 via-blue-600 to-blue-600 p-6 sm:p-10 rounded-3xl shadow-lg shadow-water-blue/20 text-white h-full">
                 <h3 className="text-2xl sm:text-3xl font-bold mb-8 text-white">Contact Info</h3>
                 <ul className="space-y-6">
                   <InfoItem icon={<Building />} label="Company" value={contactInfo.company} />
