@@ -196,11 +196,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
                 <div className="p-6 bg-gray-50">
                   <h4 className="font-serif font-bold text-center mb-4 text-gray-700 text-lg">Terms & Conditions</h4>
                   <ul className="list-disc list-inside text-sm text-gray-600 space-y-2">
-                    <li>Show this coupon at the counter & pay the remaining amount.</li>
-                    <li>Remaining payment must be made in cash.</li>
-                    <li>Alcohol is strictly prohibited.</li>
-                    <li>For refund/cancellation, contact us 24 hours prior to your check-in date.</li>
-                    <li>Management holds the final decision in case of any dispute.</li>
+                 {order.terms}
                   </ul>
                 </div>
 

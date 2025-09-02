@@ -193,7 +193,8 @@ const ProductView = () => {
       resortId: product._id, resortName: product.name,
       adultCount: adultquantity, childCount: childquantity,
       date: selectedDate, paid: advanceTotal,
-      totalamount: grandTotal, waternumber: product.waternumber
+      totalamount: grandTotal, waternumber: product.waternumber,
+      terms:product.terms
     };
     console.log(checkoutData)
     try {

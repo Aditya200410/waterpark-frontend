@@ -42,6 +42,7 @@ function CheckoutPage() {
     totalamount,
     resortId,
     waternumber,
+    terms,
   } = checkoutData;
 
 const formattedDate = new Date(date).toISOString().split("T")[0];
@@ -55,7 +56,8 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
      date: formattedDate, // ✅ sending ISO-supported date
     createAccount: false,
     total: totalamount,
-    advance:paid
+    advance:paid,
+    terms
   });
 
   useEffect(() => {
@@ -158,7 +160,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           total: finalTotal,
           advanceAmount: finalTotal,
           paymentType: paymentMethod,
-          
+          terms:terms
       
         }
       );

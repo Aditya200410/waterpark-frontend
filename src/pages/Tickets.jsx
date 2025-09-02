@@ -175,12 +175,7 @@ const Ticket = () => {
               <div className="mt-6 bg-gray-50 border border-gray-100 rounded-xl p-4 text-gray-700 text-xs">
                 <h4 className="font-bold text-center mb-3 text-gray-800 text-sm">IMPORTANT INFORMATION</h4>
                 <ul className="list-disc list-inside space-y-1.5 sm:grid sm:grid-cols-2 sm:gap-x-6">
-                    <li>Present this ticket at the counter for entry.</li>
-                    <li>Balance payment strictly in cash.</li>
-                    <li>Arrive early to enjoy all attractions.</li>
-                    <li>Outside food & beverages are not allowed.</li>
-                    <li>Contact support 24 hours prior for changes/cancellations.</li>
-                    <li>Management reserves the right of admission.</li>
+                   {ticket.terms}
                 </ul>
               </div>
 
