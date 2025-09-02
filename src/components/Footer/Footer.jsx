@@ -125,35 +125,56 @@ export default function Footer() {
           </div>
 
           <div className="grid grid-cols-2 gap-6 text-sm">
+           <div>
+            <h4 className="text-xl font-semibold mb-5 tracking-wide">Useful Links</h4>
+            <ul className="space-y-2 text-white/90">
+                <li className="flex items-center">
+                    <span className="w-1.5 h-1.5 bg-yellow-300 rounded-full mr-3"></span>
+                    <AnimatedLink to="/about">About Us</AnimatedLink>
+                </li>
+                <li className="flex items-center">
+                    <span className="w-1.5 h-1.5 bg-yellow-300 rounded-full mr-3"></span>
+                    <AnimatedLink to="/contact">Contact Us</AnimatedLink>
+                </li>
+                <li className="flex items-center">
+                    <span className="w-1.5 h-1.5 bg-yellow-300 rounded-full mr-3"></span>
+                    <AnimatedLink to="/policies">Terms and condition</AnimatedLink>
+                </li>
+                <li className="flex items-center">
+                    <span className="w-1.5 h-1.5 bg-yellow-300 rounded-full mr-3"></span>
+                    <AnimatedLink to="/gallery">Gallery</AnimatedLink>
+                </li>
+                <li className="flex items-center">
+                    <span className="w-1.5 h-1.5 bg-yellow-300 rounded-full mr-3"></span>
+                    <AnimatedLink to="/blog">Blog</AnimatedLink>
+                </li>
+                <li className="flex items-center">
+                    <span className="w-1.5 h-1.5 bg-yellow-300 rounded-full mr-3"></span>
+                    <AnimatedLink to="/tickets">Tickets</AnimatedLink>
+                </li>
+                <li className="flex items-center">
+                    <span className="w-1.5 h-1.5 bg-yellow-300 rounded-full mr-3"></span>
+                    <AnimatedLink to="/offers">Offers</AnimatedLink>
+                </li>
+            </ul>
+          </div>
             <div>
-              <h4 className="text-2xl font-semibold mb-4">Links</h4>
-              <ul className="space-y-2 text-lg">
-                <li><AnimatedLink to="/about">About Us</AnimatedLink></li>
-                <li><AnimatedLink to="/contact">Contact Us</AnimatedLink></li>
-                <li><AnimatedLink to="/policies">Terms and condition</AnimatedLink></li>
-                <li><AnimatedLink to="/gallery">Gallery</AnimatedLink></li>
-                <li><AnimatedLink to="/blog">Blog</AnimatedLink></li>
-                <li><AnimatedLink to="/tickets">Tickets</AnimatedLink></li>
-                <li><AnimatedLink to="/offers">Offers</AnimatedLink></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Contact</h4>
-              <ul className="space-y-3">
-                <li className="flex items-center space-x-2">
-                  <Phone className="w-4 h-4 flex-shrink-0" />
-                  <a href="tel:+918847714464" className="hover:text-yellow-300">+91 88477 14464</a>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <Mail className="w-4 h-4 flex-shrink-0" />
-                  <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-300">Email Us</a>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <MapPin className="w-4 h-4 mt-1 flex-shrink-0" />
-                  <span>110, Lakshmi Apt 1, Alkapuri, Nallasopara</span>
-                </li>
-              </ul>
-            </div>
+            <h4 className="text-xl font-semibold mb-5 tracking-wide">Contact & Location</h4>
+            <ul className="space-y-3 text-white/90">
+              <li className="flex items-center space-x-3">
+                <Phone className="w-5 h-5 text-yellow-300 flex-shrink-0" />
+                <a href="tel:+918847714464" className="hover:text-yellow-300 transition-colors">+91 88477 14464</a>
+              </li>
+              <li className="flex items-center space-x-3">
+                <Mail className="w-5 h-5 text-yellow-300 flex-shrink-0" />
+                <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-300 transition-colors">wpc@waterparkchalo.com</a>
+              </li>
+              <li className="flex items-start space-x-3">
+                <MapPin className="w-5 h-5 text-yellow-300 mt-1 flex-shrink-0" />
+                <span>110, Lakshmi Apt 1, Alkapuri, Nallasopara</span>
+              </li>
+            </ul>
+          </div>
           </div>
         </div>
 
