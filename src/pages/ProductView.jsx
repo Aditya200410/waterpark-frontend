@@ -271,12 +271,12 @@ const ProductView = () => {
                       <div className="absolute top-3 right-3 bg-[#03045E]/70 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">📷 {productImages.length} Photos</div>
                       <motion.button whileHover={{ x: -5, scale: 1.1 }} className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-[#90E0EF] text-[#0077B6] p-3 rounded-full shadow-lg border-2 border-[#0077B6]/30 transition-all" onClick={handlePreviousImage}><ChevronLeftIcon className="h-6 w-6" /></motion.button>
                       <motion.button whileHover={{ x: 5, scale: 1.1 }} className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-[#90E0EF] text-[#0077B6] p-3 rounded-full shadow-lg border-2 border-[#0077B6]/30 transition-all" onClick={handleNextImage}><ChevronRightIcon className="h-6 w-6" /></motion.button>
-                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#023E8A]/80 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">{selectedImage + 1} / {productImages.length}</motion.div>
+                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="absolute bottom-3 left-1/6 -translate-x-1/2 bg-[#023E8A]/80 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">{selectedImage + 1} / {productImages.length}</motion.div>
                   </>
               )}
             </div>
             {productImages.length > 1 && (
-              <div className="grid grid-cols-4 gap-3">
+              <div className="hidden md:grid grid-cols-4 gap-3">
                 {productImages.map((image, index) => (
                   <motion.button key={index} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setSelectedImage(index)} className={`aspect-square rounded-xl overflow-hidden border-2 transition-all relative shadow-sm ${selectedImage === index ? 'border-[#0077B6] shadow-lg' : 'border-transparent hover:border-[#0077B6]/30'}`}>
                     <img src={image} alt={`${product.name} - Image ${index + 1}`} className="w-full h-full object-cover bg-white" />
