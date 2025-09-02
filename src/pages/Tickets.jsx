@@ -118,7 +118,7 @@ const Ticket = () => {
                   id="ticketId" type="text" required value={ticketId}
                   onChange={(e) => setTicketId(e.target.value)}
                   className="block w-full px-4 py-3 border border-slate-700 rounded-xl bg-slate-800/60 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all duration-300"
-                  placeholder="e.g., SPLASH-67890"
+                  placeholder="e.g., waterPark67890"
                 />
               </div>
               <button type="submit" disabled={loading} className="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-700 rounded-xl font-semibold text-white hover:scale-105 shadow-lg flex justify-center items-center space-x-2 transition-all duration-300 disabled:opacity-50 disabled:scale-100">
