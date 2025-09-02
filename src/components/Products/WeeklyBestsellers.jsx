@@ -117,11 +117,9 @@ export default function WeeklyBestsellers() {
         >
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
-              Weekly <span className="font-serif italic">Best Booked</span>
+              <span className="font-serif italic"> Weekly Best Booked</span>
             </h2>
-            <p className="text-gray-600 text-sm md:text-base lg:text-lg leading-relaxed mb-4 md:mb-6 max-w-2xl mx-auto">
-              The most popular Parks that customers can't stop talking about
-            </p>
+         
             <div className="w-16 md:w-20 h-0.5 bg-gradient-to-r from-[#0077B6] to-[#0077B6] mx-auto"></div>
           </div>
         </motion.div>
@@ -176,9 +174,7 @@ export default function WeeklyBestsellers() {
             className="text-center mt-6 md:mt-8"
           >
             <div className="max-w-md mx-auto">
-              <p className="text-gray-600 text-sm mb-4 md:mb-6">
-                Discover more  in our collection
-              </p>
+              
               <Link 
                 to="/shop" 
                 className="inline-flex items-center px-6 md:px-8 py-3 md:py-4 bg-[#0077B6] text-white rounded-xl font-semibold hover:from-[#0077B6]  transition-all duration-300 text-sm shadow-lg hover:shadow-xl"

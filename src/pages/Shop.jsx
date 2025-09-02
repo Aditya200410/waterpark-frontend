@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link, useSearchParams } from 'react-router-dom';
 import { Slider } from '@mui/material';
+import { MapPin, Droplet, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HeartIcon, ShoppingCartIcon, EyeIcon, FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline';
 // import { products } from '../data/products';
@@ -258,111 +259,111 @@ const Shop = () => {
             transition={{ duration: 0.5 }}
             className="hidden md:block w-64 space-y-6"
           >
-            {/* Categories Filter */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Locations</h3>
-              <div className="space-y-2">
-                {dynamicCategories.map((category) => (
-                  <div key={category.name}>
-                    <button
-                      onClick={() => {
-                        handleCategoryClick(category.name);
-                        if (category.submenu?.length > 0) {
-                          toggleCategory(category.name);
-                        }
-                      }}
-                      className={`w-full text-left px-4 py-2 rounded-xl transition-all duration-300 flex items-center justify-between ${
-                        isCategorySelected(category.name) 
-                          ? 'bg-blue-600 text-white shadow-md' 
-                          : 'text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      <span>{category.name}</span>
-                      {category.submenu?.length > 0 && (
-                        <svg
-                          className={`w-4 h-4 transform transition-transform duration-300 ${
-                            expandedCategories[category.name] ? 'rotate-180' : ''
-                          }`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      )}
-                    </button>
-                    <AnimatePresence>
-                    {expandedCategories[category.name] && category.submenu && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="ml-4 mt-2 space-y-2 overflow-hidden"
-                        >
-                        {category.submenu.map((sub) => (
-                          <div key={sub.name}>
-                            <button
-                              onClick={() => {
-                                handleCategoryClick(category.name, sub.name);
-                                if (sub.items?.length > 0) {
-                                  toggleCategory(sub.name);
-                                }
-                              }}
-                                className={`w-full text-left px-4 py-2 rounded-xl transition-all duration-300 flex items-center justify-between ${
-                                  isCategorySelected(category.name, sub.name) 
-                                    ? 'bg-blue-600 text-white shadow-md' 
-                                    : 'text-gray-600 hover:bg-gray-50'
-                              }`}
-                            >
-                              <span>{sub.name}</span>
-                              {sub.items?.length > 0 && (
-                                <svg
-                                    className={`w-4 h-4 transform transition-transform duration-300 ${
-                                    expandedCategories[sub.name] ? 'rotate-180' : ''
-                                  }`}
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                              )}
-                            </button>
-                              <AnimatePresence>
-                            {expandedCategories[sub.name] && sub.items && (
-                                  <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="ml-4 mt-2 space-y-2 overflow-hidden"
-                                  >
-                                {sub.items.map((item) => (
-                                  <button
-                                    key={item}
-                                    onClick={() => handleCategoryClick(category.name, sub.name, item)}
-                                        className={`w-full text-left px-4 py-2 rounded-xl transition-all duration-300 ${
-                                          isCategorySelected(category.name, sub.name, item) 
-                                            ? 'bg-blue-600 text-white shadow-md' 
-                                            : 'text-gray-600 hover:bg-gray-50'
-                                    }`}
-                                  >
-                                    {item}
-                                  </button>
-                                ))}
-                                  </motion.div>
-                            )}
-                              </AnimatePresence>
-                          </div>
-                        ))}
-                        </motion.div>
+          {/* Categories Filter */}
+<div className="bg-gradient-to-br from-sky-50 to-cyan-50 p-6 rounded-3xl shadow-lg border border-sky-100">
+  <div className="flex items-center gap-3 mb-2">
+    <MapPin className="w-7 h-7 text-cyan-500" />
+    <h3 className="text-2xl font-bold text-cyan-800 tracking-tight">Park Map</h3>
+  </div>
+
+  {/* Fun wave divider */}
+  <div className="mb-5">
+    <svg viewBox="0 0 500 20" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 10 C 50 20, 100 0, 150 10 C 200 20, 250 0, 300 10 C 350 20, 400 0, 450 10 C 500 20, 500 10, 500 10" stroke="#67e8f9" fill="transparent" strokeWidth="2"/>
+    </svg>
+  </div>
+
+  <div className="space-y-2">
+    {dynamicCategories.map((category) => (
+      <div key={category.name}>
+        <button
+          onClick={() => {
+            handleCategoryClick(category.name);
+            if (category.submenu?.length > 0) toggleCategory(category.name);
+          }}
+          className={`w-full text-left px-4 py-2.5 rounded-xl transition-all duration-300 ease-in-out flex items-center justify-between text-base font-medium group ${
+            isCategorySelected(category.name)
+              ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md scale-105'
+              : 'text-sky-800 hover:bg-cyan-100/60'
+          }`}
+        >
+          <span className="flex items-center gap-2.5">
+            <Droplet className={`w-4 h-4 transition-colors ${isCategorySelected(category.name) ? 'text-white' : 'text-cyan-400 group-hover:text-cyan-500'}`} />
+            {category.name}
+          </span>
+          {category.submenu?.length > 0 && (
+            <ChevronDown
+              className={`w-5 h-5 transform transition-transform duration-300 ${
+                expandedCategories[category.name] ? 'rotate-180' : ''
+              }`}
+            />
+          )}
+        </button>
+        <AnimatePresence>
+          {expandedCategories[category.name] && category.submenu && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, y: -10 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -10 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="mt-2 pl-6 border-l-2 border-dashed border-sky-300 space-y-2"
+            >
+              {category.submenu.map((sub) => (
+                <div key={sub.name}>
+                  <button
+                    onClick={() => {
+                      handleCategoryClick(category.name, sub.name);
+                      if (sub.items?.length > 0) toggleCategory(sub.name);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-xl transition-all duration-300 flex items-center justify-between text-sm font-medium group ${
+                      isCategorySelected(category.name, sub.name)
+                        ? 'bg-cyan-500/90 text-white shadow-sm'
+                        : 'text-sky-700 hover:bg-cyan-100/60'
+                    }`}
+                  >
+                    <span>{sub.name}</span>
+                    {sub.items?.length > 0 && (
+                       <ChevronDown
+                        className={`w-4 h-4 transform transition-transform duration-300 ${
+                          expandedCategories[sub.name] ? 'rotate-180' : ''
+                        }`}
+                      />
                     )}
-                    </AnimatePresence>
-                  </div>
-                ))}
-              </div>
-            </div>
+                  </button>
+                  <AnimatePresence>
+                    {expandedCategories[sub.name] && sub.items && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        className="mt-2 pl-5 border-l-2 border-dotted border-sky-300 space-y-2"
+                      >
+                        {sub.items.map((item) => (
+                          <button
+                            key={item}
+                            onClick={() => handleCategoryClick(category.name, sub.name, item)}
+                            className={`w-full text-left px-3 py-1.5 rounded-lg transition-colors duration-200 text-sm ${
+                              isCategorySelected(category.name, sub.name, item)
+                                ? 'bg-sky-500 text-white font-semibold'
+                                : 'text-sky-600 hover:bg-cyan-100/60 hover:text-sky-800'
+                            }`}
+                          >
+                            {item}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    ))}
+  </div>
+</div>
 
             {/* Price Range Filter */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">

@@ -181,9 +181,7 @@ const fetchCategories = async () => {
           className="text-center mt-6 md:mt-8 lg:mt-10"
         >
           <div className="max-w-md mx-auto">
-            <p className="text-gray-600 text-sm md:text-base mb-4 md:mb-6">
-              Ready to explore our complete collection?
-            </p>
+         
             <Link
               to="/category"
               className="inline-flex items-center px-6 md:px-8 py-3 md:py-4 bg-[#0077B6] text-white font-medium rounded-lg hover:bg-[#005f8a] transition-all duration-300 group shadow-lg hover:shadow-xl"

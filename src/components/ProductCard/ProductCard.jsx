@@ -106,9 +106,9 @@ const ProductCard = ({ product }) => {
               </button>
             </>
           )}
-          {product.regularPrice && product.regularPrice > product.price && (
+          {product.regularprice && product.regularprice > product.price && (
             <div className="absolute top-3 left-3 bg-[#0077B6] text-white px-2.5 py-1.5 rounded-md text-xs font-semibold">
-              -{Math.round(((product.regularPrice - product.price) / product.regularPrice) * 100)}%
+              -{Math.round(((product.regularprice - product.price) / product.regularprice) * 100)}%
             </div>
           )}
         </div>
@@ -120,8 +120,8 @@ const ProductCard = ({ product }) => {
           <p className="text-sm text-gray-500">{product.category}</p>
           <div className="flex items-baseline justify-center gap-2">
             <span className="text-xl font-bold text-[#0077B6]">₹{Math.round(product.adultprice)}</span>
-            {product.regularPrice && product.regularPrice > product.price && (
-              <span className="text-base text-gray-400 line-through">₹{Math.round(product.regularPrice)}</span>
+            {product.regularprice && product.regularprice > product.price && (
+              <span className="text-base text-gray-400 line-through">₹{Math.round(product.regularprice)}</span>
             )}
           </div>
         </div>

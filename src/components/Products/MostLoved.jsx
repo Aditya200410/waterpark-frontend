@@ -133,11 +133,9 @@ export default function MostLoved() {
         >
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
-              Most <span className="font-serif italic">Loved Parks</span>
+              <span className="font-serif italic"> Most Loved Parks</span>
             </h2>
-            <p className="text-gray-600 text-sm md:text-base lg:text-lg leading-relaxed mb-4 md:mb-6 max-w-2xl mx-auto">
-              Our customers' favorite Parks  that have captured hearts and funs
-            </p>
+          
             <div className="w-16 md:w-20 h-0.5 bg-gradient-to-r from-[#0077B6]-500 to-[#0077B6]-600 mx-auto"></div>
           </div>
         </motion.div>

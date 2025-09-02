@@ -105,7 +105,7 @@ export default function FeaturedProducts() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-6 md:mb-8 lg:mb-10">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
-              Featured <span className="font-serif italic">Products</span>
+              <span className="font-serif italic"> Featured Products</span>
             </h2>
           </div>
           <div className="flex items-center justify-center py-8 md:py-16">
@@ -135,9 +135,7 @@ export default function FeaturedProducts() {
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
             Featured <span className="font-serif italic">Parks</span>
           </h2>
-            <p className="text-gray-600 text-sm md:text-base lg:text-lg leading-relaxed mb-4 md:mb-6 max-w-2xl mx-auto">
-              Discover our handpicked collection of exceptional parks, each telling a unique story of artistry and tradition
-            </p>
+          
             <div className="w-16 md:w-20 h-0.5 bg-gradient-to-r from-[#0077B6]-500 to-[#0077B6]-600 mx-auto"></div>
         </div>
         </motion.div>

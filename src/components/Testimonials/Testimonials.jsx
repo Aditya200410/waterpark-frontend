@@ -44,10 +44,12 @@ const Testimonials = () => {
       <Bubble size="35px" style={{ top: '60%', left: '50%', animationDelay: '4s' }} />
 
       <div className="w-full px-4 relative text-center mt-16">
-         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-900 mb-4">
-            <span className="text-blue-900 italic font-serif"> Read Our Reviews</span> ✨
-          </h1>
-
+         
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight mb-4 text-gray-900 ">
+              <span className="font-serif italic mb-10">Read our projects</span>
+            </h2>
+           
+            <div className="w-16 md:w-20 h-0.5 bg-[#0077B6] mx-auto"></div>
         <Carousel
           showArrows={true}
           infiniteLoop={true}
@@ -62,7 +64,7 @@ const Testimonials = () => {
                 type="button"
                 onClick={onClickHandler}
                 title={label}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-blue-200/80 shadow-lg rounded-full p-3 hover:bg-blue-300 transition-all"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-blue-200/80 shadow-lg rounded-full p-3 hover:bg-blue-300 transition-all"
               >
                 <ArrowLeft className="w-6 h-6 text-blue-800" />
               </button>
@@ -74,7 +76,7 @@ const Testimonials = () => {
                 type="button"
                 onClick={onClickHandler}
                 title={label}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-blue-200/80 shadow-lg rounded-full p-3 hover:bg-blue-300 transition-all"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-blue-200/80 shadow-lg rounded-full p-3 hover:bg-blue-300 transition-all"
               >
                 <ArrowRight className="w-6 h-6 text-blue-800" />
               </button>

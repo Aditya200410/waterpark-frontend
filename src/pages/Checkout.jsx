@@ -330,7 +330,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                       Product
                     </th>
                     <th className="py-3 px-4 text-blue-700 font-medium">
-                      paid
+                      Paid
                     </th>
                   </tr>
                 </thead>
@@ -359,17 +359,17 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                   {/* END: Display Discount */}
 
                   <tr className="border-b">
-                    <td className="py-3 px-4">totalamount:</td>
+                    <td className="py-3 px-4">Total Amount:</td>
                     <td className="py-3 px-4">₹{totalamount}</td>
                   </tr>
                   <tr className="border-b">
-                    <td className="py-3 px-4">Remaining to be <br/>paid in waterpark:</td>
+                    <td className="py-3 px-4">Remaining to be <br/>Paid in Waterpark:</td>
                     <td className="py-3 px-4">₹{remainingAmount}</td>
                   </tr>
                  
                   <tr>
                     <td className="py-3 px-4 font-semibold text-cyan-700">
-                      Payable totalamount:
+                      Payable Total Amount:
                     </td>
                     <td className="py-3 px-4 font-semibold text-cyan-700">
                       ₹{finalTotal}
