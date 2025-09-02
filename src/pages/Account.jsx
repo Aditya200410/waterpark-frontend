@@ -379,7 +379,7 @@ const Account = () => {
           <div className="space-y-5">
             {filteredOrders.map((order) => (
               <div
-                key={order._id}
+                key={order.customBookingId}
                 className="relative rounded-2xl border border-cyan-100 bg-gradient-to-br from-white to-cyan-50 p-6 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
               >
                 {/* Decorative bubbles */}
@@ -396,7 +396,7 @@ const Account = () => {
 
                 {/* Printable BILL/TICKET (captured for PDF) */}
                 <div
-                  ref={(el) => (billRefs.current[order._id] = el)}
+                  ref={(el) => (billRefs.current[order.customBookingId] = el)}
                   className="bg-white rounded-xl border border-cyan-100 p-4"
                 >
                   {/* Header */}
@@ -424,7 +424,7 @@ const Account = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
                     <div>
                       <p className="text-xs text-cyan-600">Order ID</p>
-                      <p className="font-mono text-sm">{order._id}</p>
+                      <p className="font-mono text-sm">{order.customBookingId}</p>
                     </div>
                     <div>
                       <p className="text-xs text-cyan-600">Payment</p>
@@ -466,7 +466,7 @@ const Account = () => {
                           <p className="text-xl font-extrabold text-cyan-900">₹{order.totalAmount.toFixed(2)}</p>
                         </div>
                         <button
-                          onClick={() => setSelectedOrderId(order._id)}
+                          onClick={() => setSelectedOrderId(order.customBookingId)}
                           className="inline-flex items-center gap-2 px-4 py-2 border border-cyan-200 text-cyan-900 shadow-sm text-sm font-medium rounded-xl bg-white hover:bg-cyan-50 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                         >
                           <EyeIcon className="h-4 w-4" />
@@ -734,121 +734,7 @@ const Account = () => {
                   </motion.div>
                 )}
 
-                {activeTab === 'cart' && (
-                  <motion.div
-                    key="cart"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="bg-white rounded-2xl shadow-lg border border-cyan-100 p-6"
-                  >
-                    <h3 className="text-xl font-semibold text-cyan-900 mb-6">Ticket Cart</h3>
-                    
-                    {cartItems.length === 0 ? (
-                      <div className="text-center py-12">
-                        <ShoppingCartIcon className="mx-auto h-16 w-16 text-cyan-300 mb-4" />
-                        <h3 className="text-lg font-medium text-cyan-900 mb-2">Your Ticket is empty</h3>
-                        <p className="text-cyan-700 mb-6">Add passes and splash into fun!</p>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => navigate('/shop')}
-                          className="px-6 py-3 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-colors"
-                        >
-                          Explore Rides
-                        </motion.button>
-                      </div>
-                    ) : (
-                      <div className="space-y-6">
-                        {cartItems.map((item) => (
-                          <motion.div
-                            key={item.productId || item.product?._id || item.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="flex items-center justify-between p-4 bg-cyan-50 rounded-xl"
-                          >
-                            <div className="flex items-center gap-4">
-                              <img
-                                src={config.fixImageUrl(getItemImage(item))}
-                                alt={item.product?.name || item.name}
-                                className="h-16 w-16 object-cover rounded-lg ring-1 ring-cyan-100"
-                              />
-                              <div>
-                                <h4 className="font-medium text-cyan-900">{item.product?.name || item.name}</h4>
-                                <p className="text-sm text-cyan-700">₹{(item.product?.price || item.price).toFixed(2)}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <div className="flex items-center gap-2 bg-white rounded-lg p-2 border border-cyan-100">
-                                <motion.button
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.9 }}
-                                  onClick={() => handleUpdateQuantity(item.productId || item.product?._id || item.id, item.quantity - 1)}
-                                  className="p-1 rounded-full hover:bg-cyan-50"
-                                  disabled={item.quantity <= 1}
-                                >
-                                  <MinusIcon className="h-4 w-4" />
-                                </motion.button>
-                                <span className="font-medium px-2">{item.quantity}</span>
-                                <motion.button
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.9 }}
-                                  onClick={() => handleUpdateQuantity(item.productId || item.product?._id || item.id, item.quantity + 1)}
-                                  className="p-1 rounded-full hover:bg-cyan-50"
-                                >
-                                  <PlusIcon className="h-4 w-4" />
-                                </motion.button>
-                              </div>
-                              <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                onClick={() => handleRemoveFromCart(item.productId || item.product?._id || item.id)}
-                                className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                              >
-                                <TrashIcon className="h-5 w-5" />
-                              </motion.button>
-                            </div>
-                          </motion.div>
-                        ))}
-                          
-                        <div className="border-t border-cyan-100 pt-6">
-                          <div className="flex justify-between items-center mb-4">
-                            <div className="text-lg font-semibold text-cyan-900">
-                              Total: ₹{getTotalPrice().toFixed(2)}
-                            </div>
-                            <motion.button
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              onClick={handleClearCart}
-                              className="text-sm text-rose-600 hover:text-rose-800"
-                            >
-                              Clear Ticket
-                            </motion.button>
-                          </div>
-                          <div className="flex flex-col sm:flex-row gap-3">
-                            <motion.button
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              onClick={() => navigate('/shop')}
-                              className="flex-1 px-6 py-3 border border-cyan-200 text-cyan-900 rounded-xl hover:bg-cyan-50 transition-colors"
-                            >
-                              Continue Exploring
-                            </motion.button>
-                            <motion.button
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              onClick={() => navigate('/checkout')}
-                              className="flex-1 px-6 py-3 bg-cyan-600 text-white rounded-xl hover:bg-cyan-700 transition-colors"
-                            >
-                              Proceed to Checkout
-                            </motion.button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-
+              
                 {activeTab === 'orders' && (
                   <motion.div
                     key="orders"

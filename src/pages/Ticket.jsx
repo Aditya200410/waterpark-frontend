@@ -42,7 +42,7 @@ const WaterparkTicket = () => {
         const imgData = canvas.toDataURL("image/png");
         const link = document.createElement("a");
         link.href = imgData;
-        link.download = `waterpark-ticket-${booking?._id || "details"}.png`;
+        link.download = `waterpark-ticket-${booking?.customBookingId || "details"}.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -86,7 +86,7 @@ const WaterparkTicket = () => {
             {booking.waterparkName}
           </h2>
           <p className="text-sm text-gray-500 mt-1">
-            (BOOKING ID: {booking._id})
+            (BOOKING ID: {booking.customBookingId})
           </p>
         </div>
 

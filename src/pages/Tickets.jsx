@@ -57,7 +57,7 @@ const handleDownload = () => {
       const imgData = canvas.toDataURL("image/png");
       const link = document.createElement("a");
       link.href = imgData;
-      link.download = `resort-ticket-${ticket?._id || "details"}.png`;
+      link.download = `resort-ticket-${ticket?.customBookingId || "details"}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -128,7 +128,7 @@ const handleDownload = () => {
           
             <div className="text-center py-3 bg-gray-50 border-b">
               <h2 className="text-2xl font-extrabold text-gray-800 font-serif">{ticket.waterparkName}</h2>
-              <p className="text-xs text-gray-500 mt-1">(BOOKING ID: {ticket._id})</p>
+              <p className="text-xs text-gray-500 mt-1">(BOOKING ID: {ticket.customBookingId})</p>
             </div>
             <div className="p-4 sm:p-5 text-gray-800 grid grid-cols-2 gap-y-3 gap-x-4">
               <div><p className="text-xs font-medium text-gray-500">NAME:-</p><p className="font-semibold text-sm text-gray-900">{ticket.name}</p></div>

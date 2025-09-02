@@ -487,7 +487,7 @@ const ProductView = () => {
       </AnimatePresence>
       <AnimatePresence>
         {isTermsModalOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setIsTermsModalOpen(false)}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/70 backdrop-blur-sm  flex items-center justify-center p-4 z-[400]" onClick={() => setIsTermsModalOpen(false)}>
             <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="bg-gradient-to-br from-[#E0F7FA] to-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden border-2 border-[#00B4D8]" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between p-5 bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white"><div className="flex items-center gap-3"><ShieldCheck className="h-7 w-7" /><h3 className="text-xl font-bold">Booking Confirmation</h3></div><button onClick={() => setIsTermsModalOpen(false)} className="p-2 hover:bg-white/20 rounded-full transition-colors"><XMarkIcon className="h-6 w-6" /></button></div>
               <div className="p-6 space-y-4">
@@ -497,6 +497,7 @@ const ProductView = () => {
                     <li>Drinking is strictly prohibited in Waterpark.</li>
                     <li>For refund and cancellation contact us before one day of your check in date.</li>
                     <li>If any case of any dispute and misunderstanding Waterpark hold final decision.</li>
+                    
                                </div>
               <div className="flex items-center justify-end gap-3 p-4 bg-gray-50 border-t"><button onClick={() => setIsTermsModalOpen(false)} className="px-5 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">Cancel</button><button onClick={handleProceedToCheckout} className="px-6 py-2 text-sm font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors shadow-sm">I Accept & Proceed to Pay</button></div>
             </motion.div>

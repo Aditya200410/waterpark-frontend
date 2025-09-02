@@ -52,7 +52,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`Waterpark-Ticket-${order?._id || 'details'}.pdf`);
+      pdf.save(`Waterpark-Ticket-${order?.customBookingId || 'details'}.pdf`);
 
       toast.success("Download successful!", { id: 'download-toast' });
 
@@ -141,7 +141,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
                   {order.waterparkName}
                   </h2>
                   <p className="text-sm text-gray-500 mt-1">
-                    (BOOKING ID: {order._id})
+                    (BOOKING ID: {order.customBookingId})
                   </p>
                 </div>
 

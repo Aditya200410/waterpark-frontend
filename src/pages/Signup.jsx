@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
-import config from '../config/config';
+import { useAuth } from '../context/AuthContext';
 import WhyUs from "../components/MissionVision/MissionVision"
 const Signup = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
@@ -31,27 +32,16 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch(`${config.API_URLS.AUTH}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          phone:phone
-        })
+      await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: phone,
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success('Account created successfully!');
-        navigate('/login');
-      } else {
-        setError(data.message || 'Registration failed');
-      }
-    } catch {
-      setError('Failed to create account.');
+      toast.success('Account created successfully!');
+      navigate('/');
+    } catch (err) {
+      setError(err.message || 'Failed to create account.');
     } finally {
       setIsLoading(false);
     }

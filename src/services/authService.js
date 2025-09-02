@@ -15,7 +15,11 @@ export const authService = {
             throw new Error(error.message || 'Registration failed');
         }
         
-        return response.json();
+        const data = await response.json();
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+        }
+        return data;
         } catch (error) {
             console.error('Registration error:', error);
             throw error;
