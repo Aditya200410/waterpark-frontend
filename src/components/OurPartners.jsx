@@ -1,14 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Droplet, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import config from "../config/config.js";
-
-
 
 export default function OurPartners() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -21,7 +20,9 @@ export default function OurPartners() {
 
         const data = await res.json();
         const allPartners = Array.isArray(data) ? data : data.products || [];
-        const featuredPartners = allPartners.filter((blog) => blog.isPatner === true);
+        const featuredPartners = allPartners.filter(
+          (blog) => blog.isPatner === true
+        );
         setBlogs(featuredPartners);
       } catch (err) {
         setError(err.message || "Error fetching partners");
@@ -32,10 +33,19 @@ export default function OurPartners() {
     fetchBlogs();
   }, []);
 
+  const scroll = (direction) => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, clientWidth } = scrollRef.current;
+    const scrollAmount = clientWidth * 0.8;
+    scrollRef.current.scrollTo({
+      left: direction === "left" ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
   return (
-     <section className="h-full m-10">
-      {/* Add overflow-hidden here */}
-      <div className="container mx-auto overflow-hidden"> 
+    <section className="h-full m-10">
+      <div className="container mx-auto overflow-hidden relative">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -49,12 +59,13 @@ export default function OurPartners() {
           <div className="w-16 md:w-20 h-0.5 bg-[#0077B6] mx-auto"></div>
         </motion.div>
 
-        {/* I've removed the redundant `overflow-hidden` from this line */}
+        {/* Partners Slider */}
         <motion.div
+          ref={scrollRef}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="flex gap-6 overflow-x-auto pb-6 -mx-2 px-2 scrollbar-hide"
+          className="flex gap-6 overflow-x-hidden pb-6 -mx-2 px-2 scrollbar-hide scroll-smooth"
         >
           {blogs.map((partner) => (
             <motion.div
@@ -64,24 +75,42 @@ export default function OurPartners() {
               className="min-w-[220px] md:min-w-[280px] lg:min-w-[320px] rounded-2xl shadow-md hover:shadow-2xl 
                          transition-all duration-300 ease-in-out flex flex-col items-center justify-center p-6"
             >
-              {/* Bigger Image */}
               <div className="w-36 h-36 md:w-44 md:h-44 flex items-center justify-center mb-5 overflow-hidden rounded-xl">
                 <img
-                  src={partner.image || partner.images?.[0] || "https://via.placeholder.com/150"}
+                  src={
+                    partner.image ||
+                    partner.images?.[0] ||
+                    "https://via.placeholder.com/150"
+                  }
                   alt={partner.name}
                   className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
                 />
               </div>
-
-              {/* Text */}
               <h2 className="text-base md:text-lg font-semibold text-blue-800 tracking-wide text-center">
                 {partner.name}
               </h2>
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Desktop Arrows */}
+        <div className="hidden md:flex absolute inset-y-0 left-0 items-center">
+          <button
+            onClick={() => scroll("left")}
+            className="bg-white shadow-md rounded-full p-2 hover:bg-gray-100"
+          >
+            <ChevronLeft className="w-6 h-6 text-gray-700" />
+          </button>
+        </div>
+        <div className="hidden md:flex absolute inset-y-0 right-0 items-center">
+          <button
+            onClick={() => scroll("right")}
+            className="bg-white shadow-md rounded-full p-2 hover:bg-gray-100"
+          >
+            <ChevronRight className="w-6 h-6 text-gray-700" />
+          </button>
+        </div>
       </div>
     </section>
-
   );
 }

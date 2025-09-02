@@ -63,8 +63,8 @@ const Ticket = () => {
     <>
       <div className="min-h-screen w-full flex flex-col items-center justify-start py-10 px-4 font-sans relative  overflow-hidden">
         {/* Animated background blobs */}
-        <div className="absolute top-1/4 left-0 w-80 h-80 bg-blue-500 rounded-full mix-blend-lighten filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-cyan-500 rounded-full mix-blend-lighten filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-1/4 left-0 w-80 h-80 rounded-full mix-blend-lighten filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute bottom-1/4 right-0 w-80 h-80  rounded-full mix-blend-lighten filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
 
         {/* The main input form container */}
         <motion.div
