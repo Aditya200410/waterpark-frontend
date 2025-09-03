@@ -158,7 +158,7 @@ const fetchCategories = async () => {
 
                 {/* Content */}
                 <div className="p-4 text-center">
-                  <h3 className="text-lg font-semibold text-[#023E8A] mb-2">
+                  <h3 className="text-lg font-bold text-[#023E8A] mb-1 line-clamp-1">
                     {category.name}
                   </h3>
                   <p className="text-sm text-[#0077B6] font-medium mb-3">
