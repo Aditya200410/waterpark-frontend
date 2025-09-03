@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { Droplet } from 'lucide-react'; // Added an icon for the theme
 import config from '../../config/config.js';
 import { categories as staticCategories } from '../../data/categories.js';
 
@@ -15,23 +16,54 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.5,
+      type: 'spring',
+      stiffness: 100,
     },
   },
 };
 
-// Static category images mapping
+// --- UPDATED: More relevant water park images ---
 const categoryImages = {
-  "water park mumbai": "/images/categories/wooden-craft.jpg",
-  "water park pune": "/images/categories/terracotta.jpg", 
-  "water park banglore": "/images/categories/dokra-art.jpg",
-  "water park delhi": "/images/categories/jewellery.jpg"
+  "water park mumbai": "/images/waterparks/mumbai-park.jpg",
+  "water park pune": "/images/waterparks/pune-park.jpg",
+  "water park banglore": "/images/waterparks/banglore-park.jpg",
+  "water park delhi": "/images/waterparks/delhi-park.jpg",
 };
+
+// --- NEW: Component for animated background bubbles ---
+const AnimatedBubbles = () => (
+  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    {[...Array(15)].map((_, i) => {
+      const size = Math.random() * 20 + 5; // Random size between 5px and 25px
+      const duration = Math.random() * 10 + 8; // Random duration between 8s and 18s
+      const delay = Math.random() * 5; // Random delay
+      return (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-cyan-400/20 border border-cyan-300/30"
+          initial={{ y: '110vh', x: `${Math.random() * 100}vw`, opacity: 0 }}
+          animate={{ y: '-10vh', opacity: [0, 1, 1, 0] }}
+          transition={{
+            duration,
+            delay,
+            repeat: Infinity,
+            repeatType: 'loop',
+            ease: 'linear',
+          }}
+          style={{
+            width: size,
+            height: size,
+          }}
+        />
+      );
+    })}
+  </div>
+);
 
 const Category = () => {
   const [categories, setCategories] = useState([]);
@@ -51,7 +83,7 @@ const Category = () => {
         id: category._id || category.id,
         name: category.name,
         description: category.description,
-        image: category.video || category.image || categoryImages[category.name] || '/images/categories/default.jpg',
+        image: category.video || category.image || categoryImages[category.name.toLowerCase()] || '/images/waterparks/default.jpg',
         isVideo: !!category.video,
         sortOrder: category.sortOrder || 0
       }));
@@ -59,129 +91,110 @@ const Category = () => {
       processedCategories.sort((a, b) => a.sortOrder - b.sortOrder);
       
       setCategories(processedCategories);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching categories:', error);
+      setError('Could not load destinations. Please try again later.');
+      // Keep fallback for robustness
       const fallbackCategories = staticCategories.map(category => ({
         id: category.name.toLowerCase().replace(/\s+/g, '-'),
         name: category.name,
-        image: categoryImages[category.name] || '/images/categories/default.jpg',
+        image: categoryImages[category.name.toLowerCase()] || '/images/waterparks/default.jpg',
         isVideo: false
       }));
       setCategories(fallbackCategories);
-      setLoading(false);
+    } finally {
+        setLoading(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 md:py-16">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0077B6]"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-8 md:py-16">
-        <div className="text-red-500 text-lg font-medium">{error}</div>
+      <div className="flex items-center justify-center min-h-[300px]">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-cyan-500"></div>
       </div>
     );
   }
 
   return (
-    <section className="py-6 md:py-10 lg:py-12 overflow-hidden">
-       {/* Animated bubbles for water theme */}
-  {[...Array(10)].map((_, i) => (
-    <motion.div
-      key={i}
-      animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
-      transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
-      className="absolute w-6 h-6 rounded-full bg-blue-300 "
-      style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
-    />
-  ))}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative py-12 md:py-20  overflow-hidden">
+      <AnimatedBubbles />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-6 md:mb-8 lg:mb-10"
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-10 md:mb-16"
         >
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
               <span className="font-serif italic">Location Available</span>
             </h2>
-           
-            <div className="w-16 md:w-20 h-0.5 bg-[#0077B6] mx-auto"></div>
-          </div>
+         
         </motion.div>
 
-        {/* Categories Grid */}
+        {/* Categories Grid - UPDATED for responsiveness */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3 md:gap-6 lg:gap-8 max-w-6xl mx-auto"
+          viewport={{ once: true, amount: 0.2 }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
         >
-          {categories.map((category, index) => (
-            <Link
-              key={category.id || index}
-              to="/shop"
-              state={{ selectedCategory: { main: category.name } }}
-              className="group"
-            >
-              <motion.div
-                variants={itemVariants}
-                whileHover={{ scale: 1.05, y: -4 }}
-                className="relative rounded-2xl overflow-hidden shadow-lg bg-gradient-to-b from-[#E6F9FF] to-[#B3ECFF] border border-[#B3ECFF] transition-all duration-500"
+          {categories.map((category) => (
+            <motion.div key={category.id} variants={itemVariants}>
+              <Link
+                to="/shop"
+                state={{ selectedCategory: { main: category.name } }}
+                className="group block"
               >
-                {/* Media */}
-                <div className="relative h-40 w-full overflow-hidden">
-                  {category.isVideo ? (
-                    <video
-                      src={config.fixImageUrl(category.image)}
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                    />
-                  ) : (
-                    <img
-                      src={config.fixImageUrl(category.image)}
-                      alt={category.name}
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                      onError={e => {
-                        e.target.onerror = null;
-                        e.target.src = 'https://placehold.co/400x400/e2e8f0/475569?text=' + encodeURIComponent(category.name);
-                      }}
-                    />
-                  )}
-                </div>
+                <div className="relative rounded-2xl overflow-hidden shadow-lg transition-all duration-300 transform group-hover:scale-105 group-hover:shadow-cyan-500/30 group-hover:shadow-2xl bg-white/40 backdrop-blur-md border border-white/30">
+                  {/* Media container with aspect ratio */}
+                  <div className="relative w-full aspect-[4/3] overflow-hidden">
+                    {category.isVideo ? (
+                      <video
+                        src={config.fixImageUrl(category.image)}
+                        className="w-full h-full object-cover"
+                        autoPlay muted loop playsInline
+                      />
+                    ) : (
+                      <img
+                        src={config.fixImageUrl(category.image)}
+                        alt={category.name}
+                        className="w-full h-full object-cover"
+                        onError={e => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://placehold.co/400x300/00b4d8/ffffff?text=' + encodeURIComponent(category.name);
+                        }}
+                      />
+                    )}
+                   
+                  </div>
 
-                {/* Content */}
-                <div className="p-4 text-center">
-                  <h3 className="text-lg font-semibold text-[#023E8A] mb-2">
-                    {category.name}
-                  </h3>
-                  <p className="text-sm text-[#0077B6] font-medium mb-3">
-                    Starting from ₹799
-                  </p>
-                  <span className="inline-block w-full py-2 rounded-lg bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white font-medium text-sm shadow-md hover:shadow-xl transition">
-                    Explore
-                  </span>
+                  {/* Content */}
+                  <div className="p-4 text-center">
+                    <h3 className="text-lg md:text-xl font-bold text-blue-900">
+                      {category.name}
+                    </h3>
+                    <p className="text-sm text-cyan-700 font-medium mt-1">
+                      Starting from ₹799
+                    </p>
+                  </div>
                 </div>
-              </motion.div>
-            </Link>
+              </Link>
+            </motion.div>
           ))}
         </motion.div>
 
-    
+        {error && (
+            <div className="text-center mt-12">
+                <p className="text-red-500 text-lg font-medium bg-red-100/50 rounded-lg p-4 inline-block">{error}</p>
+            </div>
+        )}
       </div>
+       {/* --- NEW: SVG Wave Divider --- */}
+     
     </section>
   );
 };
