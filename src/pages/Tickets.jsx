@@ -88,7 +88,7 @@ const Ticket = () => {
 
   return (
     <>
-      <div className="h-fit md:max-h-screen w-full flex flex-col items-center justify-start py-10 px-4 font-sans relative  overflow-hidden">
+      <div className="h-fit md:max-h-screen w-full flex flex-col items-center justify-start py-10 px-4 font-sans relative  overflow-hidden ">
         <AnimatedBubbles />
         
         {/* The main input form container */}

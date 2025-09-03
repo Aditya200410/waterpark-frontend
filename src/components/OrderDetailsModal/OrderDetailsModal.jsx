@@ -25,7 +25,14 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
     }
     toast.loading("Generating your ticket...", { id: 'download-toast' });
     try {
-      const canvas = await html2canvas(ticketElement, { scale: 3, useCORS: true, backgroundColor: null });
+      const canvas = await html2canvas(ticketElement, { 
+        scale: 3, 
+        useCORS: true, 
+        backgroundColor: null,
+        // Ensure the background image is included in the canvas
+        allowTaint: true, // May be needed for cross-origin images, but generally avoid
+        ignoreElements: (element) => element.id === 'background-image-loader' // Ignore a potential loader for the image
+      });
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: [210, 99] }); // DL envelope size
       const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -64,7 +71,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="h-full rounded-lg fixed inset-0 z-[500] flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+        className="h-full fixed inset-0 z-[500] flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm p-4"
         onClick={onClose}
       >
         {loading ? (
@@ -79,64 +86,82 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
               className="w-full max-w-4xl font-sans overflow-x-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <div id="ticket-to-print" className="relative flex aspect-[210/99] min-w-[700px] w-full bg-gradient-to-br from-cyan-50 to-blue-100 text-blue-900 shadow-2xl overflow-hidden rounded-xl">
-                <WaveWatermark />
+              <div 
+                id="ticket-to-print" 
+                className="relative flex aspect-[210/99] min-w-[700px] w-full text-blue-900 shadow-2xl overflow-hidden rounded-xl"
+                style={{ 
+                  backgroundImage: `url('/tback.png')`, // Directly using the image
+                  backgroundSize: 'cover',
+                 
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)' // Fallback and slight overlay for text
+                }}
+              >
+                {/* Optional: Overlay to ensure text readability on top of the image */}
+                <div className="absolute inset-0 bg-white/60 dark:bg-black/20 mix-blend-multiply opacity-80 z-0"></div>
                 
-                {/* Left Stub */}
-                <div className="relative w-1/4 bg-gradient-to-b from-cyan-500 to-blue-600 text-white flex flex-col items-center justify-between p-4">
-                  <div className="text-center">
-                 <img src={"/logo.png"}/>
-                   </div>
-                  <div className="text-center font-display text-xs tracking-widest uppercase opacity-70">
-                    {order.terms}
-                  </div>
-                  <Waves className="w-8 h-8 text-white opacity-40"/>
-                </div>
+                {/* Original content of the ticket, now on top of the background image */}
+                <div className="relative z-10 flex w-full h-full">
+                    {/* Left Stub */}
+                   <div className="relative w-1/4 bg-gradient-to-b from-cyan-600 to-blue-700 text-white flex flex-col items-center justify-between p-4">
+  <div className="text-center">
+    <img src='/logo.png' alt="Logo" /> {/* Added alt text for accessibility */}
+  </div>
+  
+  {/* The change is in the line below */}
+  <div className="text-center font-display text-xs tracking-widest uppercase opacity-70 whitespace-pre-line">
+    {order.terms}
+  </div>
+  
+  <Waves className="w-8 h-8 text-white opacity-40"/>
+</div>
 
-                {/* Main Content */}
-                <div className="relative w-3/4 flex flex-col p-6 border-l-2 border-dashed border-blue-300/80">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h2 className="font-display text-4xl font-extrabold text-blue-800">{order.waterparkName}</h2>
-                      <p className="font-sans text-sm text-blue-600">Present this ticket at the entrance.</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-sans text-xs font-bold text-blue-600 uppercase">Visit Date</p>
-                      <p className="font-display font-extrabold text-2xl text-cyan-600">{new Date(order.date).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })}</p>
-                    </div>
-                  </div>
+                    {/* Main Content */}
+                    <div className="relative w-3/4 flex flex-col p-6 border-l-2 border-dashed border-blue-400/80">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h2 className="font-display text-4xl font-extrabold text-blue-900">{order.waterparkName}</h2>
+                          <p className="font-sans text-sm text-blue-800">Present this ticket at the entrance.</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-sans text-xs font-bold text-blue-800 uppercase">Visit Date</p>
+                          <p className="font-display font-extrabold text-2xl text-cyan-700">{new Date(order.date).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                        </div>
+                      </div>
 
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-4 my-auto">
-                    <div className="flex items-center gap-3">
-                      <UserCircle className="w-6 h-6 text-cyan-500 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs font-bold text-blue-600 uppercase">Guest Name</p>
-                        <p className="font-bold text-base text-blue-900">{order.name}</p>
+                      <div className="grid grid-cols-2 gap-x-6 gap-y-4 my-auto">
+                        <div className="flex items-center gap-3">
+                          <UserCircle className="w-6 h-6 text-cyan-600 flex-shrink-0" />
+                          <div>
+                            <p className="text-xs font-bold text-blue-800 uppercase">Guest Name</p>
+                            <p className="font-bold text-base text-blue-900">{order.name}</p>
+                          </div>
+                        </div>
+                         <div className="flex items-center gap-3">
+                          <Users className="w-6 h-6 text-cyan-600 flex-shrink-0" />
+                          <div>
+                            <p className="text-xs font-bold text-blue-800 uppercase">Guests</p>
+                            <p className="font-bold text-base text-blue-900">{order.adults} Adults, {order.children} Children</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-auto pt-4 border-t border-dashed border-blue-400/80 flex justify-between items-end">
+                        <div>
+                          <p className="font-sans text-xs font-bold text-blue-800 uppercase">Booking ID</p>
+                          <p className="font-mono text-xl font-bold tracking-wider text-blue-900">{order.customBookingId}</p>
+                        </div>
+                         <div className="text-right">
+                          <p className="font-sans text-xs font-bold text-blue-800 uppercase">Amount Paid</p>
+                          <p className="font-display font-extrabold text-3xl text-blue-900">₹{order.advanceAmount.toLocaleString("en-IN")}</p>
+                        </div>
+                         <div className="text-right">
+                          <p className="font-sans text-xs font-bold text-blue-800 uppercase">Amount To Pay</p>
+                          <p className="font-display font-extrabold text-3xl text-blue-600">₹{remainingAmount.toLocaleString("en-IN")}</p>
+                        </div>
                       </div>
                     </div>
-                     <div className="flex items-center gap-3">
-                      <Users className="w-6 h-6 text-cyan-500 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs font-bold text-blue-600 uppercase">Guests</p>
-                        <p className="font-bold text-base text-blue-900">{order.adults} Adults, {order.children} Children</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-auto pt-4 border-t border-dashed border-blue-300/80 flex justify-between items-end">
-                    <div>
-                      <p className="font-sans text-xs font-bold text-blue-600 uppercase">Booking ID</p>
-                      <p className="font-mono text-xl font-bold tracking-wider text-blue-800">{order.customBookingId}</p>
-                    </div>
-                     <div className="text-right">
-                      <p className="font-sans text-xs font-bold text-blue-600 uppercase">Amount Paid</p>
-                      <p className="font-display font-extrabold text-3xl text-blue-800">₹{order.advanceAmount.toLocaleString("en-IN")}</p>
-                    </div>
-                     <div className="text-right">
-                      <p className="font-sans text-xs font-bold text-blue-600 uppercase">Amount To Pay</p>
-                      <p className="font-display font-extrabold text-3xl text-blue-500">₹{remainingAmount.toLocaleString("en-IN")}</p>
-                    </div>
-                  </div>
                 </div>
               </div>
             </motion.div>
