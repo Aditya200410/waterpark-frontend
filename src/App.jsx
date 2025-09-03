@@ -224,7 +224,7 @@ function AppContent() {
       </Routes>
       <Footer />
       
-      <ScrollToTop />
+    
       
        <Toaster position="top-right" />
       {toast && (

@@ -1,184 +1,171 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Phone, UserPlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
-import WhyUs from "../components/MissionVision/MissionVision"
+import WhyUs from "../components/MissionVision/MissionVision";
+
+// --- Consistent AnimatedBubbles component ---
+const AnimatedBubbles = () => (
+    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => {
+            const size = Math.random() * 25 + 10;
+            const duration = Math.random() * 12 + 8;
+            const delay = Math.random() * 6;
+            return (
+                <motion.div
+                    key={i}
+                    className="absolute rounded-full bg-cyan-300/30 border border-white/50"
+                    initial={{ y: '110vh', x: `${Math.random() * 100}vw`, opacity: 0 }}
+                    animate={{ y: '-10vh', opacity: [0, 1, 1, 0] }}
+                    transition={{ duration, delay, repeat: Infinity, repeatType: 'loop', ease: 'linear' }}
+                    style={{ width: size, height: size }}
+                />
+            );
+        })}
+    </div>
+);
+
 const Signup = () => {
-  const navigate = useNavigate();
-  const { register } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
-  const [phone, setPhone] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+    const navigate = useNavigate();
+    const { register } = useAuth();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+    const [phone, setPhone] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
+        if (formData.password !== formData.confirmPassword) {
+            toast.error('Passwords do not match');
+            setError('Passwords do not match');
+            return;
+        }
+        if (!phone.match(/^\d{10}$/)) {
+            toast.error('Please enter a valid 10-digit phone number');
+            setError('Please enter a valid 10-digit phone number');
+            return;
+        }
+        
+        setIsLoading(true);
+        try {
+            await register({
+                name: formData.name,
+                email: formData.email,
+                password: formData.password,
+                phone: phone,
+            });
+            toast.success('Account created successfully! Welcome!');
+            navigate('/');
+        } catch (err) {
+            const errorMessage = err.message || 'Failed to create account.';
+            setError(errorMessage);
+            toast.error(errorMessage);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      setIsLoading(false);
-      return;
-    }
-    if (!phone.match(/^\d{10}$/)) {
-      setError('Please enter a valid 10-digit phone number');
-      setIsLoading(false);
-      return;
-    }
+    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    try {
-      await register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        phone: phone,
-      });
-      toast.success('Account created successfully!');
-      navigate('/');
-    } catch (err) {
-      setError(err.message || 'Failed to create account.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    return (
+       <div className="relative min-h-screen w-full flex items-center justify-s font-sans overflow-hidden">
+    <AnimatedBubbles />
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  return (
-    <div className="min-h-full w-full flex  font-roboto justify-center relative font-sans bg-gradient-to-b from-blue-300 via-blue-400 to-blue-600 overflow-hidden">
-
-      {/* Animated bubbles for water theme */}
-      {[...Array(10)].map((_, i) => (
-        <motion.div
-          key={i}
-          animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
-          transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
-          className="absolute w-6 h-6 rounded-full bg-blue-300 opacity-70"
-          style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
-        />
-      ))}
-
+    {/* Centered Form */}
+    <div className="z-10 flex items-center justify-center p-4 sm:p-6 lg:p-8 w-full">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6 }}
-        className="bg-white/20  mt-3 mb-10 backdrop-blur-lg rounded-3xl shadow-lg p-5 w-full max-w-md relative z-10"
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, type: 'spring' }}
+        className="bg-white/40 backdrop-blur-md border border-white/30 rounded-3xl shadow-2xl shadow-cyan-500/20 p-6 sm:p-8 w-full max-w-md"
       >
-       <div className="max-w-md w-full space-y-8 mt-12">
-          <div className="text-center">
-            <h2 className="text-4xl md:text-5xl font-['Baloo_2'] text-blue-900 drop-shadow-lg">
-             DIVE  <span className="italic text-cyan-600">INTO FUN </span>
-            </h2>
-            <p className="mt-2 text-sm md:text-base text-blue-800">
-              Returing user ?{" "}
-              <Link
-                to="/login"
-                className="font-medium text-cyan-600 hover:text-cyan-500"
-              >
-                log in
-              </Link>
-            </p>
-          </div>
-          </div>
+                    <div className="text-center mb-6">
+                        <div className="inline-flex items-center justify-center bg-white/50 rounded-full p-3 mb-4">
+                            <UserPlus className="h-8 w-8 text-cyan-600" />
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-blue-900">Create Your Account</h2>
+                        <p className="mt-2 text-blue-800/80">
+                            Already have an account?{" "}
+                            <Link to="/login" className="font-semibold text-cyan-700 hover:text-cyan-800 transition-colors">
+                                Sign In
+                            </Link>
+                        </p>
+                    </div>
 
-        {error && <p className="text-red-500 text-sm text-center mb-3">{error}</p>}
+                    {error && (
+                        <p className="text-red-700 bg-red-100 border border-red-200 p-3 rounded-lg text-sm font-medium text-center mb-4">
+                            {error}
+                        </p>
+                    )}
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <InputField id="name" label="Full Name" icon={<User className="text-blue-300" />} placeholder="Full Name" value={formData.name} onChange={handleChange} disabled={isLoading} />
-          <InputField id="email" label="Email" icon={<Mail className="text-blue-300" />} placeholder="Email" value={formData.email} onChange={handleChange} disabled={isLoading} />
+                    <form className="space-y-4" onSubmit={handleSubmit}>
+                        {/* Name */}
+                        <div className="relative">
+                            <User className="absolute top-1/2 left-4 -translate-y-1/2 h-5 w-5 text-cyan-500" />
+                            <input id="name" name="name" type="text" required value={formData.name} onChange={handleChange}
+                                className="block w-full pl-12 pr-4 py-3 border border-cyan-300 rounded-xl bg-white/50 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all duration-300 shadow-inner"
+                                placeholder="Full Name" />
+                        </div>
 
-          <PasswordField id="password" label="Password" value={formData.password} show={showPassword} toggleShow={() => setShowPassword(!showPassword)} onChange={handleChange} disabled={isLoading} />
-          <PasswordField id="confirmPassword" label="Confirm Password" value={formData.confirmPassword} show={showConfirmPassword} toggleShow={() => setShowConfirmPassword(!showConfirmPassword)} onChange={handleChange} disabled={isLoading} />
+                        {/* Email */}
+                        <div className="relative">
+                            <Mail className="absolute top-1/2 left-4 -translate-y-1/2 h-5 w-5 text-cyan-500" />
+                            <input id="email" name="email" type="email" required value={formData.email} onChange={handleChange}
+                                className="block w-full pl-12 pr-4 py-3 border border-cyan-300 rounded-xl bg-white/50 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all duration-300 shadow-inner"
+                                placeholder="Email Address" />
+                        </div>
 
-          {/* Phone field */}
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-blue-50">Phone Number</label>
-            <div className="mt-1 relative flex">
-              <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-blue-300 bg-blue-100 text-blue-700 text-sm select-none">+91</span>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                required
-                maxLength={10}
-                className="block w-full pl-3 pr-4 py-3 border border-blue-300 rounded-r-xl bg-blue-50 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300 transition-all duration-200"
-                placeholder="10-digit phone number"
-                value={phone}
-                onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                disabled={isLoading}
-              />
+                        {/* Phone */}
+                        <div className="relative flex">
+                            <Phone className="absolute top-1/2 left-4 -translate-y-1/2 h-5 w-5 text-cyan-500 z-10" />
+                            <span className="inline-flex items-center pl-12 pr-3 rounded-l-xl border border-r-0 border-cyan-300 bg-sky-100/70 text-blue-800 text-sm select-none font-semibold">+91</span>
+                            <input type="tel" required maxLength={10} placeholder="10-Digit Phone Number" value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
+                                className="block w-full pl-3 pr-4 py-3 border border-cyan-300 rounded-r-xl bg-white/50 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:z-10 transition-all duration-300 shadow-inner" />
+                        </div>
+
+                        {/* Password */}
+                        <div className="relative">
+                            <Lock className="absolute top-1/2 left-4 -translate-y-1/2 h-5 w-5 text-cyan-500" />
+                            <input id="password" name="password" type={showPassword ? "text" : "password"} required value={formData.password} onChange={handleChange}
+                                className="block w-full pl-12 pr-12 py-3 border border-cyan-300 rounded-xl bg-white/50 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all duration-300 shadow-inner"
+                                placeholder="Password" />
+                            <button type="button" onClick={() => setShowPassword(!showPassword)}
+                                className="absolute top-1/2 right-4 -translate-y-1/2 text-cyan-500 hover:text-cyan-700 focus:outline-none">
+                                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            </button>
+                        </div>
+                        
+                        {/* Confirm Password */}
+                        <div className="relative">
+                            <Lock className="absolute top-1/2 left-4 -translate-y-1/2 h-5 w-5 text-cyan-500" />
+                            <input id="confirmPassword" name="confirmPassword" type={showConfirmPassword ? "text" : "password"} required value={formData.confirmPassword} onChange={handleChange}
+                                className="block w-full pl-12 pr-12 py-3 border border-cyan-300 rounded-xl bg-white/50 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all duration-300 shadow-inner"
+                                placeholder="Confirm Password" />
+                            <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute top-1/2 right-4 -translate-y-1/2 text-cyan-500 hover:text-cyan-700 focus:outline-none">
+                                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            </button>
+                        </div>
+
+                        <button type="submit" disabled={isLoading}
+                            className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-bold text-lg text-white hover:scale-105 shadow-lg hover:shadow-cyan-500/40 flex justify-center items-center space-x-2 transition-all duration-300 disabled:opacity-60 disabled:scale-100 disabled:cursor-not-allowed">
+                            {isLoading
+                                ? <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+                                : <span>Create Account</span>
+                            }
+                        </button>
+                    </form>
+                </motion.div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-3 bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl font-semibold text-white hover:from-blue-500 hover:to-blue-700 shadow-lg flex justify-center items-center space-x-2 transition-all duration-300"
-          >
-            {isLoading && <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2" />}
-            Sign Up
-          </button>
-        </form>
-{/* Why Us Section */}
-    <div className="lg:hidden flex mt-10">
-          <WhyUs  />
-          </div>
-        {/* Decorative wave */}
-      
-      </motion.div>
-    </div>
-  );
+          
+        </div>
+    );
 };
- 
-const InputField = ({ id, label, icon, placeholder, value, onChange, disabled }) => (
-  <div>
-    <label htmlFor={id} className="block text-sm font-medium text-blue-50">{label}</label>
-    <div className="mt-1 relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">{icon}</div>
-      <input
-        id={id}
-        name={id}
-        type="text"
-        autoComplete={id}
-        required
-        className="block w-full pl-10 pr-3 py-3 border border-blue-300 rounded-xl bg-blue-50 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300 transition-all duration-200"
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-      />
-    </div>
-  </div>
-);
-
-const PasswordField = ({ id, label, value, show, toggleShow, onChange, disabled }) => (
-  <div>
-    <label htmlFor={id} className="block text-sm font-medium text-blue-50">{label}</label>
-    <div className="mt-1 relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Lock className="text-blue-300 h-5 w-5" /></div>
-      <input
-        id={id}
-        name={id}
-        type={show ? "text" : "password"}
-        required
-        className="block w-full pl-10 pr-10 py-3 border border-blue-300 rounded-xl bg-blue-50 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300 transition-all duration-200"
-        placeholder={label}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-      />
-      <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-        <button type="button" onClick={toggleShow} className="text-blue-400 hover:text-blue-700 focus:outline-none" disabled={disabled}>
-          {show ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-        </button>
-      </div>
-    </div>
-  </div>
-);
 
 export default Signup;

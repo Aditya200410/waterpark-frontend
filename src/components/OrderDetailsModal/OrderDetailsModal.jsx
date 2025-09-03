@@ -122,7 +122,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
                       <div className="flex justify-between items-start mb-4">
                         <div>
                           <h2 className="font-display text-4xl font-extrabold text-blue-900">{order.waterparkName}</h2>
-                          <p className="font-sans text-sm text-blue-800">Present this ticket at the entrance.</p>
+                          <p className="font-sans text-sm mt-3 text-blue-800">Present this ticket at the entrance.</p>
                         </div>
                         <div className="text-right">
                           <p className="font-sans text-xs font-bold text-blue-800 uppercase">Visit Date</p>
