@@ -65,7 +65,7 @@ export default function OurPartners() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="flex gap-6 overflow-x-hidden pb-6 -mx-2 px-2 scrollbar-hide scroll-smooth"
+          className="flex gap-6 md:overflow-x-hidden overflow-x-scroll pb-6 -mx-2 px-2 scrollbar-hide scroll-smooth"
         >
           {blogs.map((partner) => (
             <motion.div
