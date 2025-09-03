@@ -90,7 +90,7 @@ const Category = () => {
   }
 
   return (
-    <section className="py-6 md:py-10 lg:py-12">
+    <section className="py-6 md:py-10 lg:py-12 overflow-hidden">
        {/* Animated bubbles for water theme */}
   {[...Array(10)].map((_, i) => (
     <motion.div
