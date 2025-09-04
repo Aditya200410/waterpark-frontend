@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { Download, UserCircle, Users, Waves } from "lucide-react";
 
 const WaterparkTicket = () => {
   const location = useLocation();
@@ -28,25 +30,41 @@ const WaterparkTicket = () => {
   }, [bookingId, initialBooking]);
 
   // The download handler is wrapped in useCallback for optimization
-  const handleDownload = useCallback(() => {
+  const handleDownload = useCallback(async () => {
     // Make sure booking data and the ticket element are available
     if (!booking) return;
     const ticketElement = document.getElementById("ticket");
     if (!ticketElement) return;
 
-    html2canvas(ticketElement, {
-      scale: 2,
-      useCORS: true,
-    }).then((canvas) => {
+    try {
+      const canvas = await html2canvas(ticketElement, { 
+        scale: 3, 
+        useCORS: true, 
+        backgroundColor: null,
+        allowTaint: true,
+        ignoreElements: (element) => element.id === 'background-image-loader'
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: [210, 99] }); // DL envelope size
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`waterpark-ticket-${booking.customBookingId}.pdf`);
+    } catch (error) {
+      console.error("PDF Download Failed:", error);
+      // Fallback to PNG download
+      const canvas = await html2canvas(ticketElement, {
+        scale: 2,
+        useCORS: true,
+      });
       const imgData = canvas.toDataURL("image/png");
       const link = document.createElement("a");
       link.href = imgData;
-      // Use a unique filename for the downloaded ticket
       link.download = `ticket-${booking.customBookingId}.png`;
-      document.body.appendChild(link); // Append link to body for Firefox compatibility
+      document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link); // Clean up by removing the link
-    });
+      document.body.removeChild(link);
+    }
   }, [booking]); // This function now depends on the booking data
 
   // This new useEffect triggers the download automatically
@@ -68,106 +86,98 @@ const WaterparkTicket = () => {
     return <div className="text-center text-gray-600 mt">Loading or no booking information available...</div>;
   }
 
+  const remainingAmount = booking ? booking.totalAmount - booking.advanceAmount : 0;
+
   return (
-    <div className="flex flex-col items-center bg-gray-100 py-10 pb-24">
+    <div className="flex flex-col items-center bg-gradient-to-br from-cyan-50 to-blue-100 min-h-screen py-10 pb-24">
       {/* The download button is kept as a manual fallback */}
       <button
         onClick={handleDownload}
-        className="flex items-center gap-2 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-900 mt-24 px-5 py-2 rounded-xl border border-gray-300 shadow-sm hover:shadow-md transition-all duration-300 font-serif"
+        className="group flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 mb-8"
       >
-        ⬇ Download Ticket Again
+        <Download className="w-5 h-5 transition-transform group-hover:-translate-y-0.5" />
+        Download Ticket Again
       </button>
 
-      {/* Ticket */}
-      <div
-        id="ticket"
-        className="max-w-xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200 mt-6"
+      {/* Modern Ticket Design */}
+      <div 
+        id="ticket" 
+        className="relative flex aspect-[210/99] min-w-[700px] w-full max-w-4xl text-blue-900 shadow-2xl overflow-hidden rounded-xl"
+        style={{ 
+          backgroundImage: `url('/tback.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)'
+        }}
       >
-        {/* Ticket Header */}
-        <div className="relative bg-gradient-to-r from-gray-50 to-gray-100 py-6 px-4 text-center border-b border-gray-200">
-          <h1 className="text-xl font-serif text-blue-800 tracking-wide">Waterpark Ticket</h1>
-          <h2 className="text-base font-semibold font-serif text-gray-800">Creating Memories</h2>
-          <p className="text-sm italic text-gray-600">One Adventure at a Time with Waterparkchalo</p>
-          <div className="absolute top-3 right-3">
-            <img src="/logo.png" alt="Logo" className="h-12" />
-          </div>
-        </div>
-
-        {/* Main Ticket Content */}
-        <div className="p-6 text-gray-800 font-sans">
-          <h2 className="text-center text-xl font-serif font-bold text-blue-800 mb-4">
-            {booking.waterparkName}
-          </h2>
-
-          <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-            <p>
-              <span className="font-semibold">Booking Id:</span>
-              <span className="block break-words">{booking.customBookingId}</span>
-            </p>
-            <p>
-              <span className="font-semibold">Payment Id:</span>{" "}
-              {booking.paymentType === "Razorpay"
-                ? booking.paymentId || "Razorpay Payment"
-                : booking.paymentType === "PhonePe"
-                ? "pay_P5cD6ESfdBTZ0B"
-                : "COD"}
-            </p>
-            <p>
-              <span className="font-semibold">Booking Date:</span>{" "}
-              {new Date(booking.bookingDate).toLocaleDateString("en-GB")}
-            </p>
-            <p>
-              <span className="font-semibold">Visit Date:</span>{" "}
-              {new Date(booking.date).toLocaleDateString("en-GB")}
-            </p>
-            <p>
-              <span className="font-semibold">Name:</span> {booking.name}
-            </p>
-            <p>
-              <span className="font-semibold">Adult:</span> {booking.adults}
-            </p>
-            <p>
-              <span className="font-semibold">Contact:</span> {booking.phone}
-            </p>
-            <p>
-              <span className="font-semibold">Children:</span> {booking.children}
-            </p>
+        {/* Overlay to ensure text readability */}
+        <div className="absolute inset-0 bg-white/60 dark:bg-black/20 mix-blend-multiply opacity-80 z-0"></div>
+        
+        {/* Ticket Content */}
+        <div className="relative z-10 flex w-full h-full">
+          {/* Left Stub */}
+          <div className="relative w-1/4 bg-gradient-to-b from-cyan-600 to-blue-700 text-white flex flex-col items-center justify-between p-4">
+            <div className="text-center">
+              <img src='/logo.png' alt="Logo" className="h-16 w-auto" />
+            </div>
+            
+            {/* Terms and Conditions */}
+            <div className="text-center font-display text-xs tracking-widest uppercase opacity-70 whitespace-pre-line">
+              {`Please carry cash for remaining payment.
+Drinking is strictly prohibited.
+Pickup and drop service not included.
+Waterpark holds final decision.
+Contact 1 day before check-in for refunds.`}
+            </div>
+            
+            <Waves className="w-8 h-8 text-white opacity-40"/>
           </div>
 
-          <div className="text-center mb-6">
-            <h3 className="font-serif font-bold text-gray-800 mb-1">Package Inclusion</h3>
-            <p className="text-sm text-gray-600">Breakfast + Lunch + Tea</p>
-          </div>
+          {/* Main Content */}
+          <div className="relative w-3/4 flex flex-col p-6 border-l-2 border-dashed border-blue-400/80">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h2 className="font-display text-4xl font-extrabold text-blue-900">{booking.waterparkName}</h2>
+                <p className="font-sans text-sm mt-3 text-blue-800">Present this ticket at the entrance.</p>
+              </div>
+              <div className="text-right">
+                <p className="font-sans text-xs font-bold text-blue-800 uppercase">Visit Date</p>
+                <p className="font-display font-extrabold text-2xl text-cyan-700">{new Date(booking.date).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+              </div>
+            </div>
 
-          {/* Payment Info */}
-          <h3
-            className="font-serif font-bold text-center border border-blue-900 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 shadow-sm"
-            style={{
-              padding: "12px",
-              lineHeight: "1.2",
-              height: "52px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            Pay on Waterpark ₹
-            {booking.totalAmount && booking.advanceAmount
-              ? booking.totalAmount - booking.advanceAmount
-              : "N/A"}
-            /-
-          </h3>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4 my-auto">
+              <div className="flex items-center gap-3">
+                <UserCircle className="w-6 h-6 text-cyan-600 flex-shrink-0" />
+                <div>
+                  <p className="text-xs font-bold text-blue-800 uppercase">Guest Name</p>
+                  <p className="font-bold text-base text-blue-900">{booking.name}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Users className="w-6 h-6 text-cyan-600 flex-shrink-0" />
+                <div>
+                  <p className="text-xs font-bold text-blue-800 uppercase">Guests</p>
+                  <p className="font-bold text-base text-blue-900">{booking.adults} Adults, {booking.children} Children</p>
+                </div>
+              </div>
+            </div>
 
-          {/* Terms and Conditions */}
-          <div className="mt-6">
-            <h4 className="font-serif font-bold text-center mb-3 text-gray-800">Terms and Conditions</h4>
-            <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-              <li>Please carry cash for remaining payment.</li>
-              <li>Drinking is strictly prohibited in the waterpark.</li>
-              <li>Pickup and drop service is not included in this package.</li>
-              <li>In case of any dispute or misunderstanding, the waterpark holds the final decision.</li>
-              <li>For refund and cancellation, contact us 1 day before your check-in date.</li>
-            </ul>
+            <div className="mt-auto pt-4 border-t border-dashed border-blue-400/80 flex justify-between items-end">
+              <div>
+                <p className="font-sans text-xs font-bold text-blue-800 uppercase">Booking ID</p>
+                <p className="font-mono text-xl font-bold tracking-wider text-blue-900">{booking.customBookingId}</p>
+              </div>
+              <div className="text-right">
+                <p className="font-sans text-xs font-bold text-blue-800 uppercase">Amount Paid</p>
+                <p className="font-display font-extrabold text-3xl text-blue-900">₹{booking.advanceAmount.toLocaleString("en-IN")}</p>
+              </div>
+              <div className="text-right">
+                <p className="font-sans text-xs font-bold text-blue-800 uppercase">Amount To Pay</p>
+                <p className="font-display font-extrabold text-3xl text-blue-600">₹{remainingAmount.toLocaleString("en-IN")}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
