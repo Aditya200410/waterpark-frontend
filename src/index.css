@@ -133,3 +133,15 @@
   scrollbar-width: thin; /* Can be "auto", "thin", or "none" */
   scrollbar-color: #0ea5e9 #cffafe; /* thumb color track color */
 }
+
+/* Hide default cursor on desktop */
+@media (min-width: 769px) {
+  * {
+    cursor: none !important;
+  }
+  
+  /* Show default cursor for interactive elements that need it */
+  input, textarea, select, button, a, [role="button"], [tabindex] {
+    cursor: auto !important;
+  }
+}

@@ -1,0 +1,313 @@
+/* Water Park Cursor Styles */
+.water-park-cursor-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.water-park-cursor {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  pointer-events: none;
+  z-index: 10000;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.water-park-cursor.visible {
+  opacity: 1;
+}
+
+.cursor-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Main water drop cursor */
+.water-drop {
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #0ea5e9, #22d3ee, #67e8f9);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  position: relative;
+  animation: waterDropFloat 2s ease-in-out infinite;
+  box-shadow: 
+    0 0 20px rgba(14, 165, 233, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3),
+    inset 0 -2px 4px rgba(14, 165, 233, 0.2);
+}
+
+.water-drop::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: waterDropShine 2s ease-in-out infinite;
+}
+
+/* Ripple effect around cursor */
+.ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(14, 165, 233, 0.3);
+  border-radius: 50%;
+  animation: rippleEffect 3s ease-out infinite;
+}
+
+/* Floating bubbles */
+.floating-bubble {
+  position: absolute;
+  background: radial-gradient(circle at 30% 30%, 
+    rgba(255, 255, 255, 0.8), 
+    rgba(14, 165, 233, 0.3), 
+    rgba(34, 211, 238, 0.2));
+  border-radius: 50%;
+  pointer-events: none;
+  animation: bubbleFloat linear forwards;
+  box-shadow: 
+    0 0 10px rgba(14, 165, 233, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+/* Water background effect */
+.water-background-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(34, 211, 238, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(103, 232, 249, 0.01) 0%, transparent 50%);
+  pointer-events: none;
+  animation: waterBackgroundFlow 20s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes waterDropFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(2deg);
+  }
+}
+
+@keyframes waterDropShine {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.2);
+  }
+}
+
+@keyframes rippleEffect {
+  0% {
+    width: 30px;
+    height: 30px;
+    opacity: 0.8;
+  }
+  50% {
+    width: 60px;
+    height: 60px;
+    opacity: 0.4;
+  }
+  100% {
+    width: 80px;
+    height: 80px;
+    opacity: 0;
+  }
+}
+
+@keyframes bubbleFloat {
+  0% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-40px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes waterBackgroundFlow {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+  }
+  25% {
+    background-position: 25% 25%, 75% 75%, 25% 75%;
+  }
+  50% {
+    background-position: 50% 50%, 50% 50%, 50% 50%;
+  }
+  75% {
+    background-position: 75% 25%, 25% 75%, 75% 25%;
+  }
+}
+
+/* Hover effects for interactive elements */
+.water-park-cursor-container:hover .water-drop {
+  animation: waterDropFloat 1s ease-in-out infinite, waterDropPulse 0.5s ease-in-out;
+}
+
+@keyframes waterDropPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Responsive design - hide on mobile */
+@media (max-width: 768px) {
+  .water-park-cursor-container {
+    display: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .water-drop {
+    background: linear-gradient(135deg, #0066cc, #0099ff);
+    box-shadow: 
+      0 0 15px rgba(0, 102, 204, 0.6),
+      inset 0 2px 4px rgba(255, 255, 255, 0.5);
+  }
+  
+  .ripple {
+    border-color: rgba(0, 102, 204, 0.5);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .water-drop,
+  .ripple,
+  .floating-bubble,
+  .water-background-effect {
+    animation: none;
+  }
+  
+  .water-drop {
+    animation: none;
+  }
+}
+
+/* Premium water park theme enhancements */
+.water-park-cursor {
+  filter: drop-shadow(0 0 10px rgba(14, 165, 233, 0.3));
+}
+
+.water-drop::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 2px;
+  background: rgba(14, 165, 233, 0.6);
+  border-radius: 50%;
+  animation: waterDropDrip 3s ease-in-out infinite;
+}
+
+@keyframes waterDropDrip {
+  0%, 90% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(0px);
+  }
+  95% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+}
+
+/* Interactive element hover effects */
+.water-park-cursor-container:hover .water-drop {
+  transform: scale(1.2);
+  box-shadow: 
+    0 0 25px rgba(14, 165, 233, 0.6),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(14, 165, 233, 0.3);
+}
+
+/* Special effects for different element types */
+.water-park-cursor-container:hover .ripple {
+  animation: rippleEffect 1.5s ease-out infinite;
+}
+
+/* Water splash effect on click */
+@keyframes waterSplash {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.water-park-cursor.clicked .water-drop {
+  animation: waterSplash 0.6s ease-out;
+}
+
+/* Enhanced bubble effects */
+.floating-bubble::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 20%;
+  width: 30%;
+  height: 30%;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: bubbleShine 2s ease-in-out infinite;
+}
+
+@keyframes bubbleShine {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.2);
+  }
+}

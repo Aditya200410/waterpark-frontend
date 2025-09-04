@@ -44,8 +44,11 @@ import Blogview from './pages/Blogview';
 import Gallery from './pages/Gallery';
 import WaterparkTicket from './pages/Ticket';
 import Tickets from './pages/Tickets';
+import OrderTicketPage from './pages/OrderTicketPage';
+import TicketLookup from './pages/TicketLookup';
 import Category from './components/Categories/Category';
 import WhatsAppButton from './components/Whatsappicon';
+import WaterParkCursor from './components/WaterParkCursor/WaterParkCursor';
 
 
 // Protected Route component
@@ -205,6 +208,8 @@ function AppContent() {
         <Route path="/login" element={<Login />} />
              <Route path="/ticket" element={<WaterparkTicket/>} />
                <Route path="/tickets" element={<Tickets/>} />
+               <Route path="/order-ticket" element={<OrderTicketPage/>} />
+               <Route path="/ticket-lookup" element={<TicketLookup/>} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
         <Route path="/wishlist" element={<Wishlist />} />
@@ -236,6 +241,7 @@ function AppContent() {
         />
       )}
         <WhatsAppButton />
+        <WaterParkCursor />
     </div>
     </div>
      </div>
