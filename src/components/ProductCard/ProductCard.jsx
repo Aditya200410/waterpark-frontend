@@ -4,11 +4,13 @@ import { useCart } from '../../context/CartContext';
 import { useState, useEffect } from 'react';
 import config from '../../config/config.js';
 import { toast } from 'react-hot-toast';
+import { getEffectivePrice } from '../../utils/priceUtils';
 
 const ProductCard = ({ product }) => {
   // --- All of your existing logic is preserved ---
   const { addToCart, cartItems } = useCart();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
 
   const isOutOfStock = product.stock === 0 || product.outOfStock === true || product.inStock === false;
   const cartQuantity = cartItems?.find(item => (item.product?._id || item.product?.id || item.id) === (product._id || product.id))?.quantity || 0;
@@ -84,11 +86,27 @@ const ProductCard = ({ product }) => {
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
 
       {/* Discount Badge */}
-      {product.regularprice && product.regularprice > product.price && (
-        <div className="absolute top-4 left-4 z-10 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-          -{Math.round(((product.regularprice - product.price) / product.regularprice) * 100)}%
-        </div>
-      )}
+      {(() => {
+        const today = new Date().toISOString().split('T')[0];
+        const effectiveAdultPrice = getEffectivePrice(product, 'adultprice', today);
+        const hasSpecialPrice = effectiveAdultPrice !== product.adultprice;
+        const hasDiscount = product.regularprice && product.regularprice > effectiveAdultPrice;
+        
+        if (hasSpecialPrice) {
+          return (
+            <div className="absolute top-4 left-4 z-10 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+              Special Price
+            </div>
+          );
+        } else if (hasDiscount) {
+          return (
+            <div className="absolute top-4 left-4 z-10 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+              -{Math.round(((product.regularprice - effectiveAdultPrice) / product.regularprice) * 100)}%
+            </div>
+          );
+        }
+        return null;
+      })()}
 
       {/* Image Navigation Controls */}
       {validImages.length > 1 && (
@@ -117,9 +135,14 @@ const ProductCard = ({ product }) => {
             {product.name}
           </h3>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-black text-cyan-300">₹{Math.round(product.adultprice)}</span>
-            {product.regularprice && product.regularprice > product.price && (
+            <span className="text-2xl font-black text-cyan-300">
+              ₹{Math.round(getEffectivePrice(product, 'adultprice', new Date().toISOString().split('T')[0]))}
+            </span>
+            {product.regularprice && product.regularprice > getEffectivePrice(product, 'adultprice', new Date().toISOString().split('T')[0]) && (
               <span className="text-sm text-gray-300 line-through">₹{Math.round(product.regularprice)}</span>
+            )}
+            {getEffectivePrice(product, 'adultprice', new Date().toISOString().split('T')[0]) !== product.adultprice && (
+              <span className="text-xs text-blue-300 font-medium">Special</span>
             )}
           </div>
         </div>

@@ -19,6 +19,7 @@ import ReviewService from '../services/reviewService';
 import SEO from '../components/SEO/SEO';
 import { seoConfig } from '../config/seo';
 import WhatsAppButton from '../components/Whatsapp.jsx';
+import { getEffectivePrice, hasSpecialPricing, calculateTicketTotal } from '../utils/priceUtils';
 
 const ProductView = () => {
   const { id } = useParams();
@@ -54,6 +55,7 @@ const ProductView = () => {
   const [grandTotal, setGrandTotal] = useState(0);
   const [advanceTotal, setAdvanceTotal] = useState(0);
   const [isSpecialDay, setIsSpecialDay] = useState(false);
+
 
   const tabs = [
     { id: 'description', label: 'Specifications', icon: DocumentTextIcon },
@@ -159,22 +161,26 @@ const ProductView = () => {
   // --- DYNAMIC PRICE CALCULATION HOOK ---
   useEffect(() => {
     if (!product || loadingSettings) return;
+    
     const checkIsSpecialDay = () => {
       if (!selectedDate || !weekendSetting || !weekendSetting.value.status) return false;
       return (weekendSetting.value.dates || []).some(dbDateString => 
           new Date(dbDateString).toDateString() === new Date(selectedDate).toDateString()
       );
     };
+    
     const isSpecial = checkIsSpecialDay();
     setIsSpecialDay(isSpecial);
-    let calculatedGrandTotal, calculatedAdvanceTotal;
-    if (isSpecial) {
-        calculatedGrandTotal = (adultquantity * product.weekendprice) + (childquantity * product.price);
-        calculatedAdvanceTotal = (adultquantity * product.weekendadvance) + (childquantity * product.weekendadvance);
-    } else {
-        calculatedGrandTotal = (adultquantity * product.adultprice) + (childquantity * product.childprice);
-        calculatedAdvanceTotal = (adultquantity * product.advanceprice) + (childquantity * product.advanceprice);
-    }
+    
+    // Calculate totals using utility function
+    const { grandTotal: calculatedGrandTotal, advanceTotal: calculatedAdvanceTotal } = calculateTicketTotal(
+      product,
+      adultquantity,
+      childquantity,
+      selectedDate,
+      isSpecial
+    );
+    
     setGrandTotal(calculatedGrandTotal);
     setAdvanceTotal(calculatedAdvanceTotal);
   }, [selectedDate, adultquantity, childquantity, product, weekendSetting, loadingSettings]);
@@ -308,12 +314,21 @@ const ProductView = () => {
             {/* Price Section */}
             <div className="space-y-2 sm:space-y-3">
               <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
-                <span className="text-2xl sm:text-3xl font-bold text-blue-900">₹{product.adultprice.toFixed(2)}</span>
-                {product.regularprice && product.regularprice > product.adultprice && (
+                <span className="text-2xl sm:text-3xl font-bold text-blue-900">
+                  ₹{getEffectivePrice(product, 'adultprice', selectedDate).toFixed(2)}
+                </span>
+                {product.regularprice && product.regularprice > getEffectivePrice(product, 'adultprice', selectedDate) && (
                   <>
                     <span className="text-lg sm:text-xl text-gray-400 line-through">₹{product.regularprice.toFixed(2)}</span>
-                    <span className="px-2 py-1 bg-red-100 text-red-600 text-xs font-medium rounded-full">{Math.round(((product.regularprice - product.adultprice) / product.regularprice) * 100)}% OFF</span>
+                    <span className="px-2 py-1 bg-red-100 text-red-600 text-xs font-medium rounded-full">
+                      {Math.round(((product.regularprice - getEffectivePrice(product, 'adultprice', selectedDate)) / product.regularprice) * 100)}% OFF
+                    </span>
                   </>
+                )}
+                {getEffectivePrice(product, 'adultprice', selectedDate) !== product.adultprice && (
+                  <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs font-medium rounded-full">
+                    Special Price
+                  </span>
                 )}
               </div>
               <p className="text-lg font-semibold text-blue-600 tracking-wide">{product.sd}</p>
@@ -403,11 +418,21 @@ const ProductView = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div>
             <span className="font-sans text-sm font-medium text-sky-700">Adult Ticket</span>
-            <p className="font-display font-bold text-3xl text-cyan-600 mt-1">₹{product.adultprice?.toFixed(0) || 'N/A'}</p>
+            <p className="font-display font-bold text-3xl text-cyan-600 mt-1">
+              ₹{getEffectivePrice(product, 'adultprice', selectedDate)?.toFixed(0) || 'N/A'}
+            </p>
+            {getEffectivePrice(product, 'adultprice', selectedDate) !== product.adultprice && (
+              <p className="text-xs text-blue-600 font-medium">Special Price</p>
+            )}
           </div>
           <div>
             <span className="font-sans text-sm font-medium text-sky-700">Child Ticket</span>
-            <p className="font-display font-bold text-3xl text-cyan-600 mt-1">₹{product.childprice?.toFixed(0) || 'N/A'}</p>
+            <p className="font-display font-bold text-3xl text-cyan-600 mt-1">
+              ₹{getEffectivePrice(product, 'childprice', selectedDate)?.toFixed(0) || 'N/A'}
+            </p>
+            {getEffectivePrice(product, 'childprice', selectedDate) !== product.childprice && (
+              <p className="text-xs text-blue-600 font-medium">Special Price</p>
+            )}
           </div>
         </div>
       </div>
@@ -476,7 +501,15 @@ const ProductView = () => {
             {/* Booking Section */}
             <div ref={bookingSectionRef} className="space-y-6 pt-4 border-t-2 border-dashed border-[#0096C7]">
               <div className=" relative z-5">
-                <CustomCalendar selectedDate={selectedDate} onDateChange={(d) => setSelectedDate(d)} normalPrice={product.adultprice} weekendPrice={product.weekendprice} specialDates={weekendSetting?.value?.dates || []} isPricingActive={weekendSetting?.value?.status || false} />
+                <CustomCalendar 
+                  selectedDate={selectedDate} 
+                  onDateChange={(d) => setSelectedDate(d)} 
+                  normalPrice={product.adultprice} 
+                  weekendPrice={product.weekendprice} 
+                  specialDates={weekendSetting?.value?.dates || []} 
+                  isPricingActive={weekendSetting?.value?.status || false}
+                  product={product}
+                />
               </div>
               <div className="flex flex-wrap items-center  justify-center gap-10">
                   <div className="flex items-center gap-2">
@@ -504,8 +537,38 @@ const ProductView = () => {
                   <table className="w-full text-sm text-white">
                     <thead className="bg-[#03045E]/80"><tr><th className="px-4 py-3 text-left">Ticket Type</th><th className="px-4 py-3 text-center">Qty</th><th className="px-4 py-3 text-right">Price</th><th className="px-4 py-3 text-right">Total</th></tr></thead>
                     <tbody>
-                      <motion.tr className="border-t border-white/30 hover:bg-white/10 transition"><td className="px-4 py-3 font-medium">👨 Adult above 8 year</td><td className="px-4 py-3 text-center">{adultquantity}</td><td className="px-4 py-3 text-right">₹{isSpecialDay ? product.weekendprice : product.adultprice}</td><td className="px-4 py-3 text-right">₹{isSpecialDay ? adultquantity * product.weekendprice : adultquantity * product.adultprice}</td></motion.tr>
-                      <motion.tr className="border-t border-white/30 hover:bg-white/10 transition"><td className="px-4 py-3 font-medium">👧 Child 3 to 8 year</td><td className="px-4 py-3 text-center">{childquantity}</td><td className="px-4 py-3 text-right">₹{isSpecialDay ? product.price : product.childprice}</td><td className="px-4 py-3 text-right">₹{isSpecialDay ? childquantity * product.price : childquantity * product.childprice}</td></motion.tr>
+                      <motion.tr className="border-t border-white/30 hover:bg-white/10 transition">
+                        <td className="px-4 py-3 font-medium">👨 Adult above 8 year</td>
+                        <td className="px-4 py-3 text-center">{adultquantity}</td>
+                        <td className="px-4 py-3 text-right">
+                          ₹{isSpecialDay ? 
+                            (getEffectivePrice(product, 'weekendprice', selectedDate) || getEffectivePrice(product, 'adultprice', selectedDate)) : 
+                            getEffectivePrice(product, 'adultprice', selectedDate)
+                          }
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          ₹{isSpecialDay ? 
+                            adultquantity * (getEffectivePrice(product, 'weekendprice', selectedDate) || getEffectivePrice(product, 'adultprice', selectedDate)) : 
+                            adultquantity * getEffectivePrice(product, 'adultprice', selectedDate)
+                          }
+                        </td>
+                      </motion.tr>
+                      <motion.tr className="border-t border-white/30 hover:bg-white/10 transition">
+                        <td className="px-4 py-3 font-medium">👧 Child 3 to 8 year</td>
+                        <td className="px-4 py-3 text-center">{childquantity}</td>
+                        <td className="px-4 py-3 text-right">
+                          ₹{isSpecialDay ? 
+                            (getEffectivePrice(product, 'price', selectedDate) || getEffectivePrice(product, 'childprice', selectedDate)) : 
+                            getEffectivePrice(product, 'childprice', selectedDate)
+                          }
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          ₹{isSpecialDay ? 
+                            childquantity * (getEffectivePrice(product, 'price', selectedDate) || getEffectivePrice(product, 'childprice', selectedDate)) : 
+                            childquantity * getEffectivePrice(product, 'childprice', selectedDate)
+                          }
+                        </td>
+                      </motion.tr>
                     </tbody>
                     <tfoot><motion.tr className="bg-[#48CAE4] text-[#03045E] font-bold text-base"><td className="px-4 py-3 text-left" colSpan={3}>💰 Grand Total</td><td className="px-4 py-3 text-right">₹{grandTotal.toFixed(2)}</td></motion.tr></tfoot>
                   </table>

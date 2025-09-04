@@ -15,6 +15,7 @@ import {
   startOfDay,
 } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { getEffectivePrice } from '../utils/priceUtils';
 
 
 export default function CustomCalendar({
@@ -25,6 +26,7 @@ export default function CustomCalendar({
   // *** NEW: Props to receive dynamic pricing data ***
   specialDates = [],
   isPricingActive = false,
+  product = null, // Add product prop for special pricing
 }) {
   const parseDate = (d) => {
     if (!d) return null;
@@ -116,7 +118,29 @@ export default function CustomCalendar({
           // --- START: DYNAMIC PRICE LOGIC ---
           // Check if the current day 'd' is in our set of special dates
           const isSpecialDay = specialDatesSet.has(format(d, 'yyyy-MM-dd'));
-          const priceToShow = isSpecialDay ? weekendPrice : normalPrice;
+          const dateStr = format(d, 'yyyy-MM-dd');
+          
+          // Get effective price using the special pricing system
+          let priceToShow = normalPrice;
+          let hasSpecialPricing = false;
+          
+          if (product) {
+            // Use special pricing if available, otherwise fall back to weekend/regular pricing
+            const effectiveAdultPrice = getEffectivePrice(product, 'adultprice', dateStr);
+            const effectiveWeekendPrice = getEffectivePrice(product, 'weekendprice', dateStr);
+            
+            // Check if this date has special pricing
+            hasSpecialPricing = effectiveAdultPrice !== product.adultprice || effectiveWeekendPrice !== product.weekendprice;
+            
+            if (isSpecialDay) {
+              priceToShow = effectiveWeekendPrice || effectiveAdultPrice || weekendPrice || normalPrice;
+            } else {
+              priceToShow = effectiveAdultPrice || normalPrice;
+            }
+          } else {
+            // Fallback to old logic if no product provided
+            priceToShow = isSpecialDay ? weekendPrice : normalPrice;
+          }
           // --- END: DYNAMIC PRICE LOGIC ---
 
           let buttonClasses = "flex flex-col items-center justify-center h-11 w-11 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-400";
@@ -130,6 +154,10 @@ export default function CustomCalendar({
             // *** NEW: Add a visual indicator for special price days ***
             if (isSpecialDay) {
                 buttonClasses += " bg-teal-50 border border-teal-200";
+            }
+            // Add special pricing indicator
+            if (hasSpecialPricing) {
+                buttonClasses += " bg-blue-50 border border-blue-200";
             }
             if (isToday) {
                 buttonClasses += " bg-slate-100 font-semibold";
@@ -147,7 +175,12 @@ export default function CustomCalendar({
                 <span className={isPast && inMonth ? "line-through" : ""}>{format(d, "d")}</span>
                 
                 {!isDisabled && priceToShow > 0 ? (
-                  <span className={`text-[10px] font-normal mt-0.5 ${ isSelected ? "opacity-90" : isSpecialDay ? "text-teal-700 font-semibold" : "text-slate-500" }`}>
+                  <span className={`text-[10px] font-normal mt-0.5 ${ 
+                    isSelected ? "opacity-90" : 
+                    hasSpecialPricing ? "text-blue-700 font-semibold" :
+                    isSpecialDay ? "text-teal-700 font-semibold" : 
+                    "text-slate-500" 
+                  }`}>
                     ₹{Number(priceToShow).toFixed(0)}
                   </span>
                 ) : (
