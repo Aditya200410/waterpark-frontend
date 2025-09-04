@@ -541,32 +541,20 @@ const ProductView = () => {
                         <td className="px-4 py-3 font-medium">👨 Adult above 8 year</td>
                         <td className="px-4 py-3 text-center">{adultquantity}</td>
                         <td className="px-4 py-3 text-right">
-                          ₹{isSpecialDay ? 
-                            (getEffectivePrice(product, 'weekendprice', selectedDate) || getEffectivePrice(product, 'adultprice', selectedDate)) : 
-                            getEffectivePrice(product, 'adultprice', selectedDate)
-                          }
+                          ₹{getEffectivePrice(product, 'adultprice', selectedDate)}
                         </td>
                         <td className="px-4 py-3 text-right">
-                          ₹{isSpecialDay ? 
-                            adultquantity * (getEffectivePrice(product, 'weekendprice', selectedDate) || getEffectivePrice(product, 'adultprice', selectedDate)) : 
-                            adultquantity * getEffectivePrice(product, 'adultprice', selectedDate)
-                          }
+                          ₹{adultquantity * getEffectivePrice(product, 'adultprice', selectedDate)}
                         </td>
                       </motion.tr>
                       <motion.tr className="border-t border-white/30 hover:bg-white/10 transition">
                         <td className="px-4 py-3 font-medium">👧 Child 3 to 8 year</td>
                         <td className="px-4 py-3 text-center">{childquantity}</td>
                         <td className="px-4 py-3 text-right">
-                          ₹{isSpecialDay ? 
-                            (getEffectivePrice(product, 'price', selectedDate) || getEffectivePrice(product, 'childprice', selectedDate)) : 
-                            getEffectivePrice(product, 'childprice', selectedDate)
-                          }
+                          ₹{getEffectivePrice(product, 'childprice', selectedDate)}
                         </td>
                         <td className="px-4 py-3 text-right">
-                          ₹{isSpecialDay ? 
-                            childquantity * (getEffectivePrice(product, 'price', selectedDate) || getEffectivePrice(product, 'childprice', selectedDate)) : 
-                            childquantity * getEffectivePrice(product, 'childprice', selectedDate)
-                          }
+                          ₹{childquantity * getEffectivePrice(product, 'childprice', selectedDate)}
                         </td>
                       </motion.tr>
                     </tbody>

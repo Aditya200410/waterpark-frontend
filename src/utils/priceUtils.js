@@ -75,11 +75,22 @@ export const calculateTicketTotal = (product, adultQuantity, childQuantity, date
   
   let adultPrice, childPrice, advancePrice;
   
-  if (isSpecialDay) {
+  // Check if special pricing exists for this date
+  const dateStr = typeof date === 'string' ? date : new Date(date).toISOString().split('T')[0];
+  const hasSpecialPricing = product.specialPrices?.[dateStr] && Object.keys(product.specialPrices[dateStr]).length > 0;
+  
+  if (hasSpecialPricing) {
+    // Use special pricing if available (overrides weekend/regular pricing)
+    adultPrice = effectiveAdultPrice;
+    childPrice = effectiveChildPrice;
+    advancePrice = effectiveAdvancePrice;
+  } else if (isSpecialDay) {
+    // Use weekend pricing if no special pricing
     adultPrice = effectiveWeekendPrice || effectiveAdultPrice;
     childPrice = effectiveWeekendChildPrice || effectiveChildPrice;
     advancePrice = effectiveWeekendAdvance || effectiveAdvancePrice;
   } else {
+    // Use regular pricing
     adultPrice = effectiveAdultPrice;
     childPrice = effectiveChildPrice;
     advancePrice = effectiveAdvancePrice;
