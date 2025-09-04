@@ -79,7 +79,7 @@ const WaterParkCursor = () => {
   }
 
   return (
-    <div className="water-park-cursor-container">
+    <div className="water-park-cursor-container z-[99999999999]">
       {/* Main cursor */}
       <div
         className={`water-park-cursor ${isVisible ? 'visible' : ''} ${isClicked ? 'clicked' : ''}`}
