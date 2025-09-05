@@ -145,7 +145,7 @@ const Hero = () => {
     >
       <AnimatedBubbles />
       {/* Navigation Buttons */}
-      <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-4">
+      <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-4 z-10">
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -202,7 +202,7 @@ const Hero = () => {
       </AnimatePresence>
 
       {/* Slide indicators */}
-      <div className="absolute  bottom-8 left-0 right-0 flex justify-center gap-2 z-20">
+      <div className="absolute  bottom-8 left-0 right-0 flex justify-center gap-2 z-[20]">
         {carouselData.map((_, index) => (
           <button
             key={index}
