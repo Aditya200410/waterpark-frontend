@@ -92,7 +92,7 @@ export default function OurPartners() {
   };
 
   return (
-    <section className="relative h-full py-20 md:py-32 overflow-hidden">
+    <section className="relative h-full py-16 md:py-24 overflow-hidden">
       <AnimatedBubbles />
       
     
@@ -205,7 +205,7 @@ export default function OurPartners() {
 
                 {/* Partner Name */}
                 <div className="relative z-10 text-center">
-                  <h3 className="text-lg md:text-xl font-bold mb-2 text-blue-800 leading-tight">
+                  <h3 className="font-light italic text-lg text-blue-800">
                     {partner.name}
                   </h3>
                   
