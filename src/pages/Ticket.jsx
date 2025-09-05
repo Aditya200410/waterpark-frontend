@@ -4,6 +4,7 @@ import jsPDF from "jspdf";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { Download, UserCircle, Users, Waves } from "lucide-react";
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 const WaterparkTicket = () => {
   const location = useLocation();
@@ -89,7 +90,8 @@ const WaterparkTicket = () => {
   const remainingAmount = booking ? booking.totalAmount - booking.advanceAmount : 0;
 
   return (
-    <div className="flex flex-col items-center bg-gradient-to-br from-cyan-50 to-blue-100 min-h-screen py-10 pb-24">
+    <div className="flex flex-col items-center bg-gradient-to-br from-cyan-50 to-blue-100 min-h-screen py-10 pb-24 relative">
+      <AnimatedBubbles />
       {/* The download button is kept as a manual fallback */}
       <button
         onClick={handleDownload}

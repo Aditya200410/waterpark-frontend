@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import config from '../../config/config.js';
 import Loader from '../Loader';
 import ProductCard from '../ProductCard/ProductCard.jsx';
+import AnimatedBubbles from '../AnimatedBubbles/AnimatedBubbles';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -106,7 +107,8 @@ export default function WeeklyBestsellers() {
   }
 
   return (
-    <section className="py-6 md:py-10 lg:py-12">
+    <section className="py-6 md:py-10 lg:py-12 relative">
+      <AnimatedBubbles />
       <div className="container mx-auto px-2 sm:px-4 lg:px-6">
         {/* Header Section */}
         <motion.div

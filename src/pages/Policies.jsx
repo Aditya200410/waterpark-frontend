@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, FileText, RefreshCw, Lock, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 const Policies = () => {
   const [activeTab, setActiveTab] = useState('terms');
@@ -129,7 +130,8 @@ const Policies = () => {
   const hasPolicies = Object.keys(policies).length > 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 relative">
+      <AnimatedBubbles />
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-b from-blue-300 via-blue-400 to-blue-500 py-20">
         <div className="container mx-auto px-4 text-center relative z-10">

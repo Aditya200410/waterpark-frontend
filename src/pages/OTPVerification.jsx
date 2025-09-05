@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import config from '../config/config';
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 const OTPVerification = () => {
   const navigate = useNavigate();
@@ -145,7 +146,8 @@ const OTPVerification = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row relative">
+      <AnimatedBubbles />
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex items-start lg:items-center justify-center px-4 sm:px-6 lg:px-8 pt-8 lg:pt-0">
         <div className="w-full max-w-md space-y-5 p-8 sm:p-10 bg-white shadow-2xl rounded-xl border border-gray-100">

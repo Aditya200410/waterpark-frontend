@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import config from '../config/config.js';
 import Loader from '../components/Loader';
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 function toIST(dateString) {
   const date = new Date(dateString);
@@ -106,7 +107,8 @@ export default function Orders() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 relative">
+      <AnimatedBubbles />
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold text-white mb-8 relative inline-block group">
           <span className="relative z-10">Your Orders</span>

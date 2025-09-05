@@ -15,6 +15,7 @@ import { MapPin } from "lucide-react";
 import config from '../config/config.js';
 import { toast } from 'react-hot-toast';
 import Loader from '../components/Loader';
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 import ReviewForm from '../components/ReviewForm';
 import ReviewList from '../components/ReviewList';
@@ -344,8 +345,9 @@ const ProductView = () => {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-gradient-to-b from-white to-gray-50"
+      className="min-h-screen bg-gradient-to-b from-white to-gray-50 relative"
     >
+      <AnimatedBubbles />
       <SEO {...productSEO} />
       {/* Breadcrumb */}
       <div className="border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-10">

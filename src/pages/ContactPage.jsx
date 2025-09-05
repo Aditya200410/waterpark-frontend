@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, LazyMotion, domAnimation } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, Send, Waves, Building, Sun } from 'lucide-react';
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 const Contact = () => {
   const contactInfo = {
@@ -71,8 +72,8 @@ const Contact = () => {
   return (
     <LazyMotion features={domAnimation}>
       {/* Set a min-height to prevent layout shifts while loading */}
-      <div className="font-sans   text-deep-blue w-full overflow-hidden min-h-screen">
- 
+      <div className="font-sans   text-deep-blue w-full overflow-hidden min-h-screen relative">
+        <AnimatedBubbles />
         {/* HERO SECTION */}
         <section className="relative text-center py-20 px-4 sm:py-28 overflow-hidden">
           {[...Array(10)].map((_, i) => (

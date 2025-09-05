@@ -16,6 +16,7 @@ import {
 } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import { getEffectivePrice } from '../utils/priceUtils';
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 
 export default function CustomCalendar({
@@ -77,7 +78,8 @@ export default function CustomCalendar({
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto bg-white p-5 rounded-2xl shadow-lg border border-slate-200/80 font-sans">
+    <div className="w-full max-w-sm mx-auto bg-white p-5 rounded-2xl shadow-lg border border-slate-200/80 font-sans relative">
+      <AnimatedBubbles />
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <button

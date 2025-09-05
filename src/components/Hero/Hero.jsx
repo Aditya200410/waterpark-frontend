@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import config from '../../config/config';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import AnimatedBubbles from '../AnimatedBubbles/AnimatedBubbles';
 
 const isVideo = (url) => url && url.toLowerCase().endsWith('.mp4');
 
@@ -142,6 +143,7 @@ const Hero = () => {
       className="relative overflow-hidden bg-black"
       style={containerHeight ? { height: containerHeight, maxHeight: '80vh' } : { height: 400, maxHeight: '80vh' }}
     >
+      <AnimatedBubbles />
       {/* Navigation Buttons */}
       <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-4">
         <motion.button

@@ -10,6 +10,7 @@ import ProductCard from '../components/ProductCard/ProductCard.jsx';
 import config from '../config/config.js';
 import Loader from '../components/Loader';
 import { useCart } from '../context/CartContext';
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 const Shop = () => {
   const location = useLocation();
@@ -232,8 +233,8 @@ const Shop = () => {
   };
 
   return (
-    <div className="min-h-screen py-12">
-      
+    <div className="min-h-screen py-12 relative">
+      <AnimatedBubbles />
       <div className="container mx-auto px-4">
         {/* Mobile Filter Button */}
         <div className="md:hidden mb-6">

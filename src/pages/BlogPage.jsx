@@ -4,6 +4,7 @@ import { Star, ArrowRight } from "lucide-react"; // Assuming you use lucide-reac
 
 import { Droplet } from "lucide-react";
 import config from "../config/config.js";
+import AnimatedBubbles from "../components/AnimatedBubbles/AnimatedBubbles";
 
 // Framer Motion variants for stagger animations
   const containerVariants = {
@@ -74,6 +75,7 @@ export default function BlogPage() {
   return (
       // The main container with a slightly more dynamic gradient
     <div className="min-h-screen flex items-center justify-center relative font-sans  overflow-hidden">
+      <AnimatedBubbles />
        {[...Array(10)].map((_, i) => (
     <motion.div
       key={i}

@@ -3,6 +3,7 @@ import { FaFacebookF, FaWhatsapp, FaInstagram, FaYoutube } from 'react-icons/fa'
 import { Phone, Mail, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import React from 'react';
+import AnimatedBubbles from '../AnimatedBubbles/AnimatedBubbles';
 
 // A reusable link component with the underline animation
 const AnimatedLink = ({ to, children, className }) => (
@@ -20,6 +21,7 @@ const AnimatedLink = ({ to, children, className }) => (
 export default function Footer() {
   return (
     <footer className="relative text-white overflow-hidden">
+      <AnimatedBubbles />
       {/* Background Video */}
       <video
         autoPlay

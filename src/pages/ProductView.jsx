@@ -20,6 +20,7 @@ import SEO from '../components/SEO/SEO';
 import { seoConfig } from '../config/seo';
 import WhatsAppButton from '../components/Whatsapp.jsx';
 import { getEffectivePrice, hasSpecialPricing, calculateTicketTotal } from '../utils/priceUtils';
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 const ProductView = () => {
   const { id } = useParams();
@@ -263,6 +264,7 @@ const ProductView = () => {
   
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className=" w-full h-full bg-[#00B4D8] overflow-hidden">
+      <AnimatedBubbles />
       <SEO {...productSEO} />
       <div className="container mx-auto px-4 py-4 sm:py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">

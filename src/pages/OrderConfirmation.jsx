@@ -4,6 +4,7 @@ import axios from 'axios';
 import { CheckCircle, ShoppingBag, Truck, User } from 'lucide-react';
 import config from '../config/config';
 import Loader from '../components/Loader';
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 function toIST(dateString) {
   const date = new Date(dateString);
@@ -65,7 +66,8 @@ const OrderConfirmation = () => {
   const subtotal = order.products.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
-    <div className="bg-gray-50 min-h-screen py-12 md:py-20">
+    <div className="bg-gray-50 min-h-screen py-12 md:py-20 relative">
+      <AnimatedBubbles />
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-10 border border-gray-100">
           

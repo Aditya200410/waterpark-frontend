@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { HeartIcon } from '@heroicons/react/24/outline';
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 const Wishlist = () => {
   return (
-    <div className="min-h-screen bg-gray-900 py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-900 py-16 px-4 sm:px-6 lg:px-8 relative">
+      <AnimatedBubbles />
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <Link to="/">

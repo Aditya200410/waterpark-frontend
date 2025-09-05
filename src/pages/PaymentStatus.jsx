@@ -18,6 +18,7 @@ import orderService from '../services/orderService';
 import config from '../config/config';
 import { toast } from 'react-hot-toast';
 import Loader from '../components/Loader';
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -594,7 +595,8 @@ const PaymentStatus = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-500 via-white to-pink-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-pink-500 via-white to-pink-100 flex items-center justify-center p-4 relative">
+      <AnimatedBubbles />
       <AnimatePresence mode="wait">
         {status === 'success' && renderSuccessStatus()}
         {status === 'failed' && renderFailedStatus()}

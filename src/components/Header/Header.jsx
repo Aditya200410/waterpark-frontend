@@ -11,6 +11,7 @@ import axios from 'axios';
 import Loader from '../Loader';
 import { useSellerNavigation } from '../../hooks/useSellerNavigation';
 import { Waves, Droplets, Ship, Umbrella, WavesIcon } from "lucide-react";
+import AnimatedBubbles from '../AnimatedBubbles/AnimatedBubbles';
 
 const Header = () => {
   // All your existing state and functions remain unchanged...
@@ -188,6 +189,7 @@ const Header = () => {
 
   return (
     <>
+      <AnimatedBubbles />
       {/* HERE'S THE FIX: This placeholder div has the same height as your fixed header.
         It sits in the normal document flow and pushes all subsequent content down,
         preventing the overlap.

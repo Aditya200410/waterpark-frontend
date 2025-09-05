@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
+import AnimatedBubbles from "../components/AnimatedBubbles/AnimatedBubbles";
 
 function CheckoutPage() {
   const location = useLocation();
@@ -245,6 +246,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-cyan-200 via-blue-200 to-blue-300 overflow-hidden">
+      <AnimatedBubbles />
       {/* Top Wave */}
       <div className="absolute top-0 left-0 w-full">
         {/* SVG remains unchanged */}
