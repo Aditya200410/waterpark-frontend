@@ -92,7 +92,7 @@ export default function MissionVission() {
                          shadow-lg shadow-cyan-500/10 transition-shadow duration-300 hover:shadow-xl hover:shadow-cyan-500/20"
             >
               {/* Image container styled like a lifebuoy */}
-              <div className="w-24 h-24 md:w-32 md:h-32 flex items-center justify-center mb-4  rounded-full p-2 ring-4 ">
+              <div className="w-24 h-24 md:w-32 md:h-32 flex items-center justify-center mb-4  rounded-full p-2 ">
                 <img
                   src={blog.images?.[0] || "https://via.placeholder.com/150"}
                   alt={blog.name}
