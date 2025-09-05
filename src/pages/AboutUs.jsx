@@ -100,19 +100,22 @@ const AboutUs = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-4 sm:mb-6">
+            <h2 className="text-2xl sm:text-4xl font-bold text-blue-900 mb-4 sm:mb-6">
               Our Story
             </h2>
-            <p className="text-white mb-3 sm:mb-4 leading-relaxed text-sm sm:text-base">
+            <p             className="text-white  mb-10 text-base sm:text-lg md:text-xl max-w-3xl mx-auto"
+>
               Water Park Chalo was created to provide professional water park
               experiences, combining thrill, safety, and family fun in one
               location.
             </p>
-            <p className="text-white mb-3 sm:mb-4 leading-relaxed text-sm sm:text-base">
+            <p             className="text-white mb-10 text-base sm:text-lg md:text-xl max-w-3xl mx-auto"
+>
               Our vision is to become the region’s leading water adventure park
               while maintaining the highest standards of service and hygiene.
             </p>
-            <p className="text-white leading-relaxed text-sm sm:text-base">
+            <p             className="text-white mb-10 text-base sm:text-lg md:text-xl max-w-3xl mx-auto"
+>
               We bring together expert staff, modern rides, and clean,
               eco-friendly facilities to ensure every visitor leaves with
               unforgettable memories.
@@ -137,7 +140,7 @@ const AboutUs = () => {
       {/* Values Section */}
       <section className="py-12 sm:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h2 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-6">
+          <motion.h2 className="text-2xl sm:text-4xl font-bold text-blue-900 mb-6">
             Our Values
           </motion.h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mt-8">
@@ -168,7 +171,8 @@ const AboutUs = () => {
           <motion.h2 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-6">
             Contact Us
           </motion.h2>
-          <p className="text-white mb-10 sm:mb-12 max-w-2xl mx-auto text-sm sm:text-base">
+          <p             className="text-white mb-10 text-base sm:text-lg md:text-xl max-w-3xl mx-auto"
+>
             Reach out to us for bookings, inquiries, or more information about
             our professional water park services.
           </p>
