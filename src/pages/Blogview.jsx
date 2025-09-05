@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { CalendarDays, AlertTriangle, Loader2 } from "lucide-react";
 import config from "../config/config";
 import { motion } from "framer-motion";
+import AnimatedBubbles from "../components/AnimatedBubbles/AnimatedBubbles";
 
 // --- Framer Motion Animation Variants ---
 const containerVariants = {
@@ -97,27 +98,7 @@ const BlogView = () => {
   // --- Main Content ---
   return (
     <div className="min-h-screen font-sans bg-gradient-to-br from-blue-50 via-sky-100 to-blue-200 overflow-hidden relative">
-      {/* Enhanced Randomized Bubbles */}
-      {[...Array(15)].map((_, i) => {
-        const size = Math.random() * 30 + 10;
-        const duration = Math.random() * 10 + 10;
-        const delay = Math.random() * 5;
-        return (
-          <motion.div
-            key={i}
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: -1000, opacity: [0, 0.6, 0] }}
-            transition={{ repeat: Infinity, duration, ease: "linear", delay }}
-            className="absolute rounded-full bg-white/30"
-            style={{
-              width: `${size}px`,
-              height: `${size}px`,
-              left: `${Math.random() * 100}%`,
-              bottom: "-150px",
-            }}
-          />
-        );
-      })}
+      <AnimatedBubbles />
 
       <motion.div
         variants={containerVariants}

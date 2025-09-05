@@ -2,16 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import config from '../config/config';
 import { Camera, X, ChevronLeft, ChevronRight } from "lucide-react";
-
-// More dynamic bubble generation
-const bubbles = Array.from({ length: 20 }, (_, i) => ({
-  id: i,
-  left: `${Math.random() * 100}%`,
-  duration: 8 + Math.random() * 10,
-  delay: Math.random() * 7,
-  size: `${15 + Math.random() * 50}px`,
-  opacity: 0.1 + Math.random() * 0.3,
-}));
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 const Gallery = () => {
   const [carouselData, setCarouselData] = useState([]);
@@ -68,23 +59,7 @@ const Gallery = () => {
 
   return (
     <div className="min-h-screen relative font-sans  overflow-hidden">
-      {/* Animated bubbles for water theme */}
-      {bubbles.map((bubble) => (
-        <motion.div
-          key={bubble.id}
-          className="absolute bottom-0 rounded-full bg-cyan-300"
-          style={{ left: bubble.left, width: bubble.size, height: bubble.size, opacity: bubble.opacity }}
-          initial={{ y: 100 }}
-          animate={{ y: -1200 }} // Animate further up
-          transition={{
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: bubble.duration,
-            ease: "linear",
-            delay: bubble.delay,
-          }}
-        />
-      ))}
+      <AnimatedBubbles />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-10 relative z-10 py-16 md:py-20">
         {/* Thematic Header */}

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Star, ArrowRight } from "lucide-react"; // Added ArrowRight
 import config from "../config/config.js";
+import AnimatedBubbles from "../components/AnimatedBubbles/AnimatedBubbles";
 
 // Framer Motion variants from the first example for staggering and card animation
 const containerVariants = {
@@ -67,16 +68,7 @@ export default function BlogPage() {
 
   return (
     <div className=" flex items-center justify-center relative font-sans overflow-hidden">
-      {/* Animated bubbles from the second example */}
-      {[...Array(10)].map((_, i) => (
-        <motion.div
-          key={i}
-          animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
-          transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
-          className="absolute w-6 h-6 rounded-full bg-blue-300 opacity-70"
-          style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
-        />
-      ))}
+      <AnimatedBubbles />
       <section className="relative overflow-hidden py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
           {/* Header from the second example */}

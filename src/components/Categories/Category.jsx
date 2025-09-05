@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Droplet } from 'lucide-react'; // Added an icon for the theme
 import config from '../../config/config.js';
 import { categories as staticCategories } from '../../data/categories.js';
+import AnimatedBubbles from '../AnimatedBubbles/AnimatedBubbles';
 
 const containerVariants = {
   hidden: {},
@@ -35,35 +36,6 @@ const categoryImages = {
   "water park delhi": "/images/waterparks/delhi-park.jpg",
 };
 
-// --- NEW: Component for animated background bubbles ---
-const AnimatedBubbles = () => (
-  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-    {[...Array(15)].map((_, i) => {
-      const size = Math.random() * 20 + 5; // Random size between 5px and 25px
-      const duration = Math.random() * 10 + 8; // Random duration between 8s and 18s
-      const delay = Math.random() * 5; // Random delay
-      return (
-        <motion.div
-          key={i}
-          className="absolute rounded-full bg-cyan-400/20 border border-cyan-300/30"
-          initial={{ y: '110vh', x: `${Math.random() * 100}vw`, opacity: 0 }}
-          animate={{ y: '-10vh', opacity: [0, 1, 1, 0] }}
-          transition={{
-            duration,
-            delay,
-            repeat: Infinity,
-            repeatType: 'loop',
-            ease: 'linear',
-          }}
-          style={{
-            width: size,
-            height: size,
-          }}
-        />
-      );
-    })}
-  </div>
-);
 
 const Category = () => {
   const [categories, setCategories] = useState([]);

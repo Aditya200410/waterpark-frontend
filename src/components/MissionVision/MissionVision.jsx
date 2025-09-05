@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 // You might need an icon for the header, for example:
 import { Waves } from "lucide-react"; 
 import config from "../../config/config.js";
+import AnimatedBubbles from "../AnimatedBubbles/AnimatedBubbles";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 50, scale: 0.9 },
@@ -19,15 +20,6 @@ const cardVariants = {
   },
 };
 
-// Data for our animated bubbles
-const bubbles = Array.from({ length: 15 }, (_, i) => ({
-  id: i,
-  left: `${Math.random() * 100}%`,
-  duration: 5 + Math.random() * 10,
-  delay: Math.random() * 5,
-  size: `${10 + Math.random() * 40}px`,
-  opacity: 0.1 + Math.random() * 0.4,
-}));
 
 
 export default function MissionVission() {
@@ -58,28 +50,7 @@ export default function MissionVission() {
 
   return (
     <section className="relative  py-16 md:py-24 overflow-hidden mb-10">
-      {/* Enhanced Animated bubbles for water theme */}
-      {bubbles.map((bubble) => (
-        <motion.div
-          key={bubble.id}
-          className="absolute bottom-0 rounded-full bg-cyan-400"
-          style={{
-            left: bubble.left,
-            width: bubble.size,
-            height: bubble.size,
-            opacity: bubble.opacity,
-          }}
-          initial={{ y: 100 }}
-          animate={{ y: -1000 }}
-          transition={{
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: bubble.duration,
-            ease: "linear",
-            delay: bubble.delay,
-          }}
-        />
-      ))}
+      <AnimatedBubbles />
 
       <div className="container relative mx-auto px-4">
         {/* Thematic Header */}

@@ -26,6 +26,7 @@ import orderService from '../services/orderService';
 import config from '../config/config.js';
 import OrderDetailsModal from '../components/OrderDetailsModal/OrderDetailsModal';
 import Ticket from './Tickets.jsx'; // adjust path if needed
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 // PDF libs
 import { jsPDF } from 'jspdf';
@@ -316,16 +317,6 @@ const Account = () => {
     { id: 'orders', label: 'Tickets', icon: GiftIcon },
   ];
 
-  // Decorative bubbles
-  const Bubble = ({ className }) => (
-    <span
-      className={`absolute rounded-full opacity-30 blur-sm animate-[float_6s_ease-in-out_infinite] ${className}`}
-      style={{
-        background:
-          'radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,.2) 60%, rgba(255,255,255,0) 70%)'
-      }}
-    />
-  );
 
   // JSX for the orders tab
   const OrdersTab = () => {
@@ -382,10 +373,6 @@ const Account = () => {
                 key={order.customBookingId}
                 className="relative rounded-2xl border border-cyan-100 bg-gradient-to-br from-white to-cyan-50 p-6 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
               >
-                {/* Decorative bubbles */}
-                <Bubble className="h-14 w-14 left-3 -top-4" />
-                <Bubble className="h-10 w-10 right-10 -bottom-4" />
-                <Bubble className="h-8 w-8 left-1/2 top-8" />
 
                 {/* Wave ribbon */}
                 <div className="absolute -top-1 left-0 right-0">
@@ -507,10 +494,7 @@ const Account = () => {
       <div className="min-h-screen relative">
        
 
-        {/* floating bubbles around */}
-        <Bubble className="h-24 w-24 right-6 top-24" />
-        <Bubble className="h-12 w-12 left-10 top-56" />
-        <Bubble className="h-16 w-16 right-24 bottom-40" />
+        <AnimatedBubbles />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
           {/* Header */}

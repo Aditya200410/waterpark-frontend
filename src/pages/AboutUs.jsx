@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { MapPin, Mail, Clock, Users, Heart, Star, Award } from "lucide-react";
 import SEO from "../components/SEO/SEO";
+import AnimatedBubbles from "../components/AnimatedBubbles/AnimatedBubbles";
 
 const AboutUs = () => {
   const stats = [
@@ -39,18 +40,7 @@ const AboutUs = () => {
 
   return (
     <div className="w-full font-roboto overflow-hidden relative">
-      {/* Animated bubbles for water theme */}
-      <div className="absolute inset-0 pointer-events-none z-[-1]">
-        {[...Array(10)].map((_, i) => (
-          <motion.div
-            key={i}
-            animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
-            transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
-            className="absolute w-4 sm:w-6 h-4 sm:h-6 rounded-full bg-blue-300 opacity-70"
-            style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
-          />
-        ))}
-      </div>
+      <AnimatedBubbles />
 
       <SEO
         title="About Water Park Chalo - Professional Water Adventures"
