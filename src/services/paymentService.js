@@ -83,7 +83,6 @@ const paymentService = {
   // Handle PhonePe callback verification
   async verifyPhonePeCallback(callbackData) {
     try {
-      console.log('PaymentService - Verifying PhonePe callback:', callbackData);
       
       const response = await axios.post(`${API_BASE_URL}/api/payment/phonepe/callback`, callbackData, {
         timeout: 30000,
@@ -92,7 +91,6 @@ const paymentService = {
         }
       });
       
-      console.log('PaymentService - Callback verification response:', response.data);
       return response.data;
     } catch (error) {
       console.error('PaymentService - Callback verification error:', error);
@@ -171,7 +169,6 @@ const paymentService = {
   // Create order after successful payment
   async createOrderAfterPayment(orderData, paymentStatus = 'completed') {
     try {
-      console.log('PaymentService - Creating order after payment with data:', orderData);
       
       // Ensure orderData is not null or undefined
       if (!orderData) {
@@ -198,9 +195,7 @@ const paymentService = {
         couponCode: orderData.couponCode
       };
 
-      console.log('PaymentService - Order payload:', orderPayload);
       const response = await orderService.createOrder(orderPayload);
-      console.log('PaymentService - Order created successfully:', response);
       return response;
     } catch (error) {
       console.error('PaymentService - Order creation error:', error);
@@ -211,16 +206,13 @@ const paymentService = {
   // Complete payment flow - verify payment and create order
   async completePaymentFlow(orderId, orderData) {
     try {
-      console.log('PaymentService - Completing payment flow for order:', orderId);
       
       // First verify payment status with PhonePe
       const paymentStatus = await this.getPhonePeStatus(orderId);
       
-      console.log('PaymentService - Payment status response:', paymentStatus);
       
       if (paymentStatus.success && paymentStatus.data?.state === 'COMPLETED') {
         // Payment is successful, create order
-        console.log('PaymentService - Payment completed, creating order...');
         try {
           const orderResult = await this.createOrderAfterPayment(orderData, 'completed');
           return {
@@ -248,7 +240,6 @@ const paymentService = {
         }
       } else if (paymentStatus.success && paymentStatus.data?.state === 'PENDING') {
         // Payment is pending, create order with pending status
-        console.log('PaymentService - Payment pending, creating order with pending status...');
         try {
           const orderResult = await this.createOrderAfterPayment(orderData, 'pending');
           return {
@@ -276,7 +267,6 @@ const paymentService = {
         }
       } else if (paymentStatus.success && paymentStatus.data?.state === 'FAILED') {
         // Payment failed
-        console.log('PaymentService - Payment failed:', paymentStatus.data);
         return {
           success: false,
           code: 'PAYMENT_FAILED',
@@ -289,7 +279,6 @@ const paymentService = {
         };
       } else {
         // Payment verification failed or unknown state
-        console.log('PaymentService - Payment verification failed or unknown state:', paymentStatus);
         return {
           success: false,
           code: 'VERIFICATION_FAILED',

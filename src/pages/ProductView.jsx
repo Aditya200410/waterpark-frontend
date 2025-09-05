@@ -202,7 +202,6 @@ const ProductView = () => {
       totalamount: grandTotal, waternumber: product.waternumber,
       terms:product.terms
     };
-    console.log(checkoutData)
     try {
       localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
       navigate('/checkout', { state: checkoutData });
