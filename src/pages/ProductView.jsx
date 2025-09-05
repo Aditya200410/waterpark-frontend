@@ -637,7 +637,8 @@ const ProductView = () => {
                     <li>Drinking is strictly prohibited in Waterpark.</li>
                     <li>For refund and cancellation contact us before one day of your check in date.</li>
                     <li>If any case of any dispute and misunderstanding Waterpark hold final decision.</li>
-                    
+                    <li>Please check the ticket before entering the waterpark.</li>
+                    <li>By accepting these terms and conditions, you agree to all of our policy <span onClick={() => navigate('/policies')} className="text-blue-500 cursor-pointer">see here</span>.</li>
                                </div>
               <div className="flex items-center justify-end gap-3 p-4 bg-gray-50 border-t"><button onClick={() => setIsTermsModalOpen(false)} className="px-5 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">Cancel</button><button onClick={handleProceedToCheckout} className="px-6 py-2 text-sm font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors shadow-sm">I Accept & Proceed to Pay</button></div>
             </motion.div>
