@@ -513,22 +513,27 @@ const ProductView = () => {
                 />
               </div>
               <div className="flex flex-wrap items-center  justify-center gap-10">
-                  <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700">👨 Adult:</label>
-                      <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
-                          <button onClick={() => handleadultQuantityChange(adultquantity - 1)} className="px-3 py-2 hover:bg-[#CAF0F8] transition-colors disabled:opacity-50" disabled={adultquantity <= 0}>-</button>
-                          <span className="px-4 py-2 border-x border-gray-300 text-md font-semibold text-[#03045E]">{adultquantity}</span>
-                          <button onClick={() => handleadultQuantityChange(adultquantity + 1)} className="px-3 py-2 hover:bg-[#CAF0F8] transition-colors">+</button>
-                      </div>
-                  </div>
-                  <div className="flex items-center gap-2 ">
-                      <label className="text-sm font-medium text-gray-700">👧 Child:</label>
-                      <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
-                          <button onClick={() => handlechildQuantityChange(childquantity - 1)} className="px-3 py-2 hover:bg-[#CAF0F8] transition-colors disabled:opacity-50" disabled={childquantity <= 0}>-</button>
-                          <span className="px-4 py-2 border-x border-gray-300 text-md font-semibold text-[#03045E]">{childquantity}</span>
-                          <button onClick={() => handlechildQuantityChange(childquantity + 1)} className="px-3 py-2 hover:bg-[#CAF0F8] transition-colors">+</button>
-                      </div>
-                  </div>
+              <div className="flex items-center gap-4">
+    {/* Adult Stepper */}
+    <div className="flex items-center gap-1.5">
+        <label className="text-sm font-medium text-gray-700">Adult:</label>
+        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
+            <button onClick={() => handleadultQuantityChange(adultquantity - 1)} className="px-2.5 py-1 hover:bg-[#CAF0F8] transition-colors disabled:opacity-50" disabled={adultquantity <= 0}>-</button>
+            <span className="px-3 py-1 border-x border-gray-300 text-sm font-semibold text-[#03045E]">{adultquantity}</span>
+            <button onClick={() => handleadultQuantityChange(adultquantity + 1)} className="px-2.5 py-1 hover:bg-[#CAF0F8] transition-colors">+</button>
+        </div>
+    </div>
+
+    {/* Child Stepper */}
+    <div className="flex items-center gap-1.5">
+        <label className="text-sm font-medium text-gray-700">Child:</label>
+        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
+            <button onClick={() => handlechildQuantityChange(childquantity - 1)} className="px-2.5 py-1 hover:bg-[#CAF0F8] transition-colors disabled:opacity-50" disabled={childquantity <= 0}>-</button>
+            <span className="px-3 py-1 border-x border-gray-300 text-sm font-semibold text-[#03045E]">{childquantity}</span>
+            <button onClick={() => handlechildQuantityChange(childquantity + 1)} className="px-2.5 py-1 hover:bg-[#CAF0F8] transition-colors">+</button>
+        </div>
+    </div>
+</div>
               </div>
               
               {/* Ticket Summary Table */}

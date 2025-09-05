@@ -11,7 +11,9 @@ import {
   Award,
   Droplets,
   Sparkles,
-  CheckCircle
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react"; 
 import config from "../../config/config.js";
 import AnimatedBubbles from "../AnimatedBubbles/AnimatedBubbles";
@@ -22,6 +24,7 @@ export default function MissionVission() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   // Color schemes for different cards
   const colorSchemes = [
@@ -53,42 +56,36 @@ export default function MissionVission() {
     fetchBlogs();
   }, []);
 
+  // Auto-scroll functionality with infinite loop
+  useEffect(() => {
+    if (blogs.length === 0) return;
+    
+    const interval = setInterval(() => {
+      const container = document.querySelector('.overflow-x-auto');
+      if (!container) return;
+      
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      const maxScroll = scrollWidth - clientWidth;
+      
+      if (scrollLeft >= maxScroll - 10) {
+        // If at the end, scroll back to start
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        // Otherwise, scroll to next card
+        const cardWidth = container.scrollWidth / blogs.length;
+        container.scrollBy({ left: cardWidth, behavior: 'smooth' });
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [blogs.length]);
+
   return (
-    <section className="relative py-20 md:py-32 overflow-hidden">
+    <section className="relative h-full py-20 md:py-32 overflow-hidden">
       <AnimatedBubbles />
       
-      {/* Water wave background effect */}
-      <div className="absolute inset-0 "></div>
+   
       
-      {/* Floating water droplets */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(25)].map((_, i) => (
-          <motion.div
-            key={i}
-            className={`absolute rounded-full opacity-40 ${
-              i % 3 === 0 ? 'w-3 h-3 bg-blue-300' : 
-              i % 3 === 1 ? 'w-2 h-2 bg-blue-300' : 
-              'w-1 h-1 bg-indigo-300'
-            }`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              x: [0, Math.random() * 10 - 5, 0],
-              opacity: [0.2, 0.8, 0.2],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 4 + Math.random() * 3,
-              repeat: Infinity,
-              delay: Math.random() * 3,
-            }}
-          />
-        ))}
-      </div>
-
       <div className="container relative mx-auto px-4">
         {/* Premium Header Section */}
         <motion.div
@@ -140,20 +137,27 @@ export default function MissionVission() {
           </motion.div>
         )}
 
-        {/* Premium Feature Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {blogs.map((blog, index) => {
-            const colorScheme = colorSchemes[index % colorSchemes.length];
-            return (
-              <motion.div
-                key={blog._id}
-                
-                initial="hidden"
-                whileInView="visible"
-                whileHover="hover"
-                viewport={{ once: true, amount: 0.3 }}
-                className="group relative"
-              >
+        {/* Premium Feature Cards - Scrollable */}
+        <div className="relative">
+          <div 
+            className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
+            style={{ scrollSnapType: 'x mandatory' }}
+          >
+            {blogs.map((blog, index) => {
+              const colorScheme = colorSchemes[index % colorSchemes.length];
+              return (
+                <motion.div
+                  key={blog._id}
+                  initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                 
+                 
+                  viewport={{ once: true, amount: 0.3 }}
+                  className="group relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] min-w-[280px]"
+                  style={{ 
+                    scrollSnapAlign: 'start'
+                  }}
+                >
                 <div className={`relative p-6 md:p-8 rounded-3xl ${colorScheme.bgColor} backdrop-blur-sm border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden`}>
                   {/* Water wave pattern overlay */}
                   <div className="absolute inset-0 opacity-10">
@@ -165,18 +169,9 @@ export default function MissionVission() {
                   {/* Background gradient overlay */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${colorScheme.color} opacity-5 group-hover:opacity-10 transition-opacity duration-500`}></div>
                   
-                  {/* Floating sparkles */}
-                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <Sparkles className="w-5 h-5 text-blue-400 animate-pulse" />
-                  </div>
+              
 
-                  {/* Water droplets decoration */}
-                  <div className="absolute top-2 left-2 opacity-60">
-                    <Droplets className="w-4 h-4 text-blue-400" />
-                  </div>
-                  <div className="absolute bottom-2 right-2 opacity-60">
-                    <Droplets className="w-3 h-3 text-blue-400" />
-                  </div>
+                 
 
                   {/* Image container styled like a lifebuoy */}
                   <motion.div
@@ -189,19 +184,8 @@ export default function MissionVission() {
                       className="w-full h-full object-cover rounded-full"
                     />
                     
-                    {/* Ripple effect on hover */}
-                    <motion.div
-                      className="absolute inset-0 rounded-full border-2 border-white/30"
-                      animate={{
-                        scale: [1, 1.2, 1],
-                        opacity: [0.5, 0, 0.5],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: index * 0.2,
-                      }}
-                    />
+                  
+                  
                   </motion.div>
 
                   {/* Content */}
@@ -216,13 +200,60 @@ export default function MissionVission() {
                     className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${colorScheme.color} rounded-b-3xl`}
                     initial={{ scaleX: 0 }}
                     whileInView={{ scaleX: 1 }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
+                 
                     viewport={{ once: true }}
                   />
                 </div>
-              </motion.div>
-            );
-          })}
+                </motion.div>
+              );
+            })}
+          </div>
+          
+          {/* Navigation Arrows */}
+          <div className="hidden md:flex absolute inset-y-0 left-0 items-center">
+            <button
+              onClick={() => {
+                const container = document.querySelector('.overflow-x-auto');
+                if (!container) return;
+                
+                const { scrollLeft, scrollWidth, clientWidth } = container;
+                const maxScroll = scrollWidth - clientWidth;
+                const scrollAmount = 300;
+                
+                if (scrollLeft <= 10) {
+                  // If at the start, scroll to end
+                  container.scrollTo({ left: maxScroll, behavior: 'smooth' });
+                } else {
+                  container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                }
+              }}
+              className="bg-white/90 shadow-lg rounded-full p-2 hover:bg-white transition-colors z-10"
+            >
+              <ChevronLeft className="w-6 h-6 text-gray-700" />
+            </button>
+          </div>
+          <div className="hidden md:flex absolute inset-y-0 right-0 items-center">
+            <button
+              onClick={() => {
+                const container = document.querySelector('.overflow-x-auto');
+                if (!container) return;
+                
+                const { scrollLeft, scrollWidth, clientWidth } = container;
+                const maxScroll = scrollWidth - clientWidth;
+                const scrollAmount = 300;
+                
+                if (scrollLeft >= maxScroll - 10) {
+                  // If at the end, scroll to start
+                  container.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                  container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                }
+              }}
+              className="bg-white/90 shadow-lg rounded-full p-2 hover:bg-white transition-colors z-10"
+            >
+              <ChevronRight className="w-6 h-6 text-gray-700" />
+            </button>
+          </div>
         </div>
 
         {/* Stats Section */}
@@ -257,8 +288,6 @@ export default function MissionVission() {
             </motion.div>
           ))}
         </motion.div>
-
-       
       </div>
     </section>
   );

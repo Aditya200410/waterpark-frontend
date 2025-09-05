@@ -103,7 +103,7 @@ const Signup = () => {
                         {/* Phone */}
                         <div className="relative flex">
                             <Phone className="absolute top-1/2 left-4 -translate-y-1/2 h-5 w-5 text-cyan-500 z-10" />
-                            <span className="inline-flex items-center pl-12 pr-3 rounded-l-xl border border-r-0 border-cyan-300 bg-sky-100/70 text-blue-800 text-sm select-none font-semibold">+91</span>
+                            <span className="inline-flex items-center pl-12 pr-3 rounded-l-xl border border-r-0 border-cyan-300 bg-sky-100/70 text-cyan-500 text-sm select-none font-semibold">+91</span>
                             <input type="tel" required maxLength={10} placeholder="10-Digit Phone Number" value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
                                 className="block w-full pl-3 pr-4 py-3 border border-cyan-300 rounded-r-xl bg-white/50 text-blue-900 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:z-10 transition-all duration-300 shadow-inner" />
                         </div>

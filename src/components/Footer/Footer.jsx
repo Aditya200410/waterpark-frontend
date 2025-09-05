@@ -44,13 +44,16 @@ export default function Footer() {
 
           {/* Column 1: Logo & About */}
           <div className="flex flex-col items-start space-y-4">
+            <Link to={"/"}>
             <motion.img
+            
               src="/logo.png"
               alt="Water Park Chalo"
               className="h-36 w-auto rounded-xl drop-shadow-lg bg-white/20 p-2"
               animate={{ y: [0, -8, 0] }}
               transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut" }}
             />
+            </Link>
             <p className="text-white/80 leading-relaxed text-sm max-w-xs">
               Water Park Chalo is your go-to destination for booking tickets to the best water parks in India. Enjoy a seamless experience with trusted partners and exclusive offers.
             </p>
@@ -58,7 +61,7 @@ export default function Footer() {
 
           {/* Column 2: Useful Links */}
           <div>
-            <h4 className="text-xl font-semibold mb-5 tracking-wide">Useful Links</h4>
+            <h4 className="text-xl font-semibold mb-3 tracking-wide">Useful Links</h4>
             <ul className="space-y-2 text-white/90">
                 <li className="flex items-center">
                     <span className="w-1.5 h-1.5 bg-yellow-300 rounded-full mr-3"></span>
@@ -93,27 +96,40 @@ export default function Footer() {
 
           {/* Column 3: Contact */}
           <div>
-            <h4 className="text-xl font-semibold mb-5 tracking-wide">Contact & Location</h4>
-            <ul className="space-y-3 text-white/90">
-              <li className="flex items-center space-x-3">
-                <Phone className="w-5 h-5 text-yellow-300 flex-shrink-0" />
-                <a href="tel:+918847714464" className="hover:text-yellow-300 transition-colors">+91 88477 14464</a>
-              </li>
-              <li className="flex items-center space-x-3">
-                <Mail className="w-5 h-5 text-yellow-300 flex-shrink-0" />
-                <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-300 transition-colors">wpc@waterparkchalo.com</a>
-              </li>
-              <li className="flex items-start space-x-3">
-                <MapPin className="w-5 h-5 text-yellow-300 mt-1 flex-shrink-0" />
-                <span>110, Lakshmi Apt 1, Alkapuri, Nallasopara</span>
-              </li>
-            </ul>
-          </div>
+    <h4 className="text-lg font-semibold mb-3 tracking-wide">Contact & Location</h4>
+    {/* Increased vertical spacing for better readability */}
+    <ul className="space-y-2 text-white/90">
+        {/* - Using 'items-start' to align the icon with the top of the text.
+          - This is better if the text ever wraps to a second line.
+        */}
+        <li className="flex items-start space-x-3">
+            {/* Added 'mt-0.5' to optically align the icon with the center of the first line of text */}
+            <Phone className="w-5 h-5 text-yellow-300 mt-0.5 flex-shrink-0" />
+            <a href="tel:+918847714464" className="hover:text-yellow-300 transition-colors">+91 88477 14464</a>
+        </li>
+
+        <li className="flex items-start space-x-1">
+            <Mail className="w-5 h-5 text-yellow-300 mt-0.5 flex-shrink-0" />
+            {/* - Added 'break-all' to ensure the long email address doesn't 
+                overflow its container on small screens.
+            */}
+            <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-300 transition-colors break-all">wpc@waterparkchalo.com</a>
+        </li>
+
+        <li className="flex items-start space-x-3">
+            <MapPin className="w-5 h-5 text-yellow-300 mt-0.5 flex-shrink-0" />
+            {/* This text will wrap naturally because it has spaces */}
+            <span>110, Lakshmi Apt 1, Alkapuri, Nallasopara</span>
+        </li>
+    </ul>
+</div>
         </div>
 
         {/* Mobile Layout */}
         <div className="flex flex-col space-y-10 md:hidden">
+         
           <div className="flex flex-col items-center space-y-4 text-center">
+          <Link to={"/"}>
             <motion.img
               src="/logo.png"
               alt="Water Park Chalo"
@@ -121,6 +137,7 @@ export default function Footer() {
               animate={{ y: [0, -8, 0] }}
               transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut" }}
             />
+            </Link>
             <p className="text-white/80 text-sm max-w-sm">
               Water Park Chalo is your go-to destination for booking tickets to the best water parks in India.
             </p>
@@ -128,7 +145,7 @@ export default function Footer() {
 
           <div className="grid grid-cols-2 gap-6 text-sm">
            <div>
-            <h4 className="text-xl font-semibold mb-5 tracking-wide">Useful Links</h4>
+            <h4 className="text-lg font-semibold mb-3 tracking-wide">Useful Links</h4>
             <ul className="space-y-2 text-white/90">
                 <li className="flex items-center">
                     <span className="w-1.5 h-1.5 bg-yellow-300 rounded-full mr-3"></span>
@@ -161,7 +178,7 @@ export default function Footer() {
             </ul>
           </div>
             <div>
-            <h4 className="text-xl font-semibold mb-5 tracking-wide">Contact & Location</h4>
+              <h4 className="text-lg font-semibold mb-3 tracking-wide">Contact & Location</h4>
             <ul className="space-y-3 text-white/90">
               <li className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-yellow-300 flex-shrink-0" />

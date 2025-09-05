@@ -289,7 +289,6 @@ const Shop = () => {
           }`}
         >
           <span className="flex items-center gap-2.5">
-            <Droplet className={`w-4 h-4 transition-colors ${isCategorySelected(category.name) ? 'text-white' : 'text-cyan-400 group-hover:text-cyan-500'}`} />
             {category.name}
           </span>
           {category.submenu?.length > 0 && (

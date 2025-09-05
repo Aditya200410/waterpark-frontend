@@ -18,6 +18,7 @@ export default function OurPartners() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const scrollRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -43,52 +44,60 @@ export default function OurPartners() {
     fetchBlogs();
   }, []);
 
+  // Auto-scroll functionality with infinite loop
+  useEffect(() => {
+    if (blogs.length === 0 || !scrollRef.current) return;
+    
+    const interval = setInterval(() => {
+      const container = scrollRef.current;
+      if (!container) return;
+      
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      const maxScroll = scrollWidth - clientWidth;
+      
+      if (scrollLeft >= maxScroll - 10) {
+        // If at the end, scroll back to start
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        // Otherwise, scroll to next card
+        const cardWidth = container.scrollWidth / blogs.length;
+        container.scrollBy({ left: cardWidth, behavior: 'smooth' });
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [blogs.length]);
+
   const scroll = (direction) => {
     if (!scrollRef.current) return;
-    const { scrollLeft, clientWidth } = scrollRef.current;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    const maxScroll = scrollWidth - clientWidth;
     const scrollAmount = clientWidth * 0.8;
-    scrollRef.current.scrollTo({
-      left: direction === "left" ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
-      behavior: "smooth",
-    });
+    
+    if (direction === "left") {
+      if (scrollLeft <= 10) {
+        // If at the start, scroll to end
+        scrollRef.current.scrollTo({ left: maxScroll, behavior: "smooth" });
+      } else {
+        scrollRef.current.scrollTo({ left: scrollLeft - scrollAmount, behavior: "smooth" });
+      }
+    } else {
+      if (scrollLeft >= maxScroll - 10) {
+        // If at the end, scroll to start
+        scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        scrollRef.current.scrollTo({ left: scrollLeft + scrollAmount, behavior: "smooth" });
+      }
+    }
   };
 
   return (
-    <section className="relative py-20 md:py-32 overflow-hidden">
+    <section className="relative h-full py-20 md:py-32 overflow-hidden">
       <AnimatedBubbles />
       
-      {/* Water wave background effect */}
-      <div className="absolute inset-0 "></div>
+    
       
-      {/* Floating water droplets */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className={`absolute rounded-full opacity-30 ${
-              i % 3 === 0 ? 'w-3 h-3 bg-blue-300' : 
-              i % 3 === 1 ? 'w-2 h-2 bg-blue-300' : 
-              'w-1 h-1 bg-indigo-300'
-            }`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -25, 0],
-              x: [0, Math.random() * 8 - 4, 0],
-              opacity: [0.2, 0.6, 0.2],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
-      </div>
-
+   
       <div className="container relative mx-auto px-4">
         {/* Premium Header Section */}
         <motion.div
@@ -141,22 +150,26 @@ export default function OurPartners() {
           </motion.div>
         )}
 
-        {/* Premium Partners Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-10">
-          {blogs.map((partner, index) => (
-            <motion.div
-              key={partner._id}
-              initial={{ opacity: 0, y: 50, scale: 0.9 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              whileHover={{ 
-                scale: 1.05, 
-                y: -8,
+        {/* Premium Partners Grid - Scrollable */}
+        <div className="relative">
+          <div 
+            ref={scrollRef}
+            className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
+            style={{ scrollSnapType: 'x mandatory' }}
+          >
+            {blogs.map((partner, index) => (
+              <motion.div
+                key={partner._id}
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 
-              }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true, amount: 0.3 }}
-              className="group relative"
-            >
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true, amount: 0.3 }}
+                className="group relative flex-shrink-0 w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] min-w-[280px]"
+                style={{ 
+                  scrollSnapAlign: 'start'
+                }}
+              >
               <div className="relative justify-center p-8 rounded-3xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden">
                 {/* Water wave pattern overlay */}
                 <div className="absolute inset-0 opacity-10">
@@ -174,12 +187,7 @@ export default function OurPartners() {
                 {/* Partner Logo Container */}
                 <motion.div
                   
-                  whileInView={{ scale: 1, rotate: 0 }}
-                  whileHover={{ 
-                    scale: 1.1, 
-                  
-                  }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                 
                   className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-6 rounded-2xl overflow-hidden shadow-lg border-4 border-white/30 bg-gradient-to-br from-blue-50 to-blue-50"
                 >
                   <img
@@ -207,6 +215,25 @@ export default function OurPartners() {
               </div>
             </motion.div>
           ))}
+          </div>
+          
+          {/* Navigation Arrows */}
+          <div className="hidden md:flex absolute inset-y-0 left-0 items-center">
+            <button
+              onClick={() => scroll("left")}
+              className="bg-white/90 shadow-lg rounded-full p-2 hover:bg-white transition-colors z-10"
+            >
+              <ChevronLeft className="w-6 h-6 text-gray-700" />
+            </button>
+          </div>
+          <div className="hidden md:flex absolute inset-y-0 right-0 items-center">
+            <button
+              onClick={() => scroll("right")}
+              className="bg-white/90 shadow-lg rounded-full p-2 hover:bg-white transition-colors z-10"
+            >
+              <ChevronRight className="w-6 h-6 text-gray-700" />
+            </button>
+          </div>
         </div>
 
      
