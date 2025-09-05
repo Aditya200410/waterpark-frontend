@@ -71,7 +71,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="h-full fixed inset-0 z-[500] flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+        className="h-full fixed inset-0 z-[500] flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm p-2 sm:p-4"
         onClick={onClose}
       >
         {loading ? (
@@ -88,11 +88,10 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
             >
               <div 
                 id="ticket-to-print" 
-                className="relative flex aspect-[210/99] min-w-[700px] w-full text-blue-900 shadow-2xl overflow-hidden rounded-xl"
+                className="relative flex aspect-[210/99] min-w-[280px] sm:min-w-[400px] md:min-w-[600px] w-full text-blue-900 shadow-2xl overflow-hidden rounded-xl"
                 style={{ 
-                  backgroundImage: `url('/tback.png')`, // Directly using the image
+                  backgroundImage: `url('/tback2.png')`, // Directly using the image
                   backgroundSize: 'cover',
-                 
                   backgroundPosition: 'center',
                   backgroundRepeat: 'no-repeat',
                   backgroundColor: 'rgba(255, 255, 255, 0.1)' // Fallback and slight overlay for text
@@ -104,61 +103,65 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
                 {/* Original content of the ticket, now on top of the background image */}
                 <div className="relative z-10 flex w-full h-full">
                     {/* Left Stub */}
-                   <div className="relative w-1/4 bg-gradient-to-b from-cyan-600 to-blue-700 text-white flex flex-col items-center justify-between p-4">
+                   <div className="relative w-1/4 bg-gradient-to-b from-cyan-600 to-blue-700 text-white flex flex-col items-center justify-between p-1 sm:p-4">
   <div className="text-center">
-    <img src='/logo.png' alt="Logo" /> {/* Added alt text for accessibility */}
+    <img src='/logo.png' alt="Logo" className="w-12 h-12 sm:w-24 sm:h-24" />
   </div>
   
   {/* The change is in the line below */}
-  <div className="text-center font-display text-xs tracking-widest uppercase opacity-70 whitespace-pre-line">
+  <div className="text-center font-display text-[8px] sm:text-xs tracking-widest uppercase opacity-70 whitespace-pre-line">
     {order.terms}
   </div>
   
-  <Waves className="w-8 h-8 text-white opacity-40"/>
+  <Waves className="w-3 h-3 sm:w-8 sm:h-8 text-white opacity-40"/>
 </div>
 
                     {/* Main Content */}
-                    <div className="relative w-3/4 flex flex-col p-6 border-l-2 border-dashed border-blue-400/80">
-                      <div className="flex justify-between items-start mb-4">
+                    <div className="relative w-3/4 flex flex-col p-2 sm:p-6 border-l-2 border-dashed border-blue-400/80">
+                      <div className="flex justify-between items-start mb-1 sm:mb-4">
                         <div>
-                          <h2 className="font-display text-4xl font-extrabold text-blue-900">{order.waterparkName}</h2>
-                          <p className="font-sans text-sm mt-3 text-blue-800">Present this ticket at the entrance.</p>
+                          <h2 className="font-display text-sm sm:text-2xl md:text-4xl font-extrabold text-blue-900 leading-tight">{order.waterparkName}</h2>
+                          <p className="font-sans text-[10px] sm:text-sm mt-0.5 sm:mt-3 text-blue-800">Present this ticket at the entrance.</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-sans text-xs font-bold text-blue-800 uppercase">Visit Date</p>
-                          <p className="font-display font-extrabold text-2xl text-cyan-700">{new Date(order.date).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                          <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Visit Date</p>
+                          <p className="font-display font-extrabold text-xs sm:text-xl md:text-2xl text-cyan-700">{new Date(order.date).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })}</p>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-x-6 gap-y-4 my-auto">
-                        <div className="flex items-center gap-3">
-                          <UserCircle className="w-6 h-6 text-cyan-600 flex-shrink-0" />
+                      <div className="grid grid-cols-2 gap-x-1 sm:gap-x-6 gap-y-1 sm:gap-y-4 my-auto">
+                        <div className="flex items-center gap-0.5 sm:gap-3">
+                          <UserCircle className="w-3 h-3 sm:w-6 sm:h-6 text-cyan-600 flex-shrink-0" />
                           <div>
-                            <p className="text-xs font-bold text-blue-800 uppercase">Guest Name</p>
-                            <p className="font-bold text-base text-blue-900">{order.name}</p>
+                            <p className="text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Guest Name</p>
+                            <p className="font-bold text-[10px] sm:text-base text-blue-900 leading-tight">{order.name}</p>
                           </div>
                         </div>
-                         <div className="flex items-center gap-3">
-                          <Users className="w-6 h-6 text-cyan-600 flex-shrink-0" />
+                         <div className="flex items-center gap-0.5 sm:gap-3">
+                          <Users className="w-3 h-3 sm:w-6 sm:h-6 text-cyan-600 flex-shrink-0" />
                           <div>
-                            <p className="text-xs font-bold text-blue-800 uppercase">Guests</p>
-                            <p className="font-bold text-base text-blue-900">{order.adults} Adults, {order.children} Children</p>
+                            <p className="text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Guests</p>
+                            <p className="font-bold text-[10px] sm:text-base text-blue-900 leading-tight">{order.adults} Adults, {order.children} Children</p>
                           </div>
                         </div>
                       </div>
 
-                      <div className="mt-auto pt-4 border-t border-dashed border-blue-400/80 flex justify-between items-end">
-                        <div>
-                          <p className="font-sans text-xs font-bold text-blue-800 uppercase">Booking ID</p>
-                          <p className="font-mono text-xl font-bold tracking-wider text-blue-900">{order.customBookingId}</p>
-                        </div>
-                         <div className="text-right">
-                          <p className="font-sans text-xs font-bold text-blue-800 uppercase">Amount Paid</p>
-                          <p className="font-display font-extrabold text-3xl text-blue-900">₹{order.advanceAmount.toLocaleString("en-IN")}</p>
-                        </div>
-                         <div className="text-right">
-                          <p className="font-sans text-xs font-bold text-blue-800 uppercase">Amount To Pay</p>
-                          <p className="font-display font-extrabold text-3xl text-blue-600">₹{remainingAmount.toLocaleString("en-IN")}</p>
+                      <div className="mt-auto pt-1 sm:pt-4 border-t border-dashed border-blue-400/80">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 sm:gap-4">
+                          <div>
+                            <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Booking ID</p>
+                            <p className="font-mono text-[10px] sm:text-xl font-bold tracking-wider text-blue-900">{order.customBookingId}</p>
+                          </div>
+                          <div className="flex flex-row gap-2 sm:gap-6">
+                            <div className="text-right">
+                              <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Amount Paid</p>
+                              <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-blue-900">₹{order.advanceAmount.toLocaleString("en-IN")}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Amount To Pay</p>
+                              <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-blue-600">₹{remainingAmount.toLocaleString("en-IN")}</p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -167,15 +170,16 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
             </motion.div>
 
             {/* Action Buttons (outside the printable area) */}
-            <div className="flex items-center gap-4 mt-6">
+            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-4 mt-2 sm:mt-6">
               <button
                 onClick={handleDownload}
-                className="group flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105"
+                className="group flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-1.5 sm:py-3 px-3 sm:px-6 rounded-lg shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 text-xs sm:text-base"
               >
-                <Download className="w-5 h-5 transition-transform group-hover:-translate-y-0.5" />
-                Download Ticket
+                <Download className="w-3 h-3 sm:w-5 sm:h-5 transition-transform group-hover:-translate-y-0.5" />
+                <span className="hidden sm:inline">Download Ticket</span>
+                <span className="sm:hidden">Download</span>
               </button>
-               <button onClick={onClose} className="text-white/60 hover:text-white font-bold transition-colors">Close</button>
+               <button onClick={onClose} className="text-white/60 hover:text-white font-bold transition-colors text-xs sm:text-base">Close</button>
             </div>
           </>
         ) : null}
