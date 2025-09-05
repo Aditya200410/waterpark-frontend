@@ -1,35 +1,16 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import config from '../../config/config.js';
-import { toast } from 'react-hot-toast';
 import { getEffectivePrice } from '../../utils/priceUtils';
-import { useCart } from '../../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Ticket } from 'lucide-react';
 
 const ProductCard = ({ product }) => {
-    const { addToCart, cartItems } = useCart();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-    // --- All of your existing logic is preserved ---
     if (!product) return null;
 
-    const isOutOfStock = product.stock === 0 || product.outOfStock === true || product.inStock === false;
-    const cartQuantity = cartItems?.find(item => (item.product?._id || item.id) === (product._id || product.id))?.quantity || 0;
-    const isCartLimit = cartQuantity >= (product.stock || 0);
-
-    const handleAddToCart = async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (isOutOfStock) return toast.error('Product is out of stock');
-        if (isCartLimit) return toast.error('Cannot add more than available stock');
-        try {
-            await addToCart(product._id || product.id);
-        } catch (error) {
-            toast.error('Failed to add item to cart');
-        }
-    };
-
+    // --- Logic for price and images is preserved ---
     const hasOptions = product.attributes && product.attributes.length > 0;
     const validImages = product.images?.filter(img => typeof img === 'string' && /\.(jpg|jpeg|png|gif|webp)$/i.test(img)) || [];
     const imageSources = validImages.length > 0 ? validImages : [product.image].filter(Boolean);
@@ -50,13 +31,11 @@ const ProductCard = ({ product }) => {
     };
 
     return (
-        // Changed: The card is no longer a single link. It's a container.
         <motion.div
             layout
             className="group relative flex flex-col bg-white rounded-2xl overflow-hidden transition-all duration-300 ease-in-out 
                        border border-slate-200/80 hover:shadow-xl hover:shadow-cyan-200/50 hover:-translate-y-1"
         >
-            {/* --- Image Section (This part is the link) --- */}
             <Link to={`/product/${product._id || product.id}`} className="block">
                 <div className="relative w-full aspect-square overflow-hidden">
                     <AnimatePresence>
@@ -87,16 +66,13 @@ const ProductCard = ({ product }) => {
                 </div>
             </Link>
 
-            {/* --- Content Section (Separate from the link for better UX) --- */}
             <div className="p-3 flex flex-col flex-grow">
-                {/* Title is a link */}
                 <h3 className="text-sm font-semibold text-slate-800 truncate" title={product.name}>
                     <Link to={`/product/${product._id || product.id}`} className="hover:text-cyan-600 transition-colors">
                         {product.name}
                     </Link>
                 </h3>
                 
-                {/* Price and Action Button now share a line for a compact, app-like feel */}
                 <div className="flex justify-between items-center mt-2">
                     <div className="flex items-baseline gap-1.5">
                         <span className="text-base font-bold text-slate-900">
@@ -107,16 +83,15 @@ const ProductCard = ({ product }) => {
                         )}
                     </div>
                     
-                    <button
-                        onClick={handleAddToCart}
-                        disabled={isOutOfStock}
+                    {/* --- CHANGED: This is now a Link component, not a button --- */}
+                    <Link
+                        to={`/product/${product._id || product.id}`}
                         className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-300
-                                   bg-cyan-100 text-cyan-800 hover:bg-cyan-500 hover:text-white
-                                   disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+                                   bg-cyan-100 text-cyan-800 hover:bg-cyan-500 hover:text-white"
                     >
                         <Ticket size={14} />
-                        <span>{hasOptions ? 'Options' : 'Book'}</span>
-                    </button>
+                        <span>Book</span>
+                    </Link>
                 </div>
             </div>
         </motion.div>
