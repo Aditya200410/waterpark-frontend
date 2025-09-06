@@ -108,12 +108,12 @@ export default function Footer() {
             <a href="tel:+918847714464" className="hover:text-yellow-300 transition-colors">+91 88477 14464</a>
         </li>
 
-        <li className="flex items-start space-x-1">
-            <Mail className="w-5 h-5 text-yellow-300 mt-0.5 flex-shrink-0" />
+        <li className="flex items-start space-x-3">
+            <Mail className="w-5 h-5 text-yellow-300 mt-0.5 flex-shrink-0 space-x-3"  />
             {/* - Added 'break-all' to ensure the long email address doesn't 
                 overflow its container on small screens.
             */}
-            <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-300 transition-colors break-all">wpc@waterparkchalo.com</a>
+            <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-300 transition-colors break-all">  Email us</a>
         </li>
 
         <li className="flex items-start space-x-3">
@@ -186,7 +186,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-yellow-300 flex-shrink-0" />
-                <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-300 transition-colors">wpc@waterparkchalo.com</a>
+                <a href="mailto:wpc@waterparkchalo.com" className="hover:text-yellow-300 transition-colors">Email us</a>
               </li>
               <li className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-yellow-300 mt-1 flex-shrink-0" />

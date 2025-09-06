@@ -158,8 +158,8 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
                               <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-blue-900">₹{order.advanceAmount.toLocaleString("en-IN")}</p>
                             </div>
                             <div className="text-right">
-                              <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Amount To Pay</p>
-                              <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-blue-600">₹{remainingAmount.toLocaleString("en-IN")}</p>
+                              <p className="font-sans text-[8px] sm:text-xs font-bold text-red-800 uppercase">Amount To Pay</p>
+                              <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-red-600">₹{remainingAmount.toLocaleString("en-IN")}</p>
                             </div>
                           </div>
                         </div>
