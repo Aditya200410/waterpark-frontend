@@ -7,29 +7,6 @@ import AnimatedBubbles from '../AnimatedBubbles/AnimatedBubbles';
 
 const isVideo = (url) => url && url.toLowerCase().endsWith('.mp4');
 
-// Animation variants for the text content
-const textContainerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const textItemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      ease: 'easeOut',
-    },
-  },
-};
 
 const Hero = () => {
   const [carouselData, setCarouselData] = useState([]);
@@ -78,7 +55,9 @@ const Hero = () => {
         const response = await fetch(`${config.API_BASE_URL}/api/hero-carousel/active`);
         if (!response.ok) throw new Error('Failed to fetch carousel data');
         const data = await response.json();
-        setCarouselData(data);
+        // Filter the data to only include items where isMobile is false
+        const desktopData = data.filter(item => !item.isMobile);
+        setCarouselData(desktopData);
       } catch (err) {
         console.error('Error fetching carousel data:', err);
         setError('Failed to load carousel content');
@@ -197,7 +176,7 @@ const Hero = () => {
           )}
 
           {/* --- CONTENT OVERLAY & ANIMATION --- */}
-       
+        
         </motion.div>
       </AnimatePresence>
 
