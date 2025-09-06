@@ -52,7 +52,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
         setLoading(true);
         setError(null);
        
-        const res = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${orderId}`);
+        const res = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${orderId.toLowerCase()}`);
         const data = await res.json();
         if (data.booking) setOrder(data.booking);
         else setError("No booking details found.");
