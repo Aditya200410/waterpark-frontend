@@ -109,11 +109,14 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
     <img src='/logo.png' alt="Logo" className="w-12 h-12 sm:w-24 sm:h-24" />
   </div>
   
-  {/* The change is in the line below */}
-  <div className="text-center font-display text-[8px] sm:text-xs tracking-widest uppercase opacity-70 whitespace-pre-line">
-    {order.terms}
-  </div>
-  
+ {/* The change is in the lines below */}
+<ul className="text-center font-display text-[8px] sm:text-xs tracking-widest uppercase opacity-70 list-disc list-inside">
+  {order.terms.split('\n').map((line, index) => (
+    <li key={index}>
+      {line}
+    </li>
+  ))}
+</ul>
   <Waves className="w-3 h-3 sm:w-8 sm:h-8 text-white opacity-40"/>
 </div>
 
