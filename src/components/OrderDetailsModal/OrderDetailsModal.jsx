@@ -51,6 +51,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
       try {
         setLoading(true);
         setError(null);
+       
         const res = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${orderId}`);
         const data = await res.json();
         if (data.booking) setOrder(data.booking);
