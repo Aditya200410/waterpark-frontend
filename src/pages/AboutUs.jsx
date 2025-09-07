@@ -2,13 +2,13 @@ import { motion } from "framer-motion";
 import { MapPin, Mail, Clock, Users, Heart, Star, Award } from "lucide-react";
 import SEO from "../components/SEO/SEO";
 import AnimatedBubbles from "../components/AnimatedBubbles/AnimatedBubbles";
-
+import { Link } from "react-router-dom";
 const AboutUs = () => {
   const stats = [
-    { icon: Users, number: "500+", label: "Happy Visitors" },
-    { icon: Award, number: "2+", label: "Years Experience" },
-    { icon: Heart, number: "200+", label: "Water Slides" },
-    { icon: Star, number: "4.9", label: "Visitor Rating" },
+    { icon: Users, number: "10000+", label: "Happy Visitors" },
+    { icon: Award, number: "3+", label: "Years Experience" },
+    { icon: Heart, number: "1000+", label: "Trip Done" },
+    { icon: Star, number: "4.7", label: "Visitor Rating" },
   ];
 
   const values = [
@@ -65,8 +65,18 @@ const AboutUs = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-white text-base sm:text-lg md:text-xl max-w-3xl mx-auto"
           >
-            Water Park Chalo is committed to delivering safe, thrilling, and
-            unforgettable experiences for families and adventure seekers alike.
+           Waterpark Chalo is India’s first dedicated platform for booking waterpark tickets at the best prices. We make it simple, fast, and hassle-free for you to plan fun-filled outings with family and friends. From exciting slides to wave pools, we bring you closer to unforgettable water adventures.
+
+          </motion.p>
+
+           <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-white text-base sm:text-lg md:text-xl max-w-3xl mt-10 mx-auto"
+          >
+         
+Our mission is to provide affordable fun, transparent bookings, and happy memories. With trusted partnerships, exclusive discounts, and a smooth online experience, we ensure your day at the waterpark is all about joy – no worries attached. Dive in with Waterpark Chalo and let the fun begin!
           </motion.p>
         </div>
       </section>
@@ -105,21 +115,15 @@ const AboutUs = () => {
             </h2>
             <p             className="text-white  mb-10 text-base sm:text-lg md:text-xl max-w-3xl mx-auto"
 >
-              Water Park Chalo was created to provide professional water park
-              experiences, combining thrill, safety, and family fun in one
-              location.
+           The journey of Waterpark Chalo started with a simple idea – to make waterpark trips easy, affordable, and fun for everyone. We noticed that people often struggled with high ticket prices, confusing options, and last-minute hassles while planning their outings.
+
             </p>
             <p             className="text-white mb-10 text-base sm:text-lg md:text-xl max-w-3xl mx-auto"
 >
-              Our vision is to become the region’s leading water adventure park
-              while maintaining the highest standards of service and hygiene.
+           To solve this, we built a platform dedicated only to waterparks, where you can discover the best parks, book tickets at discounted rates, and enjoy a smooth, worry-free experience. What began as a small vision is now growing into India’s trusted destination for waterpark lovers. With every booking, we aim to create not just convenience, but memories full of joy and laughter.
+
             </p>
-            <p             className="text-white mb-10 text-base sm:text-lg md:text-xl max-w-3xl mx-auto"
->
-              We bring together expert staff, modern rides, and clean,
-              eco-friendly facilities to ensure every visitor leaves with
-              unforgettable memories.
-            </p>
+          
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 50 }}
@@ -167,42 +171,14 @@ const AboutUs = () => {
 
       {/* Contact Section */}
       <section className="py-12 sm:py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h2 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-6">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center cursor-pointer">
+          
+          <button className="text-2xl sm:text-3xl p-5 font-bold text-white  bg-blue-500 rounded-2xl cursor-pointer">
+           <Link to={"/contact"} className="cursor-pointer" >
             Contact Us
-          </motion.h2>
-          <p             className="text-white mb-10 text-base sm:text-lg md:text-xl max-w-3xl mx-auto"
->
-            Reach out to us for bookings, inquiries, or more information about
-            our professional water park services.
-          </p>
+                   </Link>
+          </button>
 
-          <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition-shadow flex flex-col items-center">
-              <MapPin className="w-6 h-6 text-blue-600 mb-2" />
-              <h3 className="font-semibold text-blue-900 mb-1">Address</h3>
-              <p className="text-blue-700 text-sm sm:text-base break-words">
-                110, Lakshmi Apt, Near Kailash Darshan 1, Alkapuri, Nallasopara
-                East 401209
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition-shadow flex flex-col items-center">
-              <Mail className="w-6 h-6 text-blue-600 mb-2" />
-              <h3 className="font-semibold text-blue-900 mb-1">Email</h3>
-              <p className="text-blue-700 text-sm sm:text-base break-words">
-                care@waterparkchalo.com
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition-shadow flex flex-col items-center">
-              <Clock className="w-6 h-6 text-blue-600 mb-2" />
-              <h3 className="font-semibold text-blue-900 mb-1">Hours</h3>
-              <p className="text-blue-700 text-sm sm:text-base">
-                Mon - Sun: 10AM - 7PM
-              </p>
-            </div>
-          </div>
         </div>
       </section>
     </div>

@@ -8,7 +8,7 @@ const Contact = () => {
     company: 'Water Park Chalo',
     address: ' 110, Lakshmi Apt 1, Alkapuri, Nallasopara',
     phone: '+91 88477 14464',
-    email: 'wpc@waterparkchalo.com',
+    email: 'waterparkchalo@gmail.com',
     officeHours: 'Mon - Sun: 9:00 AM - 6:00 PM',
   };
 
@@ -76,15 +76,7 @@ const Contact = () => {
         <AnimatedBubbles />
         {/* HERO SECTION */}
         <section className="relative text-center py-20 px-4 sm:py-28 overflow-hidden">
-          {[...Array(10)].map((_, i) => (
-    <motion.div
-      key={i}
-      animate={{ y: [0, -500, 0], x: [0, 50, -50, 0] }}
-      transition={{ repeat: Infinity, duration: 6 + i, ease: "easeInOut" }}
-      className="absolute w-6 h-6 rounded-full bg-blue-300 z-[-1] "
-      style={{ left: `${10 + i * 10}%`, bottom: `${-50 - i * 20}px` }}
-    />
-  ))}
+    
           <motion.div
             className="relative z-10 max-w-4xl mx-auto"
             variants={containerVariants}
@@ -169,7 +161,7 @@ const Contact = () => {
                   <InfoItem icon={<MapPin />} label="Address" value={contactInfo.address} />
                   <InfoItem icon={<Phone />} label="Phone" value={contactInfo.phone} />
                   <InfoItem icon={<Mail />} label="Email" value={contactInfo.email} />
-                  <InfoItem icon={<Clock />} label="Park Hours" value={contactInfo.officeHours} />
+             
                 </ul>
                 <div className="mt-10 pt-6 border-t border-white/20 flex items-center gap-4">
                   <Sun className="text-sun-yellow" size={32} />
