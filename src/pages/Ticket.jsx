@@ -222,17 +222,8 @@ const WaterparkTicket = () => {
             </button>
           )}
           
-          {ticket?.ticketPdfUrl && (
-            <a
-              href={ticket.ticketPdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
-            >
-              <ExternalLink className="w-5 h-5 transition-transform group-hover:-translate-y-0.5" />
-              View PDF Online
-            </a>
-          )}
+         
+        
         </div>
       </div>
 
