@@ -97,7 +97,18 @@ export const calculateTicketTotal = (product, adultQuantity, childQuantity, date
   }
   
   const grandTotal = (adultQuantity * adultPrice) + (childQuantity * childPrice);
-  const advanceTotal = (adultQuantity * advancePrice) + (childQuantity * advancePrice);
+  
+  // Check payment type - if full payment, use full prices; otherwise use advance prices
+  const paymentType = product.paymentType || 'advance';
+  let advanceTotal;
+  
+  if (paymentType === 'full') {
+    // For full payment, use the full prices (adult + child full prices)
+    advanceTotal = grandTotal;
+  } else {
+    // For advance payment, use advance prices
+    advanceTotal = (adultQuantity * advancePrice) + (childQuantity * advancePrice);
+  }
   
   return { grandTotal, advanceTotal };
 };

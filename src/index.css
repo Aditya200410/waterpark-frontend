@@ -154,3 +154,23 @@
 .scrollbar-hide::-webkit-scrollbar { 
   display: none;  /* Safari and Chrome */
 }
+
+/* Blog Link Styling */
+.blog-description a,
+.blog-content a {
+  color: #2563eb !important; /* Blue-600 to match Read More links */
+  text-decoration: underline !important;
+  font-weight: 600 !important;
+  transition: color 0.3s ease !important;
+}
+
+.blog-description a:hover,
+.blog-content a:hover {
+  color: #1d4ed8 !important; /* Blue-700 for hover state */
+  text-decoration: underline !important;
+}
+
+/* Ensure links in blog content are properly styled */
+.blog-content a {
+  display: inline !important;
+}

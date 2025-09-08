@@ -728,7 +728,10 @@ const ProductView = () => {
                   {/* Product Description */}
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <h4 className="font-semibold text-gray-900 mb-3 text-sm">Product Description</h4>
-                    <p className="text-sm text-gray-700 leading-relaxed">{product.description || 'No description available.'}</p>
+                    <div 
+                      className="text-sm text-gray-700 leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: product.description || 'No description available.' }}
+                    />
                   </div>
                 </motion.div>
               )}

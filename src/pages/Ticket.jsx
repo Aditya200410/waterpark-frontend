@@ -283,14 +283,45 @@ Contact 1 day before check-in for refunds.`}
                 <p className="font-sans text-xs font-bold text-blue-800 uppercase">Booking ID</p>
                 <p className="font-mono text-lg md:text-xl font-bold tracking-wider text-blue-900">{booking.customBookingId}</p>
               </div>
-              <div className="text-left md:text-right order-2">
-                <p className="font-sans text-xs font-bold text-blue-800 uppercase">Amount Paid</p>
-                <p className="font-display font-extrabold text-2xl md:text-3xl text-blue-900">₹{booking.advanceAmount.toLocaleString("en-IN")}</p>
-              </div>
-              <div className="text-left md:text-right order-3">
-                <p className="font-sans text-xs font-bold text-blue-800 uppercase">Amount To Pay</p>
-                <p className="font-display font-extrabold text-2xl md:text-3xl text-blue-600">₹{remainingAmount.toLocaleString("en-IN")}</p>
-              </div>
+             {/* ✅ Changed to always be a row and vertically centered */}
+  <div className="flex flex-row justify-between items-center w-full">  <div>
+                            <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Booking ID</p>
+                            <p className="font-mono text-[10px] sm:text-xl font-bold tracking-wider text-blue-900">{order.customBookingId}</p>
+                          </div>
+                          <div className="flex flex-row gap-2 sm:gap-6">
+                            <div className="text-right">
+                              <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Amount Paid</p>
+                              <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-blue-900">₹{order.advanceAmount.toLocaleString("en-IN")}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-sans text-[8px] sm:text-xs font-bold text-red-600 uppercase">Amount To Pay</p>
+                              <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-red-600">₹{remainingAmount.toLocaleString("en-IN")}</p>
+                            </div>
+                          </div>
+
+
+
+                                        {/* contact information*/}
+<div className="mt-auto pt-1 sm:pt-4 border-t border-dashed border-blue-400/80">
+  {/* ✅ Changed to always be a row and vertically centered */}
+  <div className="flex flex-row justify-between items-center w-full">
+    <div>
+      {/* ✅ Added whitespace-nowrap */}
+      <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 whitespace-nowrap">
+        www.waterparkchalo.com
+      </p>
+    </div>
+    <div className="flex flex-row items-center gap-2 sm:gap-4">
+      {/* ✅ Added whitespace-nowrap */}
+     
+      {/* ✅ Added whitespace-nowrap */}
+      <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-600 uppercase whitespace-nowrap">
+        +918847714464
+      </p>
+    </div>
+  </div>
+</div>
+                        </div>
             </div>
           </div>
         </div>

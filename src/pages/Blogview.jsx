@@ -123,10 +123,11 @@ const BlogView = () => {
             className="max-w-4xl mx-auto px-4 sm:px-8 py-10 bg-white/70 backdrop-blur-lg shadow-2xl rounded-3xl -mt-16 relative z-10"
         >
           {/* Enhanced Typography for Description */}
-          <div className="prose prose-lg lg:prose-xl max-w-none text-slate-700 leading-relaxed">
-            <p className="first-letter:text-5xl first-letter:font-bold first-letter:text-blue-600 first-letter:mr-3 first-letter:float-left">
-              {product.description}
-            </p>
+          <div className="prose prose-lg lg:prose-xl max-w-none text-slate-700 leading-relaxed blog-content">
+            <div 
+              className="first-letter:text-5xl first-letter:font-bold first-letter:text-blue-600 first-letter:mr-3 first-letter:float-left"
+              dangerouslySetInnerHTML={{ __html: product.description || '' }}
+            />
           </div>
 
           {/* Dynamic Image Grid */}

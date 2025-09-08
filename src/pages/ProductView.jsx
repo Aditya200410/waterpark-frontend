@@ -22,6 +22,9 @@ import WhatsAppButton from '../components/Whatsapp.jsx';
 import { getEffectivePrice, hasSpecialPricing, calculateTicketTotal } from '../utils/priceUtils';
 import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
+import { Link } from 'react-router-dom';
+
+
 const ProductView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -201,7 +204,8 @@ const ProductView = () => {
       adultCount: adultquantity, childCount: childquantity,
       date: selectedDate, paid: advanceTotal,
       totalamount: grandTotal, waternumber: product.waternumber,
-      terms:product.terms
+      terms: product.terms,
+      paymentType: product.paymentType || 'advance'
     };
     try {
       localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
@@ -401,7 +405,10 @@ const ProductView = () => {
         <div className="space-y-4">
           <div>
             <h5 className="font-display text-lg font-bold mb-2 text-sky-900">Description</h5>
-            <p className="font-sans text-sky-800 leading-relaxed">{product.description}</p>
+            <div 
+              className="font-sans text-sky-800 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: product.description || '' }}
+            />
           </div>
           <div>
             <h5 className="font-display text-lg font-bold mb-2 text-sky-900">Location</h5>
@@ -567,8 +574,14 @@ const ProductView = () => {
                   </table>
                   <table className="w-full text-sm text-white ">
                       <tbody>
-                          <motion.tr className=" bg-[#48CAE4] text-[#03045E] font-bold "><td className="px-4 py-3 font-bold text-left" colSpan={3}>💰 Pay Now</td><td className="px-4 py-3 text-right">₹{advanceTotal.toFixed(2)}</td></motion.tr>
-                          <motion.tr className=" bg-[#48CAE4] text-[#03045E] font-bold transition"><td className="px-4 py-3 font-bold" colSpan={3}>💰 Pay In Waterpark</td><td className="px-4 py-3 text-right">₹{(grandTotal - advanceTotal).toFixed(2)}</td></motion.tr>
+                          {product.paymentType === 'full' ? (
+                            <motion.tr className=" bg-[#48CAE4] text-[#03045E] font-bold "><td className="px-4 py-3 font-bold text-left" colSpan={3}>💰 Pay Now (Full Payment)</td><td className="px-4 py-3 text-right">₹{advanceTotal.toFixed(2)}</td></motion.tr>
+                          ) : (
+                            <>
+                              <motion.tr className=" bg-[#48CAE4] text-[#03045E] font-bold "><td className="px-4 py-3 font-bold text-left" colSpan={3}>💰 Pay Now (Advance)</td><td className="px-4 py-3 text-right">₹{advanceTotal.toFixed(2)}</td></motion.tr>
+                              <motion.tr className=" bg-[#48CAE4] text-[#03045E] font-bold transition"><td className="px-4 py-3 font-bold" colSpan={3}>💰 Pay In Waterpark</td><td className="px-4 py-3 text-right">₹{(grandTotal - advanceTotal).toFixed(2)}</td></motion.tr>
+                            </>
+                          )}
                       </tbody>
                   </table>
 
@@ -630,25 +643,113 @@ const ProductView = () => {
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {isTermsModalOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/70 backdrop-blur-sm  flex items-center justify-center p-4 z-[400]" onClick={() => setIsTermsModalOpen(false)}>
-            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="bg-gradient-to-br from-[#E0F7FA] to-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden border-2 border-[#00B4D8]" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between p-5 bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white"><div className="flex items-center gap-3"><ShieldCheck className="h-7 w-7" /><h3 className="text-xl font-bold">Booking Confirmation</h3></div><button onClick={() => setIsTermsModalOpen(false)} className="p-2 hover:bg-white/20 rounded-full transition-colors"><XMarkIcon className="h-6 w-6" /></button></div>
-              <div className="p-6 space-y-4">
-                <h4 className="text-lg font-semibold text-[#03045E]">Terms and Conditions</h4>
-   <li>Show this coupon at counter & pay the remaining amount.</li>
-                    <li>It is compulsory to bring the remaining money in cash.</li>
-                    <li>Drinking is strictly prohibited in Waterpark.</li>
-                    <li>For refund and cancellation contact us before one day of your check in date.</li>
-                    <li>If any case of any dispute and misunderstanding Waterpark hold final decision.</li>
-                    <li>Please check the ticket before entering the waterpark.</li>
-                    <li>By accepting these terms and conditions, you agree to all of our policy <span onClick={() => navigate('/policies')} className="text-blue-500 cursor-pointer">see here</span>.</li>
-                               </div>
-              <div className="flex items-center justify-end gap-3 p-4 bg-gray-50 border-t"><button onClick={() => setIsTermsModalOpen(false)} className="px-5 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">Cancel</button><button onClick={handleProceedToCheckout} className="px-6 py-2 text-sm font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors shadow-sm">I Accept & Proceed to Pay</button></div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+  {isTermsModalOpen && (
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      exit={{ opacity: 0 }} 
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[400]" 
+      onClick={() => setIsTermsModalOpen(false)}
+    >
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0, y: 20 }} 
+        animate={{ scale: 1, opacity: 1, y: 0 }} 
+        exit={{ scale: 0.9, opacity: 0, y: 20 }} 
+        transition={{ type: "spring", damping: 25, stiffness: 300 }} 
+        className="bg-gradient-to-br from-[#E0F7FA] to-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden border-2 border-[#00B4D8]" 
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Modal Header */}
+        <div className="flex items-center justify-between p-5 bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="h-7 w-7" />
+            <h3 className="text-xl font-bold">Booking Confirmation</h3>
+          </div>
+          <button onClick={() => setIsTermsModalOpen(false)} className="p-2 hover:bg-white/20 rounded-full transition-colors">
+            <XMarkIcon className="h-6 w-6" />
+          </button>
+        </div>
+
+        {/* Updated Modal Content */}
+        <div className="p-6 max-h-[60vh] overflow-y-auto">
+          <h4 className="text-xl font-bold text-[#03045E] mb-4">Terms & Conditions</h4>
+          <div className="space-y-4 text-sm text-gray-800">
+
+            <div>
+              <h5 className="font-semibold text-[#0077B6]">1. Ticket Redemption</h5>
+              <ul className="list-disc list-inside pl-4 mt-1 space-y-1 text-gray-600">
+                <li>Please present your e-ticket/coupon at the counter to collect your entry pass.</li>
+                <li>If partial payment was made online, the remaining balance must be paid at the counter.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h5 className="font-semibold text-[#0077B6]">2. Mode of Payment</h5>
+              <ul className="list-disc list-inside pl-4 mt-1 space-y-1 text-gray-600">
+                <li>The remaining payment can be made in cash / UPI / card (as per waterpark rules).</li>
+              </ul>
+            </div>
+
+            <div>
+              <h5 className="font-semibold text-[#0077B6]">3. Timings</h5>
+              <ul className="list-disc list-inside pl-4 mt-1 space-y-1 text-gray-600">
+                <li>Entry is valid only for the date and time mentioned on your ticket.</li>
+                <li>Guests are requested to arrive on time; late entry may not be guaranteed.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h5 className="font-semibold text-[#0077B6]">4. Refund & Cancellation</h5>
+              <ul className="list-disc list-inside pl-4 mt-1 space-y-1 text-gray-600">
+                <li>Refund or cancellation requests must be made at least 24 hours before the visit date.</li>
+                <li>Cancellation and refund policies will follow the respective waterpark’s terms.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h5 className="font-semibold text-[#0077B6]">5. Park Rules</h5>
+              <ul className="list-disc list-inside pl-4 mt-1 space-y-1 text-gray-600">
+                <li>Drinking, smoking, or carrying prohibited substances is strictly not allowed.</li>
+                <li>Visitors must follow all safety rules, instructions, and dress codes of the waterpark.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h5 className="font-semibold text-[#0077B6]">6. Disputes</h5>
+              <ul className="list-disc list-inside pl-4 mt-1 space-y-1 text-gray-600">
+                <li>In case of any dispute or misunderstanding, the decision of the waterpark management will be final.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h5 className="font-semibold text-[#0077B6]">7. Before Entering</h5>
+              <ul className="list-disc list-inside pl-4 mt-1 space-y-1 text-gray-600">
+                <li>Please check your ticket details carefully before entering the waterpark.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h5 className="font-semibold text-[#0077B6]">8. Agreement</h5>
+              <p className="mt-1 text-gray-600">By clicking “I Accept & Proceed to Pay”, you confirm that you have read and agreed to these <Link to="/policies" className="text-[#0077B6] hover:underline">Terms & Conditions.</Link></p>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div className="flex items-center justify-end gap-3 p-4 bg-gray-50/80 border-t">
+          <button onClick={() => setIsTermsModalOpen(false)} className="px-5 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleProceedToCheckout} className="px-6 py-2 text-sm font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors shadow-sm">
+            I Accept & Proceed to Pay
+          </button>
+        </div>
+        
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
     </motion.div>
   );
 };

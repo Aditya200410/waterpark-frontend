@@ -44,6 +44,7 @@ function CheckoutPage() {
     resortId,
     waternumber,
     terms,
+    paymentType,
   } = checkoutData;
 
 const formattedDate = new Date(date).toISOString().split("T")[0];
@@ -160,7 +161,8 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           // MODIFIED: Send discounted total and coupon info
           total: finalTotal,
           advanceAmount: finalTotal,
-          paymentType: paymentMethod,
+          paymentType: paymentType, // Use product's payment type, not payment method
+          paymentMethod: paymentMethod, // Add payment method separately
           terms:terms
       
         }
@@ -364,14 +366,16 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                     <td className="py-3 px-4">Total Amount:</td>
                     <td className="py-3 px-4">₹{totalamount}</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-3 px-4">Remaining to be <br/>Paid in Waterpark:</td>
-                    <td className="py-3 px-4">₹{remainingAmount}</td>
-                  </tr>
+                  {paymentType === 'advance' && (
+                    <tr className="border-b">
+                      <td className="py-3 px-4">Remaining to be <br/>Paid in Waterpark:</td>
+                      <td className="py-3 px-4">₹{remainingAmount}</td>
+                    </tr>
+                  )}
                  
                   <tr>
                     <td className="py-3 px-4 font-semibold text-cyan-700">
-                      Payable Total Amount:
+                      {paymentType === 'full' ? 'Payable Total Amount (Full Payment):' : 'Payable Total Amount (Advance):'}
                     </td>
                     <td className="py-3 px-4 font-semibold text-cyan-700">
                       ₹{finalTotal}

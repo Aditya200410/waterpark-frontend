@@ -148,9 +148,14 @@ export default function BlogPage() {
                   
                   <h2 className="text-xl font-bold text-gray-800 mb-3 truncate">{blog.name}</h2>
                   
-                  <p className="text-gray-600 text-sm mb-4 h-20 overflow-hidden">
-                    {blog.description?.slice(0, 120) || "No description available."}...
-                  </p>
+                  <div 
+                    className="text-gray-600 text-sm mb-4 h-20 overflow-hidden blog-description"
+                    dangerouslySetInnerHTML={{ 
+                      __html: blog.description ? 
+                        blog.description.replace(/<[^>]*>/g, '').slice(0, 120) + '...' : 
+                        "No description available." 
+                    }}
+                  />
 
                   {/* Enhanced "Read More" link */}
                   <a
