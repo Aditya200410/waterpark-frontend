@@ -82,6 +82,11 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
+  // Debug processing state changes
+  useEffect(() => {
+    console.log('Processing payment state changed:', isProcessingPayment);
+  }, [isProcessingPayment]);
+
   // Check if Razorpay is loaded
   useEffect(() => {
     let retryCount = 0;
@@ -185,7 +190,12 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
     }
 
     try {
+      console.log('Setting processing state to true');
       setIsProcessingPayment(true);
+      
+      // Add a small delay to ensure processing state is visible
+      await new Promise(resolve => setTimeout(resolve, 500));
+      console.log('Processing delay completed, making API call...');
 
       const response = await axios.post(
         `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/create`,
@@ -226,6 +236,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
       if (!success) {
         console.error("Error:", response.data.message);
         toast.error("Failed to create booking. Please try again.");
+        setIsProcessingPayment(false);
         return;
       }
 
@@ -234,6 +245,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         if (typeof window.Razorpay === 'undefined') {
           console.error('Razorpay script not loaded');
           toast.error('Payment gateway not loaded. Please refresh the page and try again.');
+          setIsProcessingPayment(false);
           return;
         }
 
@@ -241,6 +253,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         if (!key || !amount || !currency || !name) {
           console.error('Missing Razorpay parameters:', { key, amount, currency, name });
           toast.error('Payment configuration error. Please try again.');
+          setIsProcessingPayment(false);
           return;
         }
 
@@ -258,6 +271,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         if (amount <= 0) {
           console.error('Invalid amount for Razorpay:', amount);
           toast.error('Invalid payment amount. Please try again.');
+          setIsProcessingPayment(false);
           return;
         }
 
@@ -311,14 +325,18 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           const rzp = new window.Razorpay(options);
           console.log('Opening Razorpay modal...');
           rzp.open();
+          // Reset processing state when modal opens successfully
+          setIsProcessingPayment(false);
         } catch (error) {
           console.error('Error opening Razorpay modal:', error);
           toast.error('Failed to open payment gateway. Please try again.');
+          setIsProcessingPayment(false);
         }
       } else if (paymentMethod === "cash") {
         toast.success("Booking created successfully with cash payment.");
         // Navigate to the new booking route with customBookingId
         navigate(`/booking/${booking.customBookingId}`);
+        setIsProcessingPayment(false);
       }
     } catch (error) {
       console.error("Error initiating payment:", error);
@@ -485,10 +503,12 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           <button
             onClick={handlePayment}
             disabled={!razorpayLoaded || isProcessingPayment}
-            className={`w-full py-3 rounded-xl shadow-lg transform transition duration-300 ${
-              razorpayLoaded && !isProcessingPayment
-                ? 'bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-blue-500 hover:to-cyan-400 hover:scale-105 text-white' 
-                : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+            className={`w-full py-3 rounded-xl shadow-lg transform transition-all duration-300 ${
+              isProcessingPayment
+                ? 'bg-gradient-to-r from-orange-400 to-red-500 text-white animate-pulse' 
+                : razorpayLoaded && !isProcessingPayment
+                  ? 'bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-blue-500 hover:to-cyan-400 hover:scale-105 text-white' 
+                  : 'bg-gray-400 text-gray-600 cursor-not-allowed'
             }`}
           >
             {isProcessingPayment 
@@ -497,6 +517,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                 ? '🌊 Chill & Pay Now' 
                 : '⏳ Loading Payment Gateway...'
             }
+            {isProcessingPayment && <span className="ml-2 animate-spin">⟳</span>}
           </button>
         </form>
       </div>
