@@ -79,46 +79,6 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   }, [user]);
 
   const [paymentMethod, setPaymentMethod] = useState("razorpay");
-  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-
-  // Debug processing state changes
-  useEffect(() => {
-    console.log('Processing payment state changed:', isProcessingPayment);
-  }, [isProcessingPayment]);
-
-  // Check if Razorpay is loaded
-  useEffect(() => {
-    let retryCount = 0;
-    const maxRetries = 50; // 5 seconds max
-    
-    const checkRazorpay = () => {
-      if (typeof window.Razorpay !== 'undefined') {
-        setRazorpayLoaded(true);
-        console.log('Razorpay loaded successfully');
-      } else if (retryCount < maxRetries) {
-        retryCount++;
-        console.log(`Razorpay not loaded yet, retrying... (${retryCount}/${maxRetries})`);
-        setTimeout(checkRazorpay, 100);
-      } else {
-        console.error('Razorpay failed to load after maximum retries');
-        toast.error('Payment gateway failed to load. Please refresh the page.');
-        // Try to reload the Razorpay script
-        const script = document.createElement('script');
-        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-        script.onload = () => {
-          console.log('Razorpay script reloaded successfully');
-          setRazorpayLoaded(true);
-        };
-        script.onerror = () => {
-          console.error('Failed to reload Razorpay script');
-        };
-        document.head.appendChild(script);
-      }
-    };
-    
-    checkRazorpay();
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -172,12 +132,6 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
 
   const handlePayment = async (e) => {
     e.preventDefault();
-    
-    if (!razorpayLoaded) {
-      toast.error("Payment gateway is still loading. Please wait a moment.");
-      return;
-    }
-    
     if (
       billingDetails.email === "" ||
       billingDetails.firstName === "" ||
@@ -190,12 +144,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
     }
 
     try {
-      console.log('Setting processing state to true');
-      setIsProcessingPayment(true);
-      
-      // Add a small delay to ensure processing state is visible
-      await new Promise(resolve => setTimeout(resolve, 500));
-      console.log('Processing delay completed, making API call...');
+     
 
       const response = await axios.post(
         `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/create`,
@@ -231,50 +180,13 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         prefill,
       } = response.data;
 
-      console.log('Backend response:', response.data);
-
       if (!success) {
         console.error("Error:", response.data.message);
         toast.error("Failed to create booking. Please try again.");
-        setIsProcessingPayment(false);
         return;
       }
 
       if (paymentMethod === "razorpay" && orderId) {
-        // Check if Razorpay is loaded
-        if (typeof window.Razorpay === 'undefined') {
-          console.error('Razorpay script not loaded');
-          toast.error('Payment gateway not loaded. Please refresh the page and try again.');
-          setIsProcessingPayment(false);
-          return;
-        }
-
-        // Check if all required parameters are present
-        if (!key || !amount || !currency || !name) {
-          console.error('Missing Razorpay parameters:', { key, amount, currency, name });
-          toast.error('Payment configuration error. Please try again.');
-          setIsProcessingPayment(false);
-          return;
-        }
-
-        console.log('Razorpay payment options:', {
-          key,
-          amount,
-          currency,
-          name,
-          description,
-          order_id: orderId,
-          prefill
-        });
-
-        // Validate amount
-        if (amount <= 0) {
-          console.error('Invalid amount for Razorpay:', amount);
-          toast.error('Invalid payment amount. Please try again.');
-          setIsProcessingPayment(false);
-          return;
-        }
-
         // Initialize Razorpay payment
         const options = {
           key: key,
@@ -321,28 +233,16 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           },
         };
 
-        try {
-          const rzp = new window.Razorpay(options);
-          console.log('Opening Razorpay modal...');
-          rzp.open();
-          // Reset processing state when modal opens successfully
-          setIsProcessingPayment(false);
-        } catch (error) {
-          console.error('Error opening Razorpay modal:', error);
-          toast.error('Failed to open payment gateway. Please try again.');
-          setIsProcessingPayment(false);
-        }
+        const rzp = new window.Razorpay(options);
+        rzp.open();
       } else if (paymentMethod === "cash") {
         toast.success("Booking created successfully with cash payment.");
         // Navigate to the new booking route with customBookingId
         navigate(`/booking/${booking.customBookingId}`);
-        setIsProcessingPayment(false);
       }
     } catch (error) {
       console.error("Error initiating payment:", error);
       toast.error("Payment initiation failed. Please try again.");
-    } finally {
-      setIsProcessingPayment(false);
     }
   };
 
@@ -367,7 +267,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
               Billing Details
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {["firstName", "lastName", "WhatsappNumber (you can login using this)", "email", "city"].map(
+              {["firstName", "lastName", "phone", "email", "city"].map(
                 (field) => (
                   <div key={field} className="flex flex-col">
                     <label
@@ -502,22 +402,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
 
           <button
             onClick={handlePayment}
-            disabled={!razorpayLoaded || isProcessingPayment}
-            className={`w-full py-3 rounded-xl shadow-lg transform transition-all duration-300 ${
-              isProcessingPayment
-                ? 'bg-gradient-to-r from-orange-400 to-red-500 text-white animate-pulse' 
-                : razorpayLoaded && !isProcessingPayment
-                  ? 'bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-blue-500 hover:to-cyan-400 hover:scale-105 text-white' 
-                  : 'bg-gray-400 text-gray-600 cursor-not-allowed'
-            }`}
+            className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-blue-500 hover:to-cyan-400 text-white py-3 rounded-xl shadow-lg transform transition duration-300 hover:scale-105"
           >
-            {isProcessingPayment 
-              ? '⏳ Processing Payment...' 
-              : razorpayLoaded 
-                ? '🌊 Chill & Pay Now' 
-                : '⏳ Loading Payment Gateway...'
-            }
-            {isProcessingPayment && <span className="ml-2 animate-spin">⟳</span>}
+            🌊 Chill & Pay Now
           </button>
         </form>
       </div>
