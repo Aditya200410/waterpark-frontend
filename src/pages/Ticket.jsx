@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { Download, UserCircle, Users, Waves, FileText, ExternalLink } from "lucide-react";
 import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 const WaterparkTicket = () => {
   const location = useLocation();
+  const params = useParams();
   const [booking, setBooking] = useState(null);
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -16,6 +17,7 @@ const WaterparkTicket = () => {
   const initialBooking = location.state?.booking || null;
   const queryParams = new URLSearchParams(location.search);
   const bookingId = queryParams.get("bookingId");
+  const ticketId = params.ticketId; // From /booking/:ticketId route
 
   // This useEffect fetches the booking data and ticket
   useEffect(() => {
@@ -25,9 +27,24 @@ const WaterparkTicket = () => {
         setError(null);
         
         let bookingData = initialBooking;
+        let ticketData = null;
         
-        // Fetch booking data if not provided
-        if (!initialBooking && bookingId) {
+        // Priority 1: If we have ticketId from URL params (from /booking/:ticketId route)
+        if (ticketId) {
+          try {
+            const response = await axios.get(
+              `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/ticket/${ticketId}`
+            );
+            bookingData = response.data.booking;
+            ticketData = response.data.ticket;
+          } catch (error) {
+            console.error("Error fetching booking with ticket:", error);
+            setError("Failed to load ticket information");
+            return;
+          }
+        }
+        // Priority 2: Fetch booking data if not provided and we have bookingId
+        else if (!initialBooking && bookingId) {
           const bookingResponse = await axios.get(
             `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${bookingId}`
           );
@@ -37,16 +54,22 @@ const WaterparkTicket = () => {
         if (bookingData) {
           setBooking(bookingData);
           
-          // Fetch ticket data
-          try {
-            const ticketResponse = await axios.get(
-              `${import.meta.env.VITE_APP_API_BASE_URL}/api/tickets/${bookingData.customBookingId}`
-            );
-            setTicket(ticketResponse.data.ticket);
-          } catch (ticketError) {
-            console.warn("Ticket not found or not generated yet:", ticketError);
-            // Don't set error for ticket, just show the visual ticket
+          // If we don't already have ticket data, try to fetch it
+          if (!ticketData) {
+            try {
+              const ticketResponse = await axios.get(
+                `${import.meta.env.VITE_APP_API_BASE_URL}/api/tickets/${bookingData.customBookingId}`
+              );
+              ticketData = ticketResponse.data.ticket;
+            } catch (ticketError) {
+              console.warn("Ticket not found or not generated yet:", ticketError);
+              // Don't set error for ticket, just show the visual ticket
+            }
           }
+          
+          setTicket(ticketData);
+        } else {
+          setError("No booking information found");
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -57,7 +80,7 @@ const WaterparkTicket = () => {
     };
     
     fetchData();
-  }, [bookingId, initialBooking]);
+  }, [bookingId, initialBooking, ticketId]);
 
   // Download PDF ticket from Cloudinary
   const handleDownloadPDF = useCallback(async () => {
@@ -166,7 +189,7 @@ const WaterparkTicket = () => {
   const remainingAmount = booking ? booking.totalAmount - booking.advanceAmount : 0;
 
   return (
-    <div className="flex flex-col items-center  min-h-screen py-10 pb-24 relative">
+    <div className="flex flex-col items-center min-h-screen py-10 pb-24 relative">
       <AnimatedBubbles />
       
       {/* Status and Download buttons */}
@@ -213,115 +236,117 @@ const WaterparkTicket = () => {
         </div>
       </div>
 
-      {/* Modern Ticket Design */}
-      <div 
-        id="ticket" 
-        className="relative flex flex-col md:flex-row aspect-[99/210] md:aspect-[210/99] w-full max-w-4xl text-blue-900 shadow-2xl overflow-hidden rounded-xl"
-        style={{ 
-          backgroundImage: `url('/tback.png')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundColor: 'rgba(255, 255, 255, 0.1)'
-        }}
-      >
-        {/* Overlay to ensure text readability */}
-        <div className="absolute inset-0 bg-white/60 dark:bg-black/20 mix-blend-multiply opacity-80 z-0"></div>
-        
-        {/* Ticket Content */}
-        <div className="relative z-10 flex flex-col md:flex-row w-full h-full">
-          {/* Left Stub */}
-          <div className="relative w-full md:w-1/4 bg-gradient-to-b from-cyan-600 to-blue-700 text-white flex flex-row md:flex-col items-center justify-between p-3 md:p-4">
-            <div className="text-center">
-              <img src='/logo.png' alt="Logo" className="h-12 md:h-16 w-auto" />
-            </div>
-            
-            {/* Terms and Conditions */}
-            <div className="text-center font-display text-xs tracking-widest uppercase opacity-70 whitespace-pre-line hidden md:block">
-              {`Please carry cash for remaining payment.
-Drinking is strictly prohibited.
-Pickup and drop service not included.
-Waterpark holds final decision.
-Contact 1 day before check-in for refunds.`}
-            </div>
-            
-            <Waves className="w-6 h-6 md:w-8 md:h-8 text-white opacity-40"/>
-          </div>
+      {/* Ticket Design - Using OrderDetailsModal Style */}
+      <div className="w-full max-w-4xl font-sans overflow-x-auto">
+        <div 
+          id="ticket" 
+          className="relative flex aspect-[210/99] min-w-[280px] sm:min-w-[400px] md:min-w-[600px] w-full text-blue-900 shadow-2xl overflow-hidden rounded-xl"
+          style={{ 
+            backgroundImage: `url('/tback2.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)'
+          }}
+        >
+          {/* Overlay to ensure text readability */}
+          <div className="absolute inset-0 bg-white/60 dark:bg-black/20 mix-blend-multiply opacity-80 z-0"></div>
+          
+          {/* Ticket Content */}
+          <div className="relative z-10 flex w-full h-full">
+            {/* Left Stub */}
+            <div className="relative w-1/4 bg-gradient-to-b from-cyan-600 to-blue-700 text-white flex flex-col items-center justify-between p-1 sm:p-4">
+              <div className="text-center">
+                <img src='/logo.png' alt="Logo" className="w-12 h-12 sm:w-24 sm:h-24" />
+              </div>
 
-          {/* Main Content */}
-          <div className="relative w-full md:w-3/4 flex flex-col p-4 md:p-6 border-t-2 md:border-t-0 md:border-l-2 border-dashed border-blue-400/80">
-            <div className="flex flex-col md:flex-row justify-between items-start mb-4 gap-4">
-              <div className="flex-1">
-                <h2 className="font-display text-2xl md:text-4xl font-extrabold text-blue-900">{booking.waterparkName}</h2>
-                <p className="font-sans text-sm mt-2 md:mt-3 text-blue-800">Present this ticket at the entrance.</p>
-              </div>
-              <div className="text-left md:text-right">
-                <p className="font-sans text-xs font-bold text-blue-800 uppercase">Visit Date</p>
-                <p className="font-display font-extrabold text-xl md:text-2xl text-cyan-700">{new Date(booking.date).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 my-auto">
-              <div className="flex items-center gap-3">
-                <UserCircle className="w-5 h-5 md:w-6 md:h-6 text-cyan-600 flex-shrink-0" />
-                <div>
-                  <p className="text-xs font-bold text-blue-800 uppercase">Guest Name</p>
-                  <p className="font-bold text-sm md:text-base text-blue-900">{booking.name}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Users className="w-5 h-5 md:w-6 md:h-6 text-cyan-600 flex-shrink-0" />
-                <div>
-                  <p className="text-xs font-bold text-blue-800 uppercase">Guests</p>
-                  <p className="font-bold text-sm md:text-base text-blue-900">{booking.adults} Adults, {booking.children} Children</p>
+              {/* Terms & Conditions Box */}
+              <div className="w-full flex-grow flex flex-col overflow-hidden my-1 sm:my-2">
+                <h3 className="text-center font-bold text-[6px] sm:text-sm uppercase tracking-wider mb-0.5 md:mb-2 flex-shrink-0">
+                  Terms & Conditions
+                </h3>
+                <div className="w-full h-full overflow-y-auto pr-1">
+                  <ul className="space-y-1 text-left text-[6px] sm:text-xs list-disc list-outside pl-2 sm:pl-4 opacity-80">
+                    {booking.terms ? booking.terms.split('\n').map((line, index) => (
+                      line.trim() && <li key={index}>{line}</li>
+                    )) : (
+                      <>
+                        <li>Please carry cash for remaining payment.</li>
+                        <li>Drinking is strictly prohibited.</li>
+                        <li>Pickup and drop service not included.</li>
+                        <li>Waterpark holds final decision.</li>
+                        <li>Contact 1 day before check-in for refunds.</li>
+                      </>
+                    )}
+                  </ul>
                 </div>
               </div>
             </div>
 
-            <div className="mt-auto pt-4 border-t border-dashed border-blue-400/80 flex flex-col md:flex-row justify-between items-end gap-4">
-              <div className="order-1">
-                <p className="font-sans text-xs font-bold text-blue-800 uppercase">Booking ID</p>
-                <p className="font-mono text-lg md:text-xl font-bold tracking-wider text-blue-900">{booking.customBookingId}</p>
+            {/* Main Content */}
+            <div className="relative w-3/4 flex flex-col p-2 sm:p-6 border-l-2 border-dashed border-blue-400/80">
+              <div className="flex justify-between items-start mb-1 sm:mb-4">
+                <div>
+                  <h2 className="font-display text-sm sm:text-2xl md:text-4xl font-extrabold text-blue-900 leading-tight">{booking.waterparkName}</h2>
+                  <p className="font-sans text-[10px] sm:text-sm mt-0.5 sm:mt-3 text-blue-800">Present this ticket at the entrance.</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Visit Date</p>
+                  <p className="font-display font-extrabold text-xs sm:text-xl md:text-2xl text-cyan-700">{new Date(booking.date).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                </div>
               </div>
-             {/* ✅ Changed to always be a row and vertically centered */}
-  <div className="flex flex-row justify-between items-center w-full">  <div>
-                            <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Booking ID</p>
-                            <p className="font-mono text-[10px] sm:text-xl font-bold tracking-wider text-blue-900">{order.customBookingId}</p>
-                          </div>
-                          <div className="flex flex-row gap-2 sm:gap-6">
-                            <div className="text-right">
-                              <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Amount Paid</p>
-                              <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-blue-900">₹{order.advanceAmount.toLocaleString("en-IN")}</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-sans text-[8px] sm:text-xs font-bold text-red-600 uppercase">Amount To Pay</p>
-                              <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-red-600">₹{remainingAmount.toLocaleString("en-IN")}</p>
-                            </div>
-                          </div>
 
+              <div className="grid grid-cols-2 gap-x-1 sm:gap-x-6 gap-y-1 sm:gap-y-4 my-auto">
+                <div className="flex items-center gap-0.5 sm:gap-3">
+                  <UserCircle className="w-3 h-3 sm:w-6 sm:h-6 text-cyan-600 flex-shrink-0" />
+                  <div>
+                    <p className="text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Guest Name</p>
+                    <p className="font-bold text-[10px] sm:text-base text-blue-900 leading-tight">{booking.name}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-0.5 sm:gap-3">
+                  <Users className="w-3 h-3 sm:w-6 sm:h-6 text-cyan-600 flex-shrink-0" />
+                  <div>
+                    <p className="text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Guests</p>
+                    <p className="font-bold text-[10px] sm:text-base text-blue-900 leading-tight">{booking.adults} Adults, {booking.children} Children</p>
+                  </div>
+                </div>
+              </div>
 
+              <div className="mt-auto pt-1 sm:pt-4 border-t border-dashed border-blue-400/80">
+                <div className="flex flex-row justify-between items-center w-full">
+                  <div>
+                    <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Booking ID</p>
+                    <p className="font-mono text-[10px] sm:text-xl font-bold tracking-wider text-blue-900">{booking.customBookingId}</p>
+                  </div>
+                  <div className="flex flex-row gap-2 sm:gap-6">
+                    <div className="text-right">
+                      <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Amount Paid</p>
+                      <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-blue-900">₹{booking.advanceAmount.toLocaleString("en-IN")}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-sans text-[8px] sm:text-xs font-bold text-red-600 uppercase">Amount To Pay</p>
+                      <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-red-600">₹{remainingAmount.toLocaleString("en-IN")}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                                        {/* contact information*/}
-<div className="mt-auto pt-1 sm:pt-4 border-t border-dashed border-blue-400/80">
-  {/* ✅ Changed to always be a row and vertically centered */}
-  <div className="flex flex-row justify-between items-center w-full">
-    <div>
-      {/* ✅ Added whitespace-nowrap */}
-      <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 whitespace-nowrap">
-        www.waterparkchalo.com
-      </p>
-    </div>
-    <div className="flex flex-row items-center gap-2 sm:gap-4">
-      {/* ✅ Added whitespace-nowrap */}
-     
-      {/* ✅ Added whitespace-nowrap */}
-      <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-600 uppercase whitespace-nowrap">
-        +918847714464
-      </p>
-    </div>
-  </div>
-</div>
-                        </div>
+              {/* Contact information */}
+              <div className="mt-auto pt-1 sm:pt-4 border-t border-dashed border-blue-400/80">
+                <div className="flex flex-row justify-between items-center w-full">
+                  <div>
+                    <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 whitespace-nowrap">
+                      www.waterparkchalo.com
+                    </p>
+                  </div>
+                  <div className="flex flex-row items-center gap-2 sm:gap-4">
+                    <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-600 uppercase whitespace-nowrap">
+                      +918847714464
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

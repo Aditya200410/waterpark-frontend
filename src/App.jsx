@@ -205,6 +205,7 @@ function AppContent() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/login" element={<Login />} />
              <Route path="/ticket" element={<WaterparkTicket/>} />
+             <Route path="/booking/:ticketId" element={<WaterparkTicket/>} />
                <Route path="/tickets" element={<Tickets/>} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />

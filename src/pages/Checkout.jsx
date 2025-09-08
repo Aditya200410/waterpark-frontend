@@ -212,9 +212,8 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
 
               if (verifyResponse.data.success) {
                 toast.success("Payment successful!");
-                navigate("/ticket", {
-                  state: { booking: verifyResponse.data.booking },
-                });
+                // Navigate to the new booking route with customBookingId
+                navigate(`/booking/${verifyResponse.data.booking.customBookingId}`);
               } else {
                 toast.error(
                   "Payment verification failed. Please contact support."
@@ -238,7 +237,8 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         rzp.open();
       } else if (paymentMethod === "cash") {
         toast.success("Booking created successfully with cash payment.");
-        navigate("/ticket", { state: { booking: booking } });
+        // Navigate to the new booking route with customBookingId
+        navigate(`/booking/${booking.customBookingId}`);
       }
     } catch (error) {
       console.error("Error initiating payment:", error);
