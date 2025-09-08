@@ -57,10 +57,10 @@ const Category = () => {
         description: category.description,
         image: category.video || category.image || categoryImages[category.name.toLowerCase()] || '/images/waterparks/default.jpg',
         isVideo: !!category.video,
-        sortOrder: category.sortOrder || 0
+        locationPosition: category.locationPosition || 0
       }));
       
-      processedCategories.sort((a, b) => a.sortOrder - b.sortOrder);
+      processedCategories.sort((a, b) => a.locationPosition - b.locationPosition);
       
       setCategories(processedCategories);
     } catch (error) {

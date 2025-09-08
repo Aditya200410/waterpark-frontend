@@ -110,7 +110,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
   </div>
   
  {/* The change is in the lines below */}
-<ul className="text-center font-display text-[8px] sm:text-xs tracking-widest uppercase opacity-70 list-disc list-inside">
+<ul className="text-left font-display text-[6px] sm:text-xs tracking-widest uppercase opacity-70 list-disc list-inside">
   {order.terms.split('\n').map((line, index) => (
     <li key={index}>
       {line}
@@ -164,6 +164,28 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
                             <div className="text-right">
                               <p className="font-sans text-[8px] sm:text-xs font-bold text-red-600 uppercase">Amount To Pay</p>
                               <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-red-600">₹{remainingAmount.toLocaleString("en-IN")}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+
+
+                      {/* contact information*/}
+                      <div className="mt-auto pt-1 sm:pt-4 border-t border-dashed border-blue-400/80">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 sm:gap-4">
+                          <div>
+                            <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800">www.waterparkchalo.com</p>
+                            <p className="font-mono text-[10px] sm:text-xl font-bold tracking-wider text-blue-900"></p>
+                          </div>
+                          <div className="flex flex-row gap-2 sm:gap-6">
+                            <div className="text-right">
+                              <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800">waterparkchalo@gmail.com</p>
+                              <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-blue-900"></p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-600 uppercase">+918847714464</p>
+                              <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-blue-600"></p>
                             </div>
                           </div>
                         </div>
