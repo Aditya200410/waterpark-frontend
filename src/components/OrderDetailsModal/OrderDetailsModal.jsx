@@ -103,22 +103,36 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
                 
                 {/* Original content of the ticket, now on top of the background image */}
                 <div className="relative z-10 flex w-full h-full">
-                    {/* Left Stub */}
-                   <div className="relative w-1/4 bg-gradient-to-b from-cyan-600 to-blue-700 text-white flex flex-col items-center justify-between p-1 sm:p-4">
+               
+
+
+
+               {/* Left Stub */}
+<div className="relative w-1/4 bg-gradient-to-b from-cyan-600 to-blue-700 text-white flex flex-col items-center justify-between p-1 sm:p-4">
   <div className="text-center">
     <img src='/logo.png' alt="Logo" className="w-12 h-12 sm:w-24 sm:h-24" />
   </div>
-  
- {/* The change is in the lines below */}
-<ul className="text-left font-display text-[6px] sm:text-xs tracking-widest uppercase opacity-70 list-disc list-inside">
-  {order.terms.split('\n').map((line, index) => (
-    <li key={index}>
-      {line}
-    </li>
-  ))}
-</ul>
-  <Waves className="w-3 h-3 sm:w-8 sm:h-8 text-white opacity-40"/>
+
+  {/* ✅ START: Updated Terms & Conditions Box */}
+  <div className="w-full flex-grow flex flex-col overflow-hidden my-1 sm:my-2">
+    <h3 className="text-center font-bold text-[6px] sm:text-sm uppercase tracking-wider mb-0.5  md:mb-2 flex-shrink-0">
+      Terms & Conditions
+    </h3>
+    {/* This inner div becomes the scrollable container */}
+    <div className="w-full h-full overflow-y-auto pr-1">
+      <ul className="space-y-1 text-left text-[6px] sm:text-xs list-disc list-outside pl-2 sm:pl-4 opacity-80">
+        {order.terms.split('\n').map((line, index) => (
+          // This ensures that empty lines in your terms data won't create an empty list item
+          line.trim() && <li key={index}>{line}</li>
+        ))}
+      </ul>
+    </div>
+  </div>
+  {/* ✅ END: Updated Terms & Conditions Box */}
+
+ 
 </div>
+
 
                     {/* Main Content */}
                     <div className="relative w-3/4 flex flex-col p-2 sm:p-6 border-l-2 border-dashed border-blue-400/80">
@@ -151,8 +165,8 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
                       </div>
 
                       <div className="mt-auto pt-1 sm:pt-4 border-t border-dashed border-blue-400/80">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 sm:gap-4">
-                          <div>
+  {/* ✅ Changed to always be a row and vertically centered */}
+  <div className="flex flex-row justify-between items-center w-full">  <div>
                             <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Booking ID</p>
                             <p className="font-mono text-[10px] sm:text-xl font-bold tracking-wider text-blue-900">{order.customBookingId}</p>
                           </div>
@@ -171,25 +185,26 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
 
 
 
-                      {/* contact information*/}
-                      <div className="mt-auto pt-1 sm:pt-4 border-t border-dashed border-blue-400/80">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 sm:gap-4">
-                          <div>
-                            <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800">www.waterparkchalo.com</p>
-                            <p className="font-mono text-[10px] sm:text-xl font-bold tracking-wider text-blue-900"></p>
-                          </div>
-                          <div className="flex flex-row gap-2 sm:gap-6">
-                            <div className="text-right">
-                              <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800">waterparkchalo@gmail.com</p>
-                              <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-blue-900"></p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-600 uppercase">+918847714464</p>
-                              <p className="font-display font-extrabold text-sm sm:text-2xl md:text-3xl text-blue-600"></p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                   {/* contact information*/}
+<div className="mt-auto pt-1 sm:pt-4 border-t border-dashed border-blue-400/80">
+  {/* ✅ Changed to always be a row and vertically centered */}
+  <div className="flex flex-row justify-between items-center w-full">
+    <div>
+      {/* ✅ Added whitespace-nowrap */}
+      <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-800 whitespace-nowrap">
+        www.waterparkchalo.com
+      </p>
+    </div>
+    <div className="flex flex-row items-center gap-2 sm:gap-4">
+      {/* ✅ Added whitespace-nowrap */}
+     
+      {/* ✅ Added whitespace-nowrap */}
+      <p className="font-sans text-[8px] sm:text-xs font-bold text-blue-600 uppercase whitespace-nowrap">
+        +918847714464
+      </p>
+    </div>
+  </div>
+</div>
                     </div>
                 </div>
               </div>

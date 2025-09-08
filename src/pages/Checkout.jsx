@@ -265,7 +265,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
               Billing Details
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {["firstName", "lastName", "phone", "email", "city"].map(
+              {["firstName", "lastName", "WhatsappNumber (you can login using this)", "email", "city"].map(
                 (field) => (
                   <div key={field} className="flex flex-col">
                     <label
