@@ -274,9 +274,12 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                       htmlFor={field}
                       className="text-gray-700 font-medium mb-2"
                     >
-                      {field
-                        .replace(/([A-Z])/g, " $1")
-                        .replace(/^./, (str) => str.toUpperCase())}
+                      {field === "phone" 
+                        ? "WhatsApp Number (can be used as login)"
+                        : field
+                            .replace(/([A-Z])/g, " $1")
+                            .replace(/^./, (str) => str.toUpperCase())
+                      }
                       <span className="text-red-500">*</span>
                     </label>
                     <input
