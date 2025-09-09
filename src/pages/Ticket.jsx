@@ -82,34 +82,72 @@ const WaterparkTicket = () => {
     fetchData();
   }, [bookingId, initialBooking, ticketId]);
 
-  // Download PDF ticket directly from backend
+  // Generate and download PDF ticket directly from booking data
   const handleDownloadPDF = useCallback(async () => {
-    if (!booking?.customBookingId) {
-      console.error("No booking ID available");
+    if (!booking) {
+      console.error("No booking data available");
       return;
     }
 
     try {
-      // Fetch PDF directly from backend
-      const response = await axios.get(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/api/tickets/${booking.customBookingId}`,
-        {
-          responseType: 'blob'
-        }
-      );
+      // Generate PDF from booking data using the same logic as backend
+      const visitDate = new Date(booking.date).toLocaleDateString('en-IN', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
       
-      // Create blob URL and download
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `waterpark-ticket-${booking.customBookingId}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const bookingDate = new Date(booking.bookingDate).toLocaleDateString('en-IN');
+      
+      // Create a simple PDF using jsPDF
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      
+      // Set font
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(24);
+      pdf.text(booking.waterparkName, 20, 30);
+      
+      pdf.setFontSize(16);
+      pdf.text("Water Park Adventure Ticket", 20, 45);
+      
+      // Booking details
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "normal");
+      let yPos = 70;
+      
+      const details = [
+        [`Booking ID: ${booking.customBookingId}`, ""],
+        [`Customer Name: ${booking.name}`, ""],
+        [`Email: ${booking.email}`, ""],
+        [`Phone: ${booking.phone}`, ""],
+        [`Water Number: ${booking.waternumber}`, ""],
+        [`Adults: ${booking.adults}`, `Children: ${booking.children}`],
+        [`Booking Date: ${bookingDate}`, ""],
+        [`Visit Date: ${visitDate}`, ""],
+        [`Advance Paid: ₹${booking.advanceAmount}`, `Total Amount: ₹${booking.totalAmount}`],
+        [`Remaining Amount: ₹${booking.leftamount}`, ""]
+      ];
+      
+      details.forEach(([left, right]) => {
+        pdf.text(left, 20, yPos);
+        if (right) {
+          pdf.text(right, 100, yPos);
+        }
+        yPos += 8;
+      });
+      
+      // Footer
+      yPos += 20;
+      pdf.setFontSize(10);
+      pdf.text("Thank you for choosing " + booking.waterparkName + "!", 20, yPos);
+      pdf.text("Have a splashing good time!", 20, yPos + 8);
+      pdf.text("Keep this ticket safe and show it at the entrance", 20, yPos + 16);
+      
+      // Save the PDF
+      pdf.save(`waterpark-ticket-${booking.customBookingId}.pdf`);
     } catch (error) {
-      console.error("PDF Download Failed:", error);
+      console.error("PDF Generation Failed:", error);
     }
   }, [booking]);
 
@@ -151,21 +189,21 @@ const WaterparkTicket = () => {
     }
   }, [booking]); // This function now depends on the booking data
 
-  // This new useEffect triggers the download automatically
+  // This new useEffect triggers the visual ticket download automatically
   useEffect(() => {
     // Only run this effect if booking data has been loaded
     if (booking && !loading) {
       // A short timeout ensures the component has fully rendered with the data
       const timer = setTimeout(() => {
-        // Always try to download PDF from backend first
-        console.log("Downloading PDF ticket from backend");
-        handleDownloadPDF();
-      }, 1000); // Increased delay to 1 second
+        // Generate and download visual ticket automatically
+        console.log("Generating and downloading visual ticket automatically");
+        handleDownloadVisual();
+      }, 2000); // Increased delay to 2 seconds to ensure ticket element is fully rendered
 
       // Clean up the timeout if the component unmounts before it fires
       return () => clearTimeout(timer);
     }
-  }, [booking, loading, handleDownloadPDF]); // It runs when booking or handleDownload changes
+  }, [booking, loading, handleDownloadVisual]); // It runs when booking or handleDownload changes
 
   if (loading) {
     return (

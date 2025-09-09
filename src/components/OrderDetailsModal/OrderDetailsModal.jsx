@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Download, UserCircle, Phone, Users, CalendarDays, Ticket as TicketIcon, X, Waves, FileText } from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import axios from "axios";
 import toast from 'react-hot-toast';
 
 // A more prominent, water-themed watermark for the ticket background
@@ -19,35 +18,74 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
   const [error, setError] = useState(null);
 
   const handleDownloadPDF = async () => {
-    if (!order?.customBookingId) {
-      toast.error("No booking ID available");
+    if (!order) {
+      toast.error("No booking data available");
       return;
     }
 
     try {
-      toast.loading("Downloading PDF ticket...", { id: 'download-toast' });
-      // Fetch PDF directly from backend
-      const response = await axios.get(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/api/tickets/${order.customBookingId}`,
-        {
-          responseType: 'blob'
-        }
-      );
+      toast.loading("Generating PDF ticket...", { id: 'download-toast' });
       
-      // Create blob URL and download
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `waterpark-ticket-${order.customBookingId}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      toast.success("PDF ticket downloaded!", { id: 'download-toast' });
+      // Generate PDF from booking data
+      const visitDate = new Date(order.date).toLocaleDateString('en-IN', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      const bookingDate = new Date(order.bookingDate).toLocaleDateString('en-IN');
+      
+      // Create a simple PDF using jsPDF
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      
+      // Set font
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(24);
+      pdf.text(order.waterparkName, 20, 30);
+      
+      pdf.setFontSize(16);
+      pdf.text("Water Park Adventure Ticket", 20, 45);
+      
+      // Booking details
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "normal");
+      let yPos = 70;
+      
+      const details = [
+        [`Booking ID: ${order.customBookingId}`, ""],
+        [`Customer Name: ${order.name}`, ""],
+        [`Email: ${order.email}`, ""],
+        [`Phone: ${order.phone}`, ""],
+        [`Water Number: ${order.waternumber}`, ""],
+        [`Adults: ${order.adults}`, `Children: ${order.children}`],
+        [`Booking Date: ${bookingDate}`, ""],
+        [`Visit Date: ${visitDate}`, ""],
+        [`Advance Paid: ₹${order.advanceAmount}`, `Total Amount: ₹${order.totalAmount}`],
+        [`Remaining Amount: ₹${order.leftamount}`, ""]
+      ];
+      
+      details.forEach(([left, right]) => {
+        pdf.text(left, 20, yPos);
+        if (right) {
+          pdf.text(right, 100, yPos);
+        }
+        yPos += 8;
+      });
+      
+      // Footer
+      yPos += 20;
+      pdf.setFontSize(10);
+      pdf.text("Thank you for choosing " + order.waterparkName + "!", 20, yPos);
+      pdf.text("Have a splashing good time!", 20, yPos + 8);
+      pdf.text("Keep this ticket safe and show it at the entrance", 20, yPos + 16);
+      
+      // Save the PDF
+      pdf.save(`waterpark-ticket-${order.customBookingId}.pdf`);
+      toast.success("PDF ticket generated!", { id: 'download-toast' });
     } catch (error) {
-      console.error("PDF Download Failed:", error);
-      toast.error("PDF download failed. Please try again.", { id: 'download-toast' });
+      console.error("PDF Generation Failed:", error);
+      toast.error("PDF generation failed. Please try again.", { id: 'download-toast' });
     }
   };
 
