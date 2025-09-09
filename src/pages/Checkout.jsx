@@ -47,6 +47,7 @@ function CheckoutPage() {
     paymentType,
   } = checkoutData;
 
+  
 const formattedDate = new Date(date).toISOString().split("T")[0];
   const [billingDetails, setBillingDetails] = useState({
     firstName: "",
@@ -98,7 +99,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
       // Create cart items array for product-specific coupons
       const cartItems = [{
         product: resortId, // Send the product ID directly
-        price: paid,
+        price: totalamount,
         quantity: 1,
         name: resortName
       }];
@@ -107,7 +108,8 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         `${import.meta.env.VITE_APP_API_BASE_URL}/api/coupons/validate`,
         {
           code: couponCode,
-          cartTotal: paid, // Using original paid for validation
+          cartTotal: totalamount, // Using original paid for validation\
+          
           cartItems: cartItems
         }
       );
@@ -135,9 +137,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   // END: Handle Apply Coupon Function
 
   // Calculate final total after discount
-  const finalTotal = paid-discountAmount;
+  const finalTotal = paid;
  
-  const remainingAmount = totalamount-paid;
+  const remainingAmount = totalamount-paid-discountAmount;
 
   const handlePayment = async (e) => {
     e.preventDefault();
