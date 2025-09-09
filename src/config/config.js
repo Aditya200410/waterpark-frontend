@@ -16,6 +16,7 @@ const config = {
     CART: '/api/cart',
     SHOP: '/api/shop',
     ORDERS: '/api/bookings',
+    BOOKINGS: '/api/bookings',
     CATEGORIES: '/api/categories',
     PRODUCTS: '/api/products',
     SETTINGS :'/api/settings',

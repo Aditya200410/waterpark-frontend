@@ -82,26 +82,36 @@ const WaterparkTicket = () => {
     fetchData();
   }, [bookingId, initialBooking, ticketId]);
 
-  // Download PDF ticket from Cloudinary
+  // Download PDF ticket directly from backend
   const handleDownloadPDF = useCallback(async () => {
-    if (!ticket?.ticketPdfUrl) {
-      console.error("No PDF ticket available");
+    if (!booking?.customBookingId) {
+      console.error("No booking ID available");
       return;
     }
 
     try {
-      // Create a temporary link to download the PDF
+      // Fetch PDF directly from backend
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/api/tickets/${booking.customBookingId}`,
+        {
+          responseType: 'blob'
+        }
+      );
+      
+      // Create blob URL and download
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = ticket.ticketPdfUrl;
+      link.href = url;
       link.download = `waterpark-ticket-${booking.customBookingId}.pdf`;
-      link.target = "_blank";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("PDF Download Failed:", error);
     }
-  }, [ticket, booking]);
+  }, [booking]);
 
   // The download handler for visual ticket (fallback)
   const handleDownloadVisual = useCallback(async () => {
@@ -146,22 +156,16 @@ const WaterparkTicket = () => {
     // Only run this effect if booking data has been loaded
     if (booking && !loading) {
       // A short timeout ensures the component has fully rendered with the data
-      // before html2canvas tries to capture it.
       const timer = setTimeout(() => {
-        // Try to download PDF first, fallback to visual ticket
-        if (ticket?.ticketPdfUrl) {
-          console.log("Downloading PDF ticket:", ticket.ticketPdfUrl);
-          handleDownloadPDF();
-        } else {
-          console.log("No PDF ticket found, downloading visual ticket");
-          handleDownloadVisual();
-        }
+        // Always try to download PDF from backend first
+        console.log("Downloading PDF ticket from backend");
+        handleDownloadPDF();
       }, 1000); // Increased delay to 1 second
 
       // Clean up the timeout if the component unmounts before it fires
       return () => clearTimeout(timer);
     }
-  }, [booking, loading, ticket, handleDownloadPDF, handleDownloadVisual]); // It runs when booking or handleDownload changes
+  }, [booking, loading, handleDownloadPDF]); // It runs when booking or handleDownload changes
 
   if (loading) {
     return (
@@ -194,36 +198,15 @@ const WaterparkTicket = () => {
       
       {/* Status and Download buttons */}
       <div className="flex flex-col items-center gap-4 mb-8">
-        {!ticket?.ticketPdfUrl && (
-          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-lg">
-            <div className="flex items-center gap-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-600"></div>
-              <span>Generating PDF ticket... This may take a few moments.</span>
-            </div>
-          </div>
-        )}
-        
         <div className="flex flex-wrap gap-4">
-          {ticket?.ticketPdfUrl ? (
-            <button
-              onClick={handleDownloadPDF}
-              className="group flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-green-500/50 transition-all duration-300 transform hover:scale-105"
-            >
-              <FileText className="w-5 h-5 transition-transform group-hover:-translate-y-0.5" />
-              Download PDF Ticket
-            </button>
-          ) : (
-            <button
-              onClick={handleDownloadVisual}
-              className="group flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105"
-            >
-              <Download className="w-5 h-5 transition-transform group-hover:-translate-y-0.5" />
-              Download Visual Ticket
-            </button>
-          )}
-          
-         
         
+          <button
+            onClick={handleDownloadVisual}
+            className="group flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105"
+          >
+            <Download className="w-5 h-5 transition-transform group-hover:-translate-y-0.5" />
+            Download Ticket
+          </button>
         </div>
       </div>
 

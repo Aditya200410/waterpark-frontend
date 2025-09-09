@@ -139,12 +139,16 @@ const Account = () => {
   }, [user, navigate]);
 
   useEffect(() => {
-    if (user?.email) fetchOrders();
+    if (user && (user.email || user.phone)) {
+      fetchOrders();
+    }
     // eslint-disable-next-line
-  }, [user?.email]);
+  }, [user?.email, user?.phone]);
 
   useEffect(() => {
-    if (activeTab === 'orders') fetchOrders();
+    if (activeTab === 'orders' && user && (user.email || user.phone)) {
+      fetchOrders();
+    }
   }, [activeTab]);
 
   useEffect(() => {
@@ -161,23 +165,20 @@ const Account = () => {
   }, [filter, orders]);
 
   const fetchOrders = async () => {
-    if (!user?.email) return;
+    if (!user?.email && !user?.phone) return;
     setLoading(true);
     try {
-      const data = await orderService.getOrdersByEmail(user.email);
-      if (data) {
-       
-       const completedOrders = data.filter(
-      (order) => order.paymentStatus?.toLowerCase() === "completed"
-    );
-
-    setOrders(completedOrders);
-    setFilteredOrders(completedOrders);
+      // Use the new API that fetches by email OR phone
+      const data = await orderService.getBookingsByEmailOrPhone(user?.email, user?.phone);
+      if (data && data.success) {
+        // The API already filters for completed bookings
+        setOrders(data.bookings || []);
+        setFilteredOrders(data.bookings || []);
       } else {
-        throw new Error(data.message || 'No success field in response');
+        throw new Error(data?.message || 'No success field in response');
       }
     } catch (error) {
-      let errorMsg = error?.message || 'Failed to fetch orders';
+      let errorMsg = error?.message || 'Failed to fetch bookings';
       if (error?.response?.data?.message) errorMsg = error.response.data.message;
       toast.error(errorMsg);
     } finally {

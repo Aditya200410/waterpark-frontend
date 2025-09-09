@@ -52,6 +52,29 @@ const orderService = {
       throw error.response?.data || new Error('Failed to fetch orders');
     }
   },
+
+  /**
+   * Fetch bookings for a specific user by email OR phone number.
+   * @param {string} email - The user's email.
+   * @param {string} phone - The user's phone number.
+   * @returns {Promise<object>} The server response containing the bookings.
+   */
+  getBookingsByEmailOrPhone: async (email, phone) => {
+    if (!email && !phone) {
+      throw new Error('Either email or phone is required to fetch bookings.');
+    }
+    try {
+      const params = new URLSearchParams();
+      if (email) params.append('email', email);
+      if (phone) params.append('phone', phone);
+      
+      const response = await axios.get(`${config.API_URLS.BOOKINGS}/user-bookings?${params.toString()}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching bookings:', error.response?.data || error.message);
+      throw error.response?.data || new Error('Failed to fetch bookings');
+    }
+  },
 };
 
 export default orderService; 

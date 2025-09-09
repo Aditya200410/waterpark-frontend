@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, UserCircle, Phone, Users, CalendarDays, Ticket as TicketIcon, X, Waves } from "lucide-react";
+import { Download, UserCircle, Phone, Users, CalendarDays, Ticket as TicketIcon, X, Waves, FileText } from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import axios from "axios";
 import toast from 'react-hot-toast';
 
 // A more prominent, water-themed watermark for the ticket background
@@ -17,13 +18,46 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const handleDownload = async () => {
+  const handleDownloadPDF = async () => {
+    if (!order?.customBookingId) {
+      toast.error("No booking ID available");
+      return;
+    }
+
+    try {
+      toast.loading("Downloading PDF ticket...", { id: 'download-toast' });
+      // Fetch PDF directly from backend
+      const response = await axios.get(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/api/tickets/${order.customBookingId}`,
+        {
+          responseType: 'blob'
+        }
+      );
+      
+      // Create blob URL and download
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `waterpark-ticket-${order.customBookingId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success("PDF ticket downloaded!", { id: 'download-toast' });
+    } catch (error) {
+      console.error("PDF Download Failed:", error);
+      toast.error("PDF download failed. Please try again.", { id: 'download-toast' });
+    }
+  };
+
+  const handleDownloadVisual = async () => {
     const ticketElement = document.getElementById("ticket-to-print");
     if (!ticketElement) {
       toast.error("Ticket element not found.");
       return;
     }
-    toast.loading("Generating your ticket...", { id: 'download-toast' });
+    toast.loading("Generating visual ticket...", { id: 'download-visual-toast' });
     try {
       const canvas = await html2canvas(ticketElement, { 
         scale: 3, 
@@ -39,10 +73,10 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
       const pdfHeight = pdf.internal.pageSize.getHeight();
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save(`waterpark-ticket-${order?.customBookingId}.pdf`);
-      toast.success("Ticket downloaded!", { id: 'download-toast' });
+      toast.success("Visual ticket downloaded!", { id: 'download-visual-toast' });
     } catch (error) {
-      console.error("PDF Download Failed:", error);
-      toast.error("Download failed. Please try again.", { id: 'download-toast' });
+      console.error("Visual PDF Download Failed:", error);
+      toast.error("Visual download failed. Please try again.", { id: 'download-visual-toast' });
     }
   };
 
@@ -212,13 +246,14 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
 
             {/* Action Buttons (outside the printable area) */}
             <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-4 mt-2 sm:mt-6">
+             
               <button
-                onClick={handleDownload}
+                onClick={handleDownloadVisual}
                 className="group flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-1.5 sm:py-3 px-3 sm:px-6 rounded-lg shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 text-xs sm:text-base"
               >
                 <Download className="w-3 h-3 sm:w-5 sm:h-5 transition-transform group-hover:-translate-y-0.5" />
                 <span className="hidden sm:inline">Download Ticket</span>
-                <span className="sm:hidden">Download</span>
+                <span className="sm:hidden">Visual</span>
               </button>
                <button onClick={onClose} className="text-white/60 hover:text-white font-bold transition-colors text-xs sm:text-base">Close</button>
             </div>
