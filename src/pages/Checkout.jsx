@@ -95,17 +95,25 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
       return;
     }
     try {
+      // Create cart items array for product-specific coupons
+      const cartItems = [{
+        product: resortId, // Send the product ID directly
+        price: paid,
+        quantity: 1,
+        name: resortName
+      }];
+
       const response = await axios.post(
         `${import.meta.env.VITE_APP_API_BASE_URL}/api/coupons/validate`,
-     
         {
           code: couponCode,
           cartTotal: paid, // Using original paid for validation
+          cartItems: cartItems
         }
       );
 
       if (response.data.success) {
-        const { coupon, discountAmount, message } = response.data.data;
+        const { coupon, discountAmount, message, applicableItems } = response.data.data;
         setAppliedCoupon(coupon);
         setDiscountAmount(discountAmount);
 
@@ -119,8 +127,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
       }
     } catch (error) {
       console.error("Error validating coupon:", error);
-      toast.error("An error occurred while applying the coupon.");
-      setCouponError("An error occurred. Please try again.");
+      const errorMessage = error.response?.data?.message || "Invalid coupon code";
+      toast.error(errorMessage);
+      setCouponError(errorMessage);
     }
   };
   // END: Handle Apply Coupon Function
@@ -302,24 +311,60 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
             <h2 className="text-2xl font-semibold text-cyan-600 mb-4">
               Have a Coupon?
             </h2>
-            <div className="flex items-center gap-4">
-              <input
-                type="text"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                placeholder="Enter coupon code"
-                className="flex-grow px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-              <button
-                type="button"
-                onClick={handleApplyCoupon}
-                className="bg-cyan-500 text-white px-6 py-2 rounded-lg hover:bg-cyan-600 transition-colors"
-              >
-                Apply
-              </button>
-            </div>
+            
+            {!appliedCoupon ? (
+              <div className="flex items-center gap-4">
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  placeholder="Enter coupon code"
+                  className="flex-grow px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyCoupon}
+                  className="bg-cyan-500 text-white px-6 py-2 rounded-lg hover:bg-cyan-600 transition-colors"
+                >
+                  Apply
+                </button>
+              </div>
+            ) : (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-green-600 font-semibold">✓ Coupon Applied</span>
+                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-mono">
+                      {appliedCoupon.code}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAppliedCoupon(null);
+                      setDiscountAmount(0);
+                      setCouponCode("");
+                      setCouponError("");
+                    }}
+                    className="text-red-500 hover:text-red-700 text-sm"
+                  >
+                    Remove
+                  </button>
+                </div>
+                
+            
+              </div>
+            )}
+            
             {couponError && (
-              <p className="text-red-500 mt-2">{couponError}</p>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-red-600 font-semibold">✗ Coupon Invalid</span>
+                </div>
+                <div className="text-sm text-red-700 mt-2">
+                  {couponError}
+                </div>
+              </div>
             )}
           </div>
           {/* END: Coupon Code Section */}
@@ -358,9 +403,27 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                   {discountAmount > 0 && (
                     <tr className="border-b text-green-600">
                       <td className="py-3 px-4">
-                        Discount ({appliedCoupon?.code})
+                        <div>
+                          <div className="font-medium">
+                            Discount ({appliedCoupon?.code})
+                          </div>
+                          {appliedCoupon?.isProductSpecific && (
+                            <div className="text-xs text-gray-500">
+                              Applied to: {resortName}
+                            </div>
+                          )}
+                        </div>
                       </td>
-                      <td className="py-3 px-4">- ₹{discountAmount.toFixed(2)}</td>
+                      <td className="py-3 px-4">
+                        <div className="text-right">
+                          <div className="font-semibold">- ₹{discountAmount.toFixed(2)}</div>
+                          {appliedCoupon?.discountType === 'percentage' && (
+                            <div className="text-xs text-gray-500">
+                              ({appliedCoupon.discountValue}% off)
+                            </div>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   )}
                   {/* END: Display Discount */}
