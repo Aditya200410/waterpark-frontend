@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FaFacebookF, FaWhatsapp, FaInstagram, FaYoutube } from 'react-icons/fa';
-import { Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import React from 'react';
 import AnimatedBubbles from '../AnimatedBubbles/AnimatedBubbles';
@@ -15,6 +15,23 @@ const AnimatedLink = ({ to, children, className }) => (
     {/* Underline effect */}
     <span className="absolute bottom-0 left-1/2 w-full h-[1.5px] bg-yellow-300 transform -translate-x-1/2 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out origin-center"></span>
   </Link>
+);
+
+// Download App Button Component
+const DownloadAppButton = ({ className = "" }) => (
+<motion.a
+  href="#" // Add your Google Play Store link here
+  className={`inline-flex items-center  text-white  rounded-lg  ${className}`}
+  whileHover={{ scale: 1.03 }}
+  whileTap={{ scale: 0.98 }}
+>
+  <div className="flex items-center ">
+    {/* Google Play Icon (SVG) */}
+  <img src="/google.png" alt="Google Play" className='w-fit md:h-[90px] h-[70px]' />
+    
+    
+  </div>
+</motion.a>
 );
 
 
@@ -57,6 +74,7 @@ export default function Footer() {
             <p className="text-white/80 leading-relaxed text-sm max-w-xs">
               Water Park Chalo is your go-to destination for booking tickets to the best water parks in India. Enjoy a seamless experience with trusted partners and exclusive offers.
             </p>
+           
           </div>
 
           {/* Column 2: Useful Links */}
@@ -121,8 +139,15 @@ export default function Footer() {
             {/* This text will wrap naturally because it has spaces */}
             <span>110, Lakshmi Apt 1, Alkapuri, Nallasopara</span>
         </li>
+        <li>
+           {/* Download App Button */}
+           <div className="mt-4">
+              <DownloadAppButton />
+            </div>
+        </li>
     </ul>
 </div>
+
         </div>
 
         {/* Mobile Layout */}
@@ -141,6 +166,7 @@ export default function Footer() {
             <p className="text-white/80 text-sm max-w-sm">
               Water Park Chalo is your go-to destination for booking tickets to the best water parks in India.
             </p>
+           
           </div>
 
           <div className="grid grid-cols-2 gap-6 text-sm">
@@ -191,6 +217,12 @@ export default function Footer() {
               <li className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-yellow-300 mt-1 flex-shrink-0" />
                 <span>110, Lakshmi Apt 1, Alkapuri, Nallasopara</span>
+              </li>
+              <li>
+                 {/* Download App Button - Mobile */}
+            <div className="mt-4">
+              <DownloadAppButton className="scale-90" />
+            </div>
               </li>
             </ul>
           </div>
