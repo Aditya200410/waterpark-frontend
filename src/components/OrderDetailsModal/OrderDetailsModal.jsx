@@ -226,6 +226,7 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
                             <p className="text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Guest Name</p>
                             <p className="font-bold text-[10px] sm:text-base text-blue-900 leading-tight">{order.name}</p>
                           </div>
+                        
                         </div>
                          <div className="flex items-center gap-0.5 sm:gap-3">
                           <Users className="w-3 h-3 sm:w-6 sm:h-6 text-cyan-600 flex-shrink-0" />
@@ -235,6 +236,13 @@ const OrderDetailsModal = ({ orderId, onClose }) => {
                           </div>
                         </div>
                       </div>
+                      <div className="flex items-center gap-0.5 sm:gap-3">
+                        <Phone className="w-3 h-3 sm:w-6 sm:h-6 text-cyan-600 flex-shrink-0" />
+                      <div>
+                            <p className="text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Phone Number</p>
+                            <p className="font-bold text-[10px] sm:text-base text-blue-900 leading-tight">{order.phone}</p>
+                          </div>
+                          </div>
 
                       <div className="mt-auto pt-1 sm:pt-4 border-t border-dashed border-blue-400/80">
   {/* ✅ Changed to always be a row and vertically centered */}
