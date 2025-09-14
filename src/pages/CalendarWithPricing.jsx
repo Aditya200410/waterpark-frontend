@@ -119,7 +119,14 @@ export default function CustomCalendar({
 
           // --- START: DYNAMIC PRICE LOGIC ---
           // Check if the current day 'd' is in our set of special dates
-          const isSpecialDay = specialDatesSet.has(format(d, 'yyyy-MM-dd'));
+          const isManuallySpecialDay = specialDatesSet.has(format(d, 'yyyy-MM-dd'));
+          
+          // Check if it's automatically a weekend day (Saturday = 6, Sunday = 0)
+          const dayOfWeek = d.getDay();
+          const isWeekendDay = dayOfWeek === 0; // Sunday only
+          
+          // A day is special if it's either manually selected OR it's a weekend day
+          const isSpecialDay = isManuallySpecialDay || isWeekendDay;
           const dateStr = format(d, 'yyyy-MM-dd');
           
           // Get effective price using the special pricing system

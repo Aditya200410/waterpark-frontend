@@ -198,15 +198,51 @@ const ProductView = () => {
     if (product?._id) loadReviews();
   }, [product?._id, user?.email]);
 
+  // Helper function to get display price (matches calculation logic)
+  const getDisplayPrice = (product, priceType, selectedDate, isSpecialDay) => {
+    if (!product || !selectedDate) return product?.[priceType] || 0;
+    
+    // Check if special pricing exists for this date
+    const dateStr = typeof selectedDate === 'string' ? selectedDate : new Date(selectedDate).toISOString().split('T')[0];
+    const hasSpecialPricing = product.specialPrices?.[dateStr] && Object.keys(product.specialPrices[dateStr]).length > 0;
+    
+    if (hasSpecialPricing) {
+      // Use special pricing if available (overrides weekend/regular pricing)
+      return getEffectivePrice(product, priceType, selectedDate);
+    } else if (isSpecialDay) {
+      // Use weekend pricing if no special pricing
+      const weekendPriceType = priceType === 'adultprice' ? 'weekendprice' : 
+                              priceType === 'childprice' ? 'price' : 
+                              priceType === 'advanceprice' ? 'weekendadvance' : priceType;
+      return getEffectivePrice(product, weekendPriceType, selectedDate) || getEffectivePrice(product, priceType, selectedDate);
+    } else {
+      // Use regular pricing
+      return getEffectivePrice(product, priceType, selectedDate);
+    }
+  };
+
   // --- DYNAMIC PRICE CALCULATION HOOK ---
   useEffect(() => {
     if (!product || loadingSettings) return;
     
     const checkIsSpecialDay = () => {
-      if (!selectedDate || !weekendSetting || !weekendSetting.value.status) return false;
-      return (weekendSetting.value.dates || []).some(dbDateString => 
-          new Date(dbDateString).toDateString() === new Date(selectedDate).toDateString()
-      );
+      if (!selectedDate) return false;
+      
+      // Check if weekend pricing is enabled in settings
+      if (weekendSetting && weekendSetting.value.status) {
+        // Check if this date is manually selected as a special day
+        const isManuallySelected = (weekendSetting.value.dates || []).some(dbDateString => 
+            new Date(dbDateString).toDateString() === new Date(selectedDate).toDateString()
+        );
+        if (isManuallySelected) return true;
+      }
+      
+      // Check if it's automatically a weekend day (Saturday = 6, Sunday = 0)
+      const selectedDateObj = new Date(selectedDate);
+      const dayOfWeek = selectedDateObj.getDay();
+      const isWeekendDay = dayOfWeek === 0; // Sunday or Saturday
+      
+      return isWeekendDay;
     };
     
     const isSpecial = checkIsSpecialDay();
@@ -354,19 +390,34 @@ const ProductView = () => {
 
             {/* Price Section */}
             <div className="space-y-2 sm:space-y-3">
+              {/* Weekend Pricing Notice */}
+              {isSpecialDay && (
+                <div className="bg-gradient-to-r from-orange-100 to-yellow-100 border border-orange-300 rounded-lg p-3 mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-orange-600 font-bold text-sm">🏖️ Weekend Pricing Active</span>
+                    <span className="text-orange-700 text-sm">(Sunday Special Rates)</span>
+                  </div>
+                </div>
+              )}
+              
               <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
                 <span className="text-2xl sm:text-3xl font-bold text-blue-900">
-                  ₹{getEffectivePrice(product, 'adultprice', selectedDate).toFixed(2)}
+                  ₹{getDisplayPrice(product, 'adultprice', selectedDate, isSpecialDay).toFixed(2)}
                 </span>
-                {product.regularprice && product.regularprice > getEffectivePrice(product, 'adultprice', selectedDate) && (
+                {product.regularprice && product.regularprice > getDisplayPrice(product, 'adultprice', selectedDate, isSpecialDay) && (
                   <>
                     <span className="text-lg sm:text-xl text-gray-400 line-through">₹{product.regularprice.toFixed(2)}</span>
                     <span className="px-2 py-1 bg-red-100 text-red-600 text-xs font-medium rounded-full">
-                      {Math.round(((product.regularprice - getEffectivePrice(product, 'adultprice', selectedDate)) / product.regularprice) * 100)}% OFF
+                      {Math.round(((product.regularprice - getDisplayPrice(product, 'adultprice', selectedDate, isSpecialDay)) / product.regularprice) * 100)}% OFF
                     </span>
                   </>
                 )}
-                {getEffectivePrice(product, 'adultprice', selectedDate) !== product.adultprice && (
+                {isSpecialDay && product.weekendprice && (
+                  <span className="px-2 py-1 bg-orange-100 text-orange-600 text-xs font-medium rounded-full">
+                    Weekend Price
+                  </span>
+                )}
+                {getDisplayPrice(product, 'adultprice', selectedDate, isSpecialDay) !== product.adultprice && !isSpecialDay && (
                   <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs font-medium rounded-full">
                     Special Price
                   </span>
@@ -462,19 +513,34 @@ const ProductView = () => {
           <div>
             <span className="font-sans text-sm font-medium text-sky-700">Adult Ticket</span>
             <p className="font-display font-bold text-3xl text-cyan-600 mt-1">
-              ₹{getEffectivePrice(product, 'adultprice', selectedDate)?.toFixed(0) || 'N/A'}
+              ₹{getDisplayPrice(product, 'adultprice', selectedDate, isSpecialDay)?.toFixed(0) || 'N/A'}
             </p>
-            {getEffectivePrice(product, 'adultprice', selectedDate) !== product.adultprice && (
+            {getDisplayPrice(product, 'adultprice', selectedDate, isSpecialDay) !== product.adultprice && !isSpecialDay && (
               <p className="text-xs text-blue-600 font-medium">Special Price</p>
+            )}
+            {isSpecialDay && (
+              <p className="text-xs text-orange-600 font-medium">Weekend Price (Sunday)</p>
             )}
           </div>
           <div>
             <span className="font-sans text-sm font-medium text-sky-700">Child Ticket</span>
             <p className="font-display font-bold text-3xl text-cyan-600 mt-1">
-              ₹{getEffectivePrice(product, 'childprice', selectedDate)?.toFixed(0) || 'N/A'}
+              ₹{getDisplayPrice(product, 'childprice', selectedDate, isSpecialDay)?.toFixed(0) || 'N/A'}
             </p>
-            {getEffectivePrice(product, 'childprice', selectedDate) !== product.childprice && (
+            {getDisplayPrice(product, 'childprice', selectedDate, isSpecialDay) !== product.childprice && !isSpecialDay && (
               <p className="text-xs text-blue-600 font-medium">Special Price</p>
+            )}
+            {isSpecialDay && (
+              <p className="text-xs text-orange-600 font-medium">Weekend Price (Sunday)</p>
+            )}
+          </div>
+          <div>
+            <span className="font-sans text-sm font-medium text-sky-700">Advance Payment</span>
+            <p className="font-display font-bold text-3xl text-cyan-600 mt-1">
+              ₹{getDisplayPrice(product, 'advanceprice', selectedDate, isSpecialDay)?.toFixed(0) || 'N/A'}
+            </p>
+            {isSpecialDay && (
+              <p className="text-xs text-orange-600 font-medium">Weekend Price (Sunday)</p>
             )}
           </div>
         </div>
@@ -586,23 +652,37 @@ const ProductView = () => {
                     <thead className="bg-[#03045E]/80"><tr><th className="px-4 py-3 text-left">Ticket Type</th><th className="px-4 py-3 text-center">Qty</th><th className="px-4 py-3 text-right">Price</th><th className="px-4 py-3 text-right">Total</th></tr></thead>
                     <tbody>
                       <motion.tr className="border-t border-white/30 hover:bg-white/10 transition">
-                        <td className="px-4 py-3 font-medium">👨 Adult above 8 year</td>
+                        <td className="px-4 py-3 font-medium">
+                          Adult above 8 year
+                          {isSpecialDay && (
+                            <span className="ml-2 px-2 py-1 bg-orange-200 text-orange-700 text-xs font-medium rounded-full">
+                              Weekend
+                            </span>
+                          )}
+                        </td>
                         <td className="px-4 py-3 text-center">{adultquantity}</td>
                         <td className="px-4 py-3 text-right">
-                          ₹{getEffectivePrice(product, 'adultprice', selectedDate)}
+                          ₹{getDisplayPrice(product, 'adultprice', selectedDate, isSpecialDay)}
                         </td>
                         <td className="px-4 py-3 text-right">
-                          ₹{adultquantity * getEffectivePrice(product, 'adultprice', selectedDate)}
+                          ₹{adultquantity * getDisplayPrice(product, 'adultprice', selectedDate, isSpecialDay)}
                         </td>
                       </motion.tr>
                       <motion.tr className="border-t border-white/30 hover:bg-white/10 transition">
-                        <td className="px-4 py-3 font-medium">👧 Child 3 to 8 year</td>
+                        <td className="px-4 py-3 font-medium">
+                          Child 3 to 8 year
+                          {isSpecialDay && (
+                            <span className="ml-2 px-2 py-1 bg-orange-200 text-orange-700 text-xs font-medium rounded-full">
+                              Weekend
+                            </span>
+                          )}
+                        </td>
                         <td className="px-4 py-3 text-center">{childquantity}</td>
                         <td className="px-4 py-3 text-right">
-                          ₹{getEffectivePrice(product, 'childprice', selectedDate)}
+                          ₹{getDisplayPrice(product, 'childprice', selectedDate, isSpecialDay)}
                         </td>
                         <td className="px-4 py-3 text-right">
-                          ₹{childquantity * getEffectivePrice(product, 'childprice', selectedDate)}
+                          ₹{childquantity * getDisplayPrice(product, 'childprice', selectedDate, isSpecialDay)}
                         </td>
                       </motion.tr>
                     </tbody>
