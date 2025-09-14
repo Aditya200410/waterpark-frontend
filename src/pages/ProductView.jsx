@@ -391,14 +391,7 @@ const ProductView = () => {
             {/* Price Section */}
             <div className="space-y-2 sm:space-y-3">
               {/* Weekend Pricing Notice */}
-              {isSpecialDay && (
-                <div className="bg-gradient-to-r from-orange-100 to-yellow-100 border border-orange-300 rounded-lg p-3 mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-orange-600 font-bold text-sm">🏖️ Weekend Pricing Active</span>
-                    <span className="text-orange-700 text-sm">(Sunday Special Rates)</span>
-                  </div>
-                </div>
-              )}
+             
               
               <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
                 <span className="text-2xl sm:text-3xl font-bold text-blue-900">
@@ -412,11 +405,7 @@ const ProductView = () => {
                     </span>
                   </>
                 )}
-                {isSpecialDay && product.weekendprice && (
-                  <span className="px-2 py-1 bg-orange-100 text-orange-600 text-xs font-medium rounded-full">
-                    Weekend Price
-                  </span>
-                )}
+               
                 {getDisplayPrice(product, 'adultprice', selectedDate, isSpecialDay) !== product.adultprice && !isSpecialDay && (
                   <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs font-medium rounded-full">
                     Special Price
