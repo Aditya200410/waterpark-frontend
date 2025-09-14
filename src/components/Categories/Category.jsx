@@ -101,7 +101,7 @@ const Category = () => {
           className="text-center mb-10 md:mb-16"
         >
             <div className="max-w-3xl mx-auto">
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 font-serif italic">
                     All Our Destinations
                 </h2>
                 <p className="mt-3 sm:mt-4 text-base md:text-lg text-gray-600">

@@ -234,12 +234,7 @@ export default function Footer() {
          <p className="text-white ">
             © {new Date().getFullYear()} All Rights Reserved by Water Park Chalo.
           </p>
-          <p className="text-white text-sm mt-1">
-            Made by{" "}
-            <a href="https://www.appzeto.com/" target="_blank" rel="noopener noreferrer" className="text-white mb-10  hover:text-white font-semibold transition-colors">
-              Appzeto
-            </a>
-          </p>
+          
           <div className="flex justify-center mt-5 space-x-4 mb-8 md:mb-0">
             <a href="https://www.facebook.com/people/Waterpark-chalo/61568891087635" target="_blank" rel="noopener noreferrer" className="p-2.5  rounded-full bg-blue-600 hover:scale-110 transition-all duration-300"><FaFacebookF /></a>
             <a href="https://wa.me/918847714464" target="_blank" rel="noopener noreferrer" className="p-2.5  rounded-full bg-green-500 hover:scale-110 transition-all duration-300"><FaWhatsapp /></a>

@@ -104,8 +104,8 @@ const Categories = () => {
           className="text-center mb-8 md:mb-12"
         >
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">
-              Explore by Location
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
+              <span className="font-serif italic"> Explore by Location</span>
             </h2>
             <p className="mt-3 sm:mt-4 text-base md:text-lg text-gray-600">
               Find the best water parks and attractions near you.
