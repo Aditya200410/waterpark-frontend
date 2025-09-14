@@ -107,9 +107,7 @@ const Categories = () => {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-gray-900 mb-3 md:mb-4">
               <span className="font-serif italic"> Explore by Location</span>
             </h2>
-            <p className="mt-3 sm:mt-4 text-base md:text-lg text-gray-600">
-              Find the best water parks and attractions near you.
-            </p>
+           
           </div>
         </motion.div>
 

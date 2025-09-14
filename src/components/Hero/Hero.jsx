@@ -120,7 +120,7 @@ const Hero = () => {
     <div
       ref={containerRef}
       className="relative overflow-hidden bg-black"
-      style={containerHeight ? { height: containerHeight, maxHeight: '80vh' } : { height: 400, maxHeight: '80vh' }}
+      style={containerHeight ? { height: containerHeight, maxHeight: '100vh' } : { height: 400, maxHeight: '80vh' }}
     >
       <AnimatedBubbles />
       {/* Navigation Buttons */}
