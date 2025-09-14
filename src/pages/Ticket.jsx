@@ -3,7 +3,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useLocation, useParams } from "react-router-dom";
 import axios from "axios";
-import { Download, UserCircle, Users, Waves, FileText, ExternalLink } from "lucide-react";
+import { Download, UserCircle, Users, Waves, FileText, ExternalLink, Phone, User } from "lucide-react";
 import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 
 const WaterparkTicket = () => {
@@ -324,6 +324,14 @@ const WaterparkTicket = () => {
                   </div>
                 </div>
               </div>
+
+              <div className="flex items-center gap-0.5 sm:gap-3">
+                        <Phone className="w-3 h-3 sm:w-6 sm:h-6 text-cyan-600 flex-shrink-0" />
+                      <div>
+                            <p className="text-[8px] sm:text-xs font-bold text-blue-800 uppercase">Phone Number</p>
+                            <p className="font-bold text-[10px] sm:text-base text-blue-900 leading-tight">{booking.phone}</p>
+                          </div>
+                          </div>
 
               <div className="mt-auto pt-1 sm:pt-4 border-t border-dashed border-blue-400/80">
                 <div className="flex flex-row justify-between items-center w-full">
