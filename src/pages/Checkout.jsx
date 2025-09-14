@@ -137,9 +137,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   // END: Handle Apply Coupon Function
 
   // Calculate final total after discount
-  const finalTotal = paid;
- 
-  const remainingAmount = totalamount-paid-discountAmount;
+  const discountedTotalAmount = totalamount - discountAmount;
+  const finalTotal = paid; // Advance amount remains the same
+  const remainingAmount = discountedTotalAmount - finalTotal;
 
   const handlePayment = async (e) => {
     e.preventDefault();
@@ -169,8 +169,8 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           date: formattedDate,
           adults: adultCount,
           children: childCount,
-          // MODIFIED: Send discounted total and coupon info
-          total: finalTotal,
+          // MODIFIED: Send discounted total and original advance amount
+          total: discountedTotalAmount,
           advanceAmount: finalTotal,
           paymentType: paymentType, // Use product's payment type, not payment method
           paymentMethod: paymentMethod, // Add payment method separately
@@ -401,39 +401,28 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                     <td className="py-3 px-4">₹{paid}</td>
                   </tr>
 
-                  {/* START: Display Discount if Applied */}
-                  {discountAmount > 0 && (
-                    <tr className="border-b text-green-600">
-                      <td className="py-3 px-4">
-                        <div>
-                          <div className="font-medium">
-                            Discount ({appliedCoupon?.code})
-                          </div>
-                          {appliedCoupon?.isProductSpecific && (
-                            <div className="text-xs text-gray-500">
-                              Applied to: {resortName}
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="text-right">
-                          <div className="font-semibold">- ₹{discountAmount.toFixed(2)}</div>
-                          {appliedCoupon?.discountType === 'percentage' && (
-                            <div className="text-xs text-gray-500">
-                              ({appliedCoupon.discountValue}% off)
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                  {/* END: Display Discount */}
+               
 
                   <tr className="border-b">
                     <td className="py-3 px-4">Total Amount:</td>
                     <td className="py-3 px-4">₹{totalamount}</td>
                   </tr>
+                  {discountAmount > 0 && (
+                    <tr className="border-b text-green-600">
+                      <td className="py-3 px-4">
+                        <div>
+                          <div className="font-medium">After Discount:</div>
+                          <div className="text-xs text-gray-500">Original: ₹{totalamount}</div>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="text-right">
+                          <div className="font-semibold">₹{discountedTotalAmount}</div>
+                          <div className="text-xs text-gray-500">You saved: ₹{discountAmount}</div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                   {paymentType === 'advance' && (
                     <tr className="border-b">
                       <td className="py-3 px-4">Remaining to be <br/>Paid in Waterpark:</td>

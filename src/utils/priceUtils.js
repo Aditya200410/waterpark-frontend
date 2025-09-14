@@ -107,7 +107,10 @@ export const calculateTicketTotal = (product, adultQuantity, childQuantity, date
     advanceTotal = grandTotal;
   } else {
     // For advance payment, use advance prices
-    advanceTotal = (adultQuantity * advancePrice) + (childQuantity * advancePrice);
+    // Note: advancePrice is typically the same for adults and children, but we should use separate prices if available
+    const adultAdvancePrice = getEffectivePrice(product, 'adultadvanceprice', date) || advancePrice;
+    const childAdvancePrice = getEffectivePrice(product, 'childadvanceprice', date) || advancePrice;
+    advanceTotal = (adultQuantity * adultAdvancePrice) + (childQuantity * childAdvancePrice);
   }
   
   return { grandTotal, advanceTotal };
