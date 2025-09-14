@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const RikoCraftPoster = ({ qrSrc = "/qr.jpg", bgSrc = "/qr.jpg" }) => {
+const WaterParkChaloCert = ({ qrSrc = "/qr.jpg", bgSrc = "/poster.jpg" }) => {
   const [imgSize, setImgSize] = useState({ width: 1080, height: 1920 });
 
   useEffect(() => {
@@ -18,36 +18,35 @@ const RikoCraftPoster = ({ qrSrc = "/qr.jpg", bgSrc = "/qr.jpg" }) => {
         width: imgSize.width + "px",
         height: imgSize.height + "px",
         position: "relative",
-        overflow: "hidden"
+        overflow: "hidden",
       }}
     >
-      {/* QR code overlay - adjust top/left/width/height as needed for perfect placement */}
+      {/* ✅ QR Code perfectly aligned */}
       <div
         style={{
           position: "absolute",
-          top: imgSize.height * 0.3200 + "px", // 600/1920 for default
-          left: `calc(50% - ${imgSize.width * 0.2000}px)`, // 240/1080 for default, width 480/1080
-          width: imgSize.width * 0.4000 + "px", // 480/1080
-          height: imgSize.width * 0.3900 + "px", // 480/1080
+          top: imgSize.height * 0.60 + "px", // ~66% from top
+          left: imgSize.width * 0.65 + "px", // ~64% from left
+          width: imgSize.width * 0.26 + "px", // QR box width
+          height: imgSize.width * 0.26 + "px", // QR box height
           background: "#fff",
-          
-          border: "8px solid #fff",
+          borderRadius: "24px",
+          border: "10px solid #fff",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          
-          overflow: "hidden"
+          boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
+          overflow: "hidden",
         }}
       >
         <img
           src={qrSrc}
-          alt="Shop QR"
+          alt="Water Park QR"
           style={{
-            width: "110%",
-            height: "110%",
+            width: "100%",
+            height: "100%",
             objectFit: "cover",
-         
-            background: "#fff"
+            borderRadius: "16px",
           }}
         />
       </div>
@@ -55,4 +54,4 @@ const RikoCraftPoster = ({ qrSrc = "/qr.jpg", bgSrc = "/qr.jpg" }) => {
   );
 };
 
-export default RikoCraftPoster; 
+export default WaterParkChaloCert;

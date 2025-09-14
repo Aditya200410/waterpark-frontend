@@ -75,7 +75,7 @@ const SEO = ({
       canonical.rel = 'canonical';
       document.head.appendChild(canonical);
     }
-    canonical.href = url || `https://rikocraft.com${location.pathname}`;
+    canonical.href = url || `https://waterparkchalo.com${location.pathname}`;
 
     // Add structured data if provided
     if (structuredData) {

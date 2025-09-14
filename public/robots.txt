@@ -1,6 +1,6 @@
-# RikoCraft (Riko Craft) - Handcrafted Jewelry & Artisan Products
-# Official website - https://rikocraft.com
-# Both brand names: RikoCraft and Riko Craft
+# WaterParkChalo - Water Park Tickets & Adventure Booking
+# Official website - https://waterparkchalo.com
+# Water park theme - Book tickets for thrilling water adventures
 # Enhanced for precise search engine crawling and indexing
 
 User-agent: *
@@ -8,10 +8,10 @@ Allow: /
 Crawl-delay: 1
 
 # Primary domain declaration
-Host: rikocraft.com
+Host: waterparkchalo.com
 
 # Sitemap location
-Sitemap: https://rikocraft.com/sitemap.xml
+Sitemap: https://waterparkchalo.com/sitemap.xml
 
 # Allow important pages and content
 Allow: /shop

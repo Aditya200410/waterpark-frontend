@@ -4,49 +4,49 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 const faqCategories = [
   {
-    title: 'About RIKO CRAFT',
+    title: 'About WaterParkChalo',
     questions: [
       {
-        q: 'Is Riko Craft An Indian Company?',
-        a: 'Yes, RIKO CRAFT is a registered proprietorship start-up company in India. Full name of the company is **Riko Enterprises.**'
+        q: 'Is WaterParkChalo An Indian Company?',
+        a: 'Yes, WaterParkChalo is a registered company in India specializing in water park ticket booking and adventure experiences. We are committed to providing the best water park experiences across India.'
       },
      
       {
-        q: 'Where Can I Buy Riko Craft Products In India?',
-        a: '• You can buy RIKO CRAFT products directly from our Stores: "Riko Craft Gallery" at Jamshedpur,jharkhand.\n• **Alternatively** you can also buy our products **online** from our website: **rikocraft.com**'
+        q: 'Where Can I Book Water Park Tickets In India?',
+        a: '• You can book water park tickets directly through our website: **waterparkchalo.com**\n• **Alternatively** you can also visit our partner water parks and book tickets on-site with special discounts available through our platform.'
       },
      
       
     ]
   },
   {
-    title: 'About RIKO CRAFT Products',
+    title: 'About Water Park Experiences',
     questions: [
       {
-        q: 'Where Are Your Manufacturing Facilities Located?',
-        a: 'Riko Craft does have a small production unit in Jamshedpur, Jharkhand where few of our products are manufactured but majority of our products are created by village-based artisans across Jharkhand. We identify, develop and nurture age old traditional skills of talented artisans across Bengal and work in close association with them to preserve the Art Form to prevent it from extinction. This commitment has helped preserve many traditional crafts of India and created employment opportunities in deep rural areas.'
+        q: 'What Types of Water Parks Do You Partner With?',
+        a: 'WaterParkChalo partners with premium water parks across India, featuring thrilling water slides, wave pools, lazy rivers, and family-friendly attractions. We work with both established water parks and emerging adventure destinations to provide diverse experiences for all age groups.'
       },
       {
-        q: 'Are All RIKO CRAFT Products Handmade?',
-        a: 'YES almost all of Riko Craft products are purely handmade using age old traditional skills. In some products such as appeal etc, if the cloth is from power loom, the final product is made using hand stitch, hand-woven, hand block-print etc process using vegetable dyes or natural colours as far as possible.'
+        q: 'Are All Water Park Activities Safe?',
+        a: 'YES, all our partner water parks maintain the highest safety standards with certified lifeguards, regular equipment maintenance, and safety protocols. We ensure that all activities are supervised by trained professionals and follow international safety guidelines.'
       },
       
     ]
   },
   {
-    title: 'How To Shop',
+    title: 'How To Book',
     questions: [
       {
-        q: 'How Do I Shop Online?',
-        a: 'It\'s fairly easy. Select products of your choice from 350+ products classified in different broad Category in our website. Place them in your \'Shopping Cart\'. Press \'Check out\' button – Insert Discount Coupon Code, if you have any – tick the \'I Agree\' check box – Make Payment using your Debit/ Credit Card/Net Banking/ Wallet or any other option given. Tick EMI Option if you so desire. Your purchase is complete.'
+        q: 'How Do I Book Water Park Tickets Online?',
+        a: 'It\'s very easy! Browse through our selection of water parks, choose your preferred date and time slot, select the number of tickets needed, and add them to your cart. Click \'Checkout\' – Apply any discount codes if you have them – agree to terms and conditions – Make payment using your Debit/Credit Card/Net Banking/Wallet or UPI. Your booking is complete and you\'ll receive instant confirmation!'
       },
       {
-        q: 'How Will I Know If You Have Received My Order?',
-        a: 'During the payment process you will be given a confirmation that your credit /debit card has been successfully processed. **You get a on-screen notification \'Successfully Placed Order\'.** You will also be given an order confirmation number through an email / SMS from Riko Craft.'
+        q: 'How Will I Know If My Booking Is Confirmed?',
+        a: 'During the payment process you will receive a confirmation that your payment has been successfully processed. **You\'ll get an on-screen notification \'Booking Confirmed\'.** You will also receive a booking confirmation number through email/SMS from WaterParkChalo with your e-tickets.'
       },
       {
-        q: 'Is It Safe To Use My Credit Card Online At rikocraft.com?',
-        a: 'We do not store credit card information on our website. Your credit card information is safe with our international payment solution providers – Razorpay and PayPal.'
+        q: 'Is It Safe To Use My Credit Card Online At waterparkchalo.com?',
+        a: 'We do not store credit card information on our website. Your payment information is secure with our trusted payment solution providers – Razorpay and PhonePe, ensuring your financial data is protected.'
       }
     ]
   },
@@ -55,27 +55,27 @@ const faqCategories = [
     questions: [
       {
         q: 'What Payment Methods Do You Accept?',
-        a: 'We accept all MasterCard, VISA, American Express, and Citibank Maestro Debit or Credit Cards.\n\nIf you have an Indian bank account, you can also transfer your payment directly to us using our payment gateway\'s net banking facility.'
+        a: 'We accept all MasterCard, VISA, American Express, and RuPay Debit or Credit Cards.\n\nWe also support UPI payments, net banking, and digital wallets like Paytm, PhonePe, and Google Pay for convenient booking.'
       },
       {
-        q: 'When Will My Credit Card Be Charged?',
-        a: 'Your credit card will be charged at the time of placing your order through our secured payment gateway. (an online real-time authorisation is done through the Payment Gateway)'
+        q: 'When Will My Payment Be Charged?',
+        a: 'Your payment will be charged immediately at the time of booking confirmation through our secured payment gateway. You\'ll receive instant confirmation and e-tickets upon successful payment.'
       }
     ]
   },
   {
-    title: 'Returns & Exchanges',
+    title: 'Cancellations & Refunds',
     questions: [
       {
-        q: 'What Is Your Return Policy?',
-        a: '• At Riko Craft, we stand behind the quality of our products and we assure each and every product passes through a strict quality checking process.\n• Please bear in mind that all handmade items are bound to have minor defects in them and any two item of same product will never be exactly same. These inherent quality of handicraft make them unique and add value of it being a genuine and authentic handmade product. These are not acceptable valid reasons for return.\n• However we will provide a full refund for the cost of the product if the product is found faulty or defective or not the one that you selected in your order.\n• Return request must be made on a valid reason within 48 hours of receiving the goods in writing to [email protected] with clearly stating reasons for return.\n• Shipping charges will not be refunded and customers are required to pay for the return shipping costs of the goods.'
+        q: 'What Is Your Cancellation Policy?',
+        a: '• At WaterParkChalo, we understand that plans can change, so we offer flexible cancellation options.\n• Cancellations made 24 hours before the scheduled visit are eligible for full refund.\n• Cancellations made within 24 hours but before the visit time are eligible for 50% refund.\n• No refunds for no-shows or cancellations after the visit time.\n• Refund requests must be made through our customer support at support@waterparkchalo.com with your booking reference number.\n• Refunds will be processed within 5-7 business days to the original payment method.'
       }
     ]
   }
 ];
 
 export default function FAQ() {
-  const [activeCategory, setActiveCategory] = useState('About RIKO CRAFT');
+  const [activeCategory, setActiveCategory] = useState('About WaterParkChalo');
   const [activeQuestion, setActiveQuestion] = useState(null);
 
   return (
