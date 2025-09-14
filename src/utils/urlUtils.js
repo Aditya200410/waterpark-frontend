@@ -1,68 +1,55 @@
-// Utility functions for handling URLs with seller tokens
+/**
+ * Utility functions for URL generation and parsing
+ */
 
 /**
- * Updates the current URL to include seller token without causing a page reload
- * @param {string} sellerToken - The seller token to add to URL
- * @param {string} pathname - The current pathname (optional, defaults to current location)
+ * Creates a URL-friendly slug from a product name
+ * @param {string} name - The product name
+ * @returns {string} - URL-friendly slug
  */
-export const updateURLWithSellerToken = (sellerToken, pathname = null) => {
-  if (!sellerToken) return;
-
-  const currentPath = pathname || window.location.pathname;
-  const currentSearch = window.location.search;
-  const urlParams = new URLSearchParams(currentSearch);
+export const createSlug = (name) => {
+  if (!name) return '';
   
-  // Add or update seller token
-  urlParams.set('seller', sellerToken);
-  
-  const newURL = `${currentPath}?${urlParams.toString()}`;
-  
-  // Update URL without reloading the page
-  window.history.replaceState({}, '', newURL);
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special characters except spaces and hyphens
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
 };
 
 /**
- * Removes seller token from URL without causing a page reload
- * @param {string} pathname - The current pathname (optional, defaults to current location)
+ * Creates a product URL with only the product name slug
+ * @param {string} id - The product ID (not used in URL but kept for compatibility)
+ * @param {string} name - The product name
+ * @returns {string} - URL with only the product name slug
  */
-export const removeSellerTokenFromURL = (pathname = null) => {
-  const currentPath = pathname || window.location.pathname;
-  const currentSearch = window.location.search;
-  const urlParams = new URLSearchParams(currentSearch);
-  
-  // Remove seller token
-  urlParams.delete('seller');
-  
-  const newURL = urlParams.toString() ? `${currentPath}?${urlParams.toString()}` : currentPath;
-  
-  // Update URL without reloading the page
-  window.history.replaceState({}, '', newURL);
+export const createProductUrl = (id, name) => {
+  if (!name) return '';
+  const slug = createSlug(name);
+  return `/waterpark/${slug}`;
 };
 
 /**
- * Gets seller token from URL parameters
- * @returns {string|null} The seller token if present, null otherwise
+ * Extracts product name from URL slug
+ * @param {string} urlParam - The URL parameter (e.g., "virar-waterpark")
+ * @returns {string} - The product name slug
  */
-export const getSellerTokenFromURL = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get('seller');
+export const extractProductSlugFromUrl = (urlParam) => {
+  if (!urlParam) return '';
+  return urlParam;
 };
 
 /**
- * Creates a URL with seller token for navigation
- * @param {string} path - The path to navigate to
- * @param {string} sellerToken - The seller token to include
- * @returns {string} The complete URL with seller token
+ * Creates a URL with seller token if available
+ * @param {string} path - The base path
+ * @param {string} sellerToken - The seller token
+ * @returns {string} - URL with seller token
  */
 export const createURLWithSellerToken = (path, sellerToken) => {
   if (!sellerToken) return path;
-  return `${path}?seller=${sellerToken}`;
+  
+  const separator = path.includes('?') ? '&' : '?';
+  return `${path}${separator}seller=${sellerToken}`;
 };
-
-/**
- * Checks if current URL has a seller token
- * @returns {boolean} True if seller token is present in URL
- */
-export const hasSellerTokenInURL = () => {
-  return getSellerTokenFromURL() !== null;
-}; 

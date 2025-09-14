@@ -216,7 +216,7 @@ function AppContent() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
-        <Route path="/product/:id" element={<ProductView />} />
+        <Route path="/waterpark/:idOrSlug" element={<ProductView />} />
                <Route path="/blog/:id" element={<Blogview />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/policies" element={<Policies />} />

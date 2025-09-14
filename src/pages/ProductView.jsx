@@ -21,13 +21,17 @@ import { seoConfig } from '../config/seo';
 import WhatsAppButton from '../components/Whatsapp.jsx';
 import { getEffectivePrice, hasSpecialPricing, calculateTicketTotal } from '../utils/priceUtils';
 import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
+import { extractProductSlugFromUrl } from '../utils/urlUtils';
 
 import { Link } from 'react-router-dom';
 
 
 const ProductView = () => {
-  const { id } = useParams();
+  const { idOrSlug } = useParams();
   const navigate = useNavigate();
+  
+  // Extract the product slug from the URL parameter
+  const productSlug = extractProductSlugFromUrl(idOrSlug);
   const bookingSectionRef = useRef(null);
 
   // State for UI and product data
@@ -103,31 +107,60 @@ const ProductView = () => {
       try {
         setLoading(true);
         setError(null);
-        const endpoints = [`${config.API_URLS.SHOP}/${id}`, `${config.API_URLS.PRODUCTS}/${id}`, `${config.API_URLS.LOVED}/${id}`, `${config.API_URLS.BESTSELLER}/${id}`, `${config.API_URLS.FEATURED_PRODUCTS}/${id}`];
+        
+        // Convert slug back to a searchable format
+        const searchName = productSlug.replace(/-/g, ' ').toLowerCase();
+        
+        // Fetch from all endpoints to search for products
+        const endpoints = [
+          config.API_URLS.SHOP,
+          config.API_URLS.PRODUCTS,
+          config.API_URLS.LOVED,
+          config.API_URLS.BESTSELLER,
+          config.API_URLS.FEATURED_PRODUCTS
+        ];
+        
         let foundProduct = null;
+        
         for (const endpoint of endpoints) {
           try {
             const response = await fetch(endpoint);
             if (!response.ok) continue;
+            
             const data = await response.json();
-            foundProduct = data.product || (Array.isArray(data.products) ? data.products[0] : null) || (data._id ? data : null);
-            if (foundProduct) {
+            const products = data.products || data || [];
+            
+            // Search for product by name (case-insensitive)
+            const matchingProduct = products.find(p => {
+              if (!p.name) return false;
+              const productName = p.name.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ');
+              return productName.includes(searchName) || searchName.includes(productName);
+            });
+            
+            if (matchingProduct) {
               foundProduct = {
-                ...foundProduct, id: foundProduct._id || foundProduct.id,
-                price: parseFloat(foundProduct.price) || 0,
-                regularprice: parseFloat(foundProduct.regularprice) || 0,
-                adultprice: parseFloat(foundProduct.adultprice) || 0,
-                childprice: parseFloat(foundProduct.childprice) || 0,
-                weekendprice: parseFloat(foundProduct.weekendprice) || 0,
-                advanceprice: parseFloat(foundProduct.advanceprice) || 0,
-                weekendadvance: parseFloat(foundProduct.weekendadvance) || 0,
-                images: foundProduct.images || [foundProduct.image],
+                ...matchingProduct,
+                id: matchingProduct._id || matchingProduct.id,
+                price: parseFloat(matchingProduct.price) || 0,
+                regularprice: parseFloat(matchingProduct.regularprice) || 0,
+                adultprice: parseFloat(matchingProduct.adultprice) || 0,
+                childprice: parseFloat(matchingProduct.childprice) || 0,
+                weekendprice: parseFloat(matchingProduct.weekendprice) || 0,
+                advanceprice: parseFloat(matchingProduct.advanceprice) || 0,
+                weekendadvance: parseFloat(matchingProduct.weekendadvance) || 0,
+                images: matchingProduct.images || [matchingProduct.image],
               };
               break;
             }
-          } catch (error) {}
+          } catch (error) {
+            console.error(`Error fetching from ${endpoint}:`, error);
+          }
         }
-        if (!foundProduct) throw new Error('Product not found');
+        
+        if (!foundProduct) {
+          throw new Error('Product not found');
+        }
+        
         setProduct(foundProduct);
       } catch (error) {
         setError(error.message || 'Failed to load product details');
@@ -136,8 +169,11 @@ const ProductView = () => {
         setLoading(false);
       }
     };
-    if (id) fetchProduct();
-  }, [id]);
+    
+    if (productSlug) {
+      fetchProduct();
+    }
+  }, [productSlug]);
 
   const loadReviews = async () => {
     if (!product?._id) return;

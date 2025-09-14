@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import cartService from '../services/cartService';
 import { toast } from 'react-hot-toast';
-import { updateURLWithSellerToken, removeSellerTokenFromURL, getSellerTokenFromURL } from '../utils/urlUtils';
 
 const CartContext = createContext();
 const LOCAL_CART_KEY = 'cart';
@@ -75,44 +74,10 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    const urlToken = getSellerTokenFromURL();
-    const savedToken = getSellerTokenWithExpiry();
-    const tokenToUse = urlToken || savedToken;
-    if (tokenToUse) {
-      setSellerToken(tokenToUse);
-      setSellerTokenWithExpiry(tokenToUse);
-      updateURLWithSellerToken(tokenToUse);
-    }
-  }, []);
+ 
 
-  useEffect(() => {
-    if (sellerToken) {
-      setSellerTokenWithExpiry(sellerToken);
-      updateURLWithSellerToken(sellerToken);
-    } else {
-      localStorage.removeItem(SELLER_TOKEN_KEY);
-      removeSellerTokenFromURL();
-    }
-  }, [sellerToken]);
 
-  const setSellerTokenFromURL = (token) => {
-    if (token) {
-      setSellerToken(token);
-      setSellerTokenWithExpiry(token);
-      updateURLWithSellerToken(token);
-    }
-  };
 
-  const clearSellerToken = () => {
-    setSellerToken(null);
-    localStorage.removeItem(SELLER_TOKEN_KEY);
-    removeSellerTokenFromURL();
-  };
-
-  const updateURLWithCurrentSellerToken = () => {
-    if (sellerToken) updateURLWithSellerToken(sellerToken);
-  };
 
   // Cart functions
   const addToCart = async (productId, quantity = 1) => {
@@ -240,10 +205,8 @@ export const CartProvider = ({ children }) => {
         getTotalItems,
         loading,
         getItemImage,
-        sellerToken,
-        setSellerTokenFromURL,
-        clearSellerToken,
-        updateURLWithCurrentSellerToken
+      
+   
       }}
     >
       {children}

@@ -4,6 +4,7 @@ import config from '../../config/config.js';
 import { getEffectivePrice } from '../../utils/priceUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Ticket } from 'lucide-react';
+import { createProductUrl } from '../../utils/urlUtils';
 
 const ProductCard = ({ product }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -36,7 +37,7 @@ const ProductCard = ({ product }) => {
             className="group relative flex flex-col bg-white rounded-2xl overflow-hidden transition-all duration-300 ease-in-out 
                        border border-slate-200/80 hover:shadow-xl hover:shadow-cyan-200/50 hover:-translate-y-1"
         >
-            <Link to={`/product/${product._id || product.id}`} className="block">
+            <Link to={createProductUrl(product._id || product.id, product.name)} className="block">
                 <div className="relative w-full aspect-square overflow-hidden">
                     <AnimatePresence>
                         <motion.img
@@ -68,7 +69,7 @@ const ProductCard = ({ product }) => {
 
             <div className="p-3 flex flex-col flex-grow">
                 <h3 className="text-sm font-semibold text-slate-800 truncate" title={product.name}>
-                    <Link to={`/product/${product._id || product.id}`} className="hover:text-cyan-600 transition-colors">
+                    <Link to={createProductUrl(product._id || product.id, product.name)} className="hover:text-cyan-600 transition-colors">
                         {product.name}
                     </Link>
                 </h3>
@@ -85,7 +86,7 @@ const ProductCard = ({ product }) => {
                     
                     {/* --- CHANGED: This is now a Link component, not a button --- */}
                     <Link
-                        to={`/product/${product._id || product.id}`}
+                        to={createProductUrl(product._id || product.id, product.name)}
                         className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-300
                                    bg-cyan-100 text-cyan-800 hover:bg-cyan-500 hover:text-white"
                     >
