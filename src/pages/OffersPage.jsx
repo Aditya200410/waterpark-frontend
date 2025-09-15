@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Star, ArrowRight } from "lucide-react"; // Added ArrowRight
 import config from "../config/config.js";
 import AnimatedBubbles from "../components/AnimatedBubbles/AnimatedBubbles";
+import { createOfferUrl } from "../utils/urlUtils";
 
 // Framer Motion variants from the first example for staggering and card animation
 const containerVariants = {
@@ -146,7 +147,7 @@ export default function BlogPage() {
 
                   {/* Enhanced "Read More" link */}
                   <a
-                    href={`/blog/${blog._id}`}
+                    href={createOfferUrl(blog._id, blog.name)}
                     className="inline-flex items-center text-blue-600 font-semibold group-hover:text-blue-800 transition-colors duration-300"
                   >
                     Read More

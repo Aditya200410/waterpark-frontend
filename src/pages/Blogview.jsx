@@ -34,7 +34,7 @@ const imageVariants = {
 
 // --- Main Component ---
 const BlogView = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,18 +45,28 @@ const BlogView = () => {
         setLoading(true);
         setError(null);
 
-        const endpoint = `${config.API_URLS.BLOG}/${id}`;
+        // Fetch all blogs and find the one with matching slug
+        const endpoint = config.API_URLS.BLOG;
         const response = await fetch(endpoint);
 
-        if (!response.ok) throw new Error("Whoops! We couldn't find that blog post.");
+        if (!response.ok) throw new Error("Whoops! We couldn't fetch blog posts.");
 
         const data = await response.json();
-        const foundProduct =
-          data.product ||
-          (Array.isArray(data.products) ? data.products[0] : null) ||
-          (data._id ? data : null);
+        const allBlogs = Array.isArray(data) ? data : data.products || [];
 
-        if (!foundProduct) throw new Error("Blog post data seems to be missing.");
+        // Find blog by slug (convert name to slug and compare)
+        const foundProduct = allBlogs.find(blog => {
+          const blogSlug = blog.name
+            ?.toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+          return blogSlug === slug;
+        });
+
+        if (!foundProduct) throw new Error("Blog post not found.");
 
         setProduct({
           ...foundProduct,
@@ -72,8 +82,8 @@ const BlogView = () => {
       }
     };
 
-    if (id) fetchProduct();
-  }, [id]);
+    if (slug) fetchProduct();
+  }, [slug]);
 
   // --- Loading State ---
   if (loading)

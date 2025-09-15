@@ -5,6 +5,7 @@ import { Star, ArrowRight } from "lucide-react"; // Assuming you use lucide-reac
 import { Droplet } from "lucide-react";
 import config from "../config/config.js";
 import AnimatedBubbles from "../components/AnimatedBubbles/AnimatedBubbles";
+import { createBlogUrl } from "../utils/urlUtils";
 
 // Framer Motion variants for stagger animations
   const containerVariants = {
@@ -159,7 +160,7 @@ export default function BlogPage() {
 
                   {/* Enhanced "Read More" link */}
                   <a
-                    href={`/blog/${blog._id}`}
+                    href={createBlogUrl(blog._id, blog.name)}
                     className="inline-flex items-center text-blue-600 font-semibold group-hover:text-blue-800 transition-colors duration-300"
                   >
                     Read More

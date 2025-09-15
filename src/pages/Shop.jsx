@@ -50,6 +50,7 @@ const Shop = () => {
     }
   }, [searchParams]);
 
+
   // Fetch products from backend
   useEffect(() => {
     const fetchProducts = async () => {
@@ -161,6 +162,7 @@ const Shop = () => {
       });
     }
 
+
     // Sorting
     switch (sortBy) {
       case 'popularity':
@@ -246,6 +248,7 @@ const Shop = () => {
             <span>Filters</span>
           </button>
         </div>
+
 
         {loading ? (
           <div className="w-full h-[60vh] flex items-center justify-center">

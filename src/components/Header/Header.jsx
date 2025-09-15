@@ -235,8 +235,7 @@ const Header = () => {
                       <img src={config.fixImageUrl(product.image)} alt={product.name} className="w-14 h-14 object-cover rounded-xl mr-4 border border-gray-200 shadow-sm" />
                       <div className="flex-1">
                         <div className="font-semibold text-gray-900">{product.name}</div>
-                        <div className="text-sm text-gray-500 truncate">{product.description}</div>
-                      </div>
+                     </div>
                       <div className="ml-4 text-cyan-600 font-bold whitespace-nowrap">₹{product.price}</div>
                     </li>
                   ))}

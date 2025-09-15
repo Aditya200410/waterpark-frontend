@@ -197,8 +197,10 @@ function AppContent() {
      
     
         <Route path="/blog" element={<BlogPage/>} />
+        <Route path="/blog/:slug" element={<Blogview />} />
         <Route path="/location" element={<Category/>} />
-        <Route path="/Offers" element={<OffersPage />} />
+        <Route path="/offers" element={<OffersPage />} />
+        <Route path="/offer/:slug" element={<Blogview />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/waterparks" element={<Shop />} />
@@ -219,7 +221,6 @@ function AppContent() {
         <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
         <Route path="/waterpark/:idOrSlug" element={<ProductView />} />
 
-               <Route path="/blog/:id" element={<Blogview />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/policies" element={<Policies />} />
       
