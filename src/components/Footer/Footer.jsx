@@ -20,14 +20,16 @@ const AnimatedLink = ({ to, children, className }) => (
 // Download App Button Component
 const DownloadAppButton = ({ className = "" }) => (
 <motion.a
-  href="#" // Add your Google Play Store link here
+  href="https://api.waterparkchalo.com/app-debug.apk"
+  download="waterpark-chalo-app.apk"
   className={`inline-flex items-center  text-white  rounded-lg  ${className}`}
   whileHover={{ scale: 1.03 }}
   whileTap={{ scale: 0.98 }}
 >
+  
   <div className="flex items-center ">
     {/* Google Play Icon (SVG) */}
-  <img src="/google.png" alt="Google Play" className='w-fit md:h-[90px] h-[70px]' />
+  <img src="/google.png" alt="Download App" className='w-fit md:h-[90px] h-[70px]' />
     
     
   </div>
