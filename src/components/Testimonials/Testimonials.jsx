@@ -92,7 +92,7 @@ const Testimonials = () => {
               <div className="flex justify-center mb-4">
                 {[...Array(testimonial.rating)].map((_, index) => (
                   <svg
-                    key={index}
+                    key={`star-${testimonial.id}-${index}`}
                     className="w-6 h-6 text-yellow-400"
                     fill="currentColor"
                     viewBox="0 0 20 20"
@@ -115,7 +115,7 @@ const Testimonials = () => {
         </Carousel>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes bubble {
           0% {
             transform: translateY(0) scale(1);

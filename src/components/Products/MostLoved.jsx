@@ -150,11 +150,14 @@ export default function MostLoved() {
           viewport={{ once: true }}
           className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6"
         >
-          {displayedProducts.map((product) => (
-            <motion.div key={product.id} variants={itemVariants}>
-              <ProductCard product={product} />
-            </motion.div>
-          ))}
+          {displayedProducts.map((product, index) => {
+            const uniqueKey = product.id || product._id || `mostloved-${index}-${product.name?.replace(/\s+/g, '-') || 'unknown'}`;
+            return (
+              <motion.div key={uniqueKey} variants={itemVariants}>
+                <ProductCard product={product} />
+              </motion.div>
+            );
+          })}
         </motion.div>
         
         {/* Show "View More" button on mobile if there are more products */}
