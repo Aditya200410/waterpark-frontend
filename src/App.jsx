@@ -220,8 +220,8 @@ function AppContent() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
-        <Route path="/waterpark/:idOrSlug" element={<ProductView />} />
-
+        <Route path="/waterparks/:idOrSlug" element={<ProductView />} />
+        <Route path="/location/waterparks/:idOrSlug" element={<ProductView />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/policies" element={<Policies />} />
       

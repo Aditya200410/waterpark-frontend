@@ -28,7 +28,7 @@ export const createSlug = (name) => {
 export const createProductUrl = (id, name) => {
   if (!name) return '';
   const slug = createSlug(name);
-  return `/waterpark/${slug}`;
+  return `${slug}`;
 };
 
 
