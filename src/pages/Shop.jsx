@@ -170,10 +170,10 @@ const Shop = () => {
         filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
         break;
       case 'price-low':
-        filtered.sort((a, b) => a.price - b.price);
+        filtered.sort((a, b) => (a.adultprice || 0) - (b.adultprice || 0));
         break;
       case 'price-high':
-        filtered.sort((a, b) => b.price - a.price);
+        filtered.sort((a, b) => (b.adultprice || 0) - (a.adultprice || 0));
         break;
       case 'alphabetical':
         filtered.sort((a, b) => a.name.localeCompare(b.name));

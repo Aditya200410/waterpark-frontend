@@ -122,7 +122,7 @@ const Categories = () => {
           {categories.map((category) => (
             <motion.div variants={itemVariants} key={category.id}>
               <Link
-                to="/shop"
+                to="/waterparks"
                 state={{ selectedCategory: { main: category.name } }}
                 className="group block" // `block` is important for the link to take up space
               >
@@ -179,7 +179,7 @@ const Categories = () => {
           className="text-center mt-8 md:mt-12"
         >
           <Link
-            to="/category"
+            to="/location"
             className="inline-flex items-center px-6 py-3 text-sm font-medium md:text-base bg-[#0077B6] text-white rounded-lg shadow-md hover:bg-[#005f8a] transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0077B6]"
           >
             View All Locations

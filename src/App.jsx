@@ -197,7 +197,7 @@ function AppContent() {
      
     
         <Route path="/blog" element={<BlogPage/>} />
-        <Route path="/category" element={<Category/>} />
+        <Route path="/location" element={<Category/>} />
         <Route path="/Offers" element={<OffersPage />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactPage />} />
@@ -212,11 +212,13 @@ function AppContent() {
         <Route path="/wishlist" element={<Wishlist />} />
       
         <Route path='/gallery' element={<Gallery />} />
+   
     
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
         <Route path="/waterpark/:idOrSlug" element={<ProductView />} />
+
                <Route path="/blog/:id" element={<Blogview />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/policies" element={<Policies />} />

@@ -12,6 +12,7 @@ import Loader from '../Loader';
 import { useSellerNavigation } from '../../hooks/useSellerNavigation';
 import { Waves, Droplets, Ship, Umbrella, WavesIcon } from "lucide-react";
 import AnimatedBubbles from '../AnimatedBubbles/AnimatedBubbles';
+import { createProductUrl } from '../../utils/urlUtils';
 
 const Header = () => {
   // All your existing state and functions remain unchanged...
@@ -137,7 +138,7 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/shop?search=${searchQuery.trim()}`);
+      navigate(`/waterpark?search=${searchQuery.trim()}`);
       setIsSearchOpen(false);
       setIsDesktopSearchFocused(false);
       setSearchQuery('');
@@ -151,12 +152,13 @@ const Header = () => {
     setSearchError(null);
   };
 
-  const handleResultClick = (id) => {
+  const handleResultClick = (product) => {
     setIsSearchOpen(false);
     setIsDesktopSearchFocused(false);
     setSearchResults([]);
     setSearchQuery('');
-    navigateToProduct(id);
+    const waterparkUrl = createProductUrl(product._id, product.name);
+    navigate(waterparkUrl);
   };
 
   const isActive = (path) => location.pathname === path;
@@ -229,7 +231,7 @@ const Header = () => {
               {!searchLoading && !searchError && searchResults.length > 0 && (
                 <ul className="max-h-[60vh] overflow-y-auto">
                   {searchResults.slice(0, 8).map(product => (
-                    <li key={product._id} className="flex items-center px-6 py-4 hover:bg-cyan-50 cursor-pointer transition-all duration-200 border-b last:border-b-0 border-gray-100" onClick={() => handleResultClick(product._id)}>
+                    <li key={product._id} className="flex items-center px-6 py-4 hover:bg-cyan-50 cursor-pointer transition-all duration-200 border-b last:border-b-0 border-gray-100" onClick={() => handleResultClick(product)}>
                       <img src={config.fixImageUrl(product.image)} alt={product.name} className="w-14 h-14 object-cover rounded-xl mr-4 border border-gray-200 shadow-sm" />
                       <div className="flex-1">
                         <div className="font-semibold text-gray-900">{product.name}</div>
