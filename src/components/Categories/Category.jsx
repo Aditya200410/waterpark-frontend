@@ -120,7 +120,7 @@ const Category = () => {
           {categories.map((category) => (
             <motion.div key={category.id} variants={itemVariants}>
               <Link
-                to="/waterparks"
+                to="/location/waterparks"
                 state={{ selectedCategory: { main: category.name } }}
                 className="group block"
               >

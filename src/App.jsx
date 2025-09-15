@@ -203,6 +203,7 @@ function AppContent() {
         <Route path="/offer/:slug" element={<Blogview />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/location/waterparks" element={<Shop />} />
         <Route path="/waterparks" element={<Shop />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/login" element={<Login />} />
