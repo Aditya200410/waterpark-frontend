@@ -165,9 +165,7 @@ const Shop = () => {
 
     // Sorting
     switch (sortBy) {
-      case 'popularity':
-        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-        break;
+      
       case 'latest':
         filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
         break;
@@ -393,7 +391,7 @@ const Shop = () => {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-300"
               >
-                <option value="popularity">Popularity</option>
+                
                 <option value="latest">Latest</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
