@@ -5,6 +5,7 @@ import { getEffectivePrice } from '../../utils/priceUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Ticket } from 'lucide-react';
 import { createProductUrl } from '../../utils/urlUtils';
+import OptimizedImage from '../OptimizedImage/OptimizedImage';
 
 const ProductCard = ({ product }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -40,16 +41,20 @@ const ProductCard = ({ product }) => {
             <Link to={createProductUrl(product._id || product.id, product.name)} className="block">
                 <div className="relative w-full aspect-square overflow-hidden">
                     <AnimatePresence>
-                        <motion.img
+                        <motion.div
                             key={currentImageIndex}
                             initial={{ opacity: 0.5 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.3 }}
-                            src={mainImage}
-                            alt={product.name}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            onError={e => { e.target.src = 'https://placehold.co/400x500/e2e8f0/475569?text=Image'; }}
-                        />
+                            className="w-full h-full"
+                        >
+                            <OptimizedImage
+                                src={mainImage}
+                                alt={product.name}
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                fallbackSrc="https://placehold.co/400x500/e2e8f0/475569?text=Image"
+                            />
+                        </motion.div>
                     </AnimatePresence>
                     
                     {discountPercentage > 0 && (

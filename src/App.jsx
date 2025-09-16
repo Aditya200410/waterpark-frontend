@@ -47,6 +47,9 @@ import Tickets from './pages/Tickets';
 import Category from './components/Categories/Category';
 import WhatsAppButton from './components/Whatsappicon';
 import WaterParkCursor from './components/WaterParkCursor/WaterParkCursor';
+import PerformanceOptimizer from './components/PerformanceOptimizer/PerformanceOptimizer';
+import PerformanceMonitor from './components/PerformanceMonitor/PerformanceMonitor';
+import PaymentRetry from './components/PaymentRetry';
 
 
 // Protected Route component
@@ -161,6 +164,8 @@ function AppContent() {
   
   return (
     <div className="min-h-screen relative z-0 pt-20 bg-transparent">
+      <PerformanceOptimizer />
+      <PerformanceMonitor />
       <SEO {...seoData} />
       <Header/>
      <div>
@@ -227,6 +232,7 @@ function AppContent() {
         <Route path="/policies" element={<Policies />} />
       
         <Route path="/payment/status" element={<PaymentStatus />} />
+        <Route path="/payment/retry" element={<PaymentRetry />} />
 
       </Routes>
       <Footer />

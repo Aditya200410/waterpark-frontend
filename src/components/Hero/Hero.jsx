@@ -4,6 +4,8 @@ import config from '../../config/config';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import AnimatedBubbles from '../AnimatedBubbles/AnimatedBubbles';
+import OptimizedVideo from '../OptimizedVideo/OptimizedVideo';
+import OptimizedImage from '../OptimizedImage/OptimizedImage';
 
 const isVideo = (url) => url && url.toLowerCase().endsWith('.mp4');
 
@@ -157,21 +159,20 @@ const Hero = () => {
           className="absolute inset-0 z-0"
         >
           {isVideo(currentItem.image) ? (
-            <video
+            <OptimizedVideo
+              src={currentItem.image}
               className="absolute inset-0 w-full h-full object-cover"
               onLoadedMetadata={e => updateContainerHeight(e.target.videoWidth, e.target.videoHeight)}
               autoPlay loop muted playsInline onError={handleMediaError}
-            >
-              <source src={currentItem.image} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+            />
           ) : (
-            <img
+            <OptimizedImage
               src={currentItem.image}
               alt={currentItem.title || 'Hero image'}
               className="absolute inset-0 w-full h-full object-cover"
               onLoad={e => updateContainerHeight(e.target.naturalWidth, e.target.naturalHeight)}
               onError={handleMediaError}
+              priority={currentSlide === 0}
             />
           )}
 

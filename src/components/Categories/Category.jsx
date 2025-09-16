@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import config from '../../config/config.js';
 import { categories as staticCategories } from '../../data/categories.js';
+import OptimizedImage from '../OptimizedImage/OptimizedImage';
+import OptimizedVideo from '../OptimizedVideo/OptimizedVideo';
 import AnimatedBubbles from '../AnimatedBubbles/AnimatedBubbles';
 
 // Framer Motion variants remain unchanged
@@ -129,20 +131,17 @@ const Category = () => {
                   
                   {/* Background Image/Video */}
                   {category.isVideo ? (
-                    <video
+                    <OptimizedVideo
                       src={config.fixImageUrl(category.image)}
                       className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                       autoPlay muted loop playsInline
                     />
                   ) : (
-                    <img
+                    <OptimizedImage
                       src={config.fixImageUrl(category.image)}
                       alt={category.name}
                       className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      onError={e => {
-                        e.target.onerror = null;
-                        e.target.src = 'https://placehold.co/400x500/00b4d8/ffffff?text=' + encodeURIComponent(category.name);
-                      }}
+                      fallbackSrc={'https://placehold.co/400x500/00b4d8/ffffff?text=' + encodeURIComponent(category.name)}
                     />
                   )}
 
