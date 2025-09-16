@@ -4,8 +4,6 @@ import { Phone, Mail, MapPin, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import React from 'react';
 import AnimatedBubbles from '../AnimatedBubbles/AnimatedBubbles';
-import OptimizedVideo from '../OptimizedVideo/OptimizedVideo';
-import OptimizedImage from '../OptimizedImage/OptimizedImage';
 
 // A reusable link component with the underline animation
 const AnimatedLink = ({ to, children, className }) => (
@@ -31,7 +29,7 @@ const DownloadAppButton = ({ className = "" }) => (
   
   <div className="flex items-center ">
     {/* Google Play Icon (SVG) */}
-  <OptimizedImage src="/google.webp" alt="Download App" className='w-fit md:h-[90px] h-[70px]' priority />
+  <img src="/google.png" alt="Download App" className='w-fit md:h-[90px] h-[70px]' />
     
     
   </div>
@@ -43,16 +41,17 @@ export default function Footer() {
   return (
     <footer className="relative text-white overflow-hidden">
       <AnimatedBubbles />
-      {/* Background Video - Optimized */}
-      <OptimizedVideo
-        src="/footer.webm"
-        poster="/footer.png"
+      {/* Background Video */}
+      <video
         autoPlay
         loop
         muted
-        playsInline
+        playsInline // Important for iOS devices
         className="absolute top-0 left-0 w-full h-full object-cover z-0"
-      />
+        src="/footer.webm" // Make sure footer.mp4 is in your /public folder
+      >
+        Your browser does not support the video tag.
+      </video>
 
       {/* Overlay for better text readability */}
       <div className="absolute top-0 left-0 w-full h-full  z-0"></div>
@@ -65,18 +64,14 @@ export default function Footer() {
           {/* Column 1: Logo & About */}
           <div className="flex flex-col items-start space-y-4">
             <Link to={"/"}>
-            <motion.div
+            <motion.img
+            
+              src="/logo.png"
+              alt="Water Park Chalo"
               className="h-36 w-auto rounded-xl drop-shadow-lg bg-white/20 p-2"
               animate={{ y: [0, -8, 0] }}
               transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut" }}
-            >
-              <OptimizedImage
-                src="/logo.webp"
-                alt="Water Park Chalo"
-                className="h-full w-auto"
-                priority
-              />
-            </motion.div>
+            />
             </Link>
             <p className="text-white/80 leading-relaxed text-sm max-w-xs">
               Water Park Chalo is your go-to destination for booking tickets to the best water parks in India. Enjoy a seamless experience with trusted partners and exclusive offers.
@@ -162,18 +157,13 @@ export default function Footer() {
          
           <div className="flex flex-col items-center space-y-4 text-center">
           <Link to={"/"}>
-            <motion.div
+            <motion.img
+              src="/logo.png"
+              alt="Water Park Chalo"
               className="h-32 w-auto rounded-xl drop-shadow-lg bg-white/20 p-2"
               animate={{ y: [0, -8, 0] }}
               transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut" }}
-            >
-              <OptimizedImage
-                src="/logo.webp"
-                alt="Water Park Chalo"
-                className="h-full w-auto"
-                priority
-              />
-            </motion.div>
+            />
             </Link>
             <p className="text-white/80 text-sm max-w-sm">
               Water Park Chalo is your go-to destination for booking tickets to the best water parks in India.
