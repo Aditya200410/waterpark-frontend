@@ -196,7 +196,6 @@ const WaterparkTicket = () => {
       // A short timeout ensures the component has fully rendered with the data
       const timer = setTimeout(() => {
         // Generate and download visual ticket automatically
-        console.log("Generating and downloading visual ticket automatically");
         handleDownloadVisual();
       }, 2000); // Increased delay to 2 seconds to ensure ticket element is fully rendered
 

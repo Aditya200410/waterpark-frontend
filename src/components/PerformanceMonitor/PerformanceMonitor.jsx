@@ -11,7 +11,6 @@ const PerformanceMonitor = () => {
       const observer = new PerformanceObserver((list) => {
         const entries = list.getEntries();
         const lastEntry = entries[entries.length - 1];
-        console.log('🎯 LCP (Largest Contentful Paint):', lastEntry.startTime.toFixed(2) + 'ms');
       });
       observer.observe({ entryTypes: ['largest-contentful-paint'] });
 
@@ -19,7 +18,6 @@ const PerformanceMonitor = () => {
       const fidObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
         entries.forEach((entry) => {
-          console.log('🎯 FID (First Input Delay):', entry.processingStart - entry.startTime + 'ms');
         });
       });
       fidObserver.observe({ entryTypes: ['first-input'] });
@@ -32,7 +30,6 @@ const PerformanceMonitor = () => {
             clsValue += entry.value;
           }
         }
-        console.log('🎯 CLS (Cumulative Layout Shift):', clsValue.toFixed(4));
       });
       clsObserver.observe({ entryTypes: ['layout-shift'] });
 
@@ -48,17 +45,13 @@ const PerformanceMonitor = () => {
           resource.name.includes('.webm')
         );
 
-        console.log('📊 Media Resources Performance:');
         imageResources.forEach(resource => {
           const loadTime = resource.responseEnd - resource.startTime;
           const size = resource.transferSize || 0;
-          console.log(`  ${resource.name.split('/').pop()}: ${loadTime.toFixed(2)}ms (${(size/1024).toFixed(2)}KB)`);
         });
 
         // Overall page load time
         const navigation = performance.getEntriesByType('navigation')[0];
-        console.log('🚀 Page Load Time:', navigation.loadEventEnd - navigation.fetchStart + 'ms');
-        console.log('🚀 DOM Content Loaded:', navigation.domContentLoadedEventEnd - navigation.fetchStart + 'ms');
       });
     };
 
