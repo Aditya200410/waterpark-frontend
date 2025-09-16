@@ -158,13 +158,13 @@ const ProductView = () => {
         }
         
         if (!foundProduct) {
-          throw new Error('Product not found');
+          throw new Error('waterpark not found');
         }
         
         setProduct(foundProduct);
       } catch (error) {
-        setError(error.message || 'Failed to load product details');
-        toast.error('Failed to load product details');
+        setError(error.message || 'Failed to load waterpark details');
+        toast.error('Failed to load waterpark details');
       } finally {
         setLoading(false);
       }
@@ -188,7 +188,7 @@ const ProductView = () => {
         setUserReview(null);
       }
     } catch (error) {
-      toast.error('Failed to load reviews');
+      toast.error('Failed to load waterpark reviews');
     } finally {
       setReviewsLoading(false);
     }
@@ -323,8 +323,8 @@ const ProductView = () => {
   const handleModalClose = () => setIsImageModalOpen(false);
 
   // --- RENDER LOGIC ---
-  if (loading || loadingSettings) return <Loader fullScreen={true} withHeaderFooter={true} size="large" text="Loading product details..." />;
-  if (error) return ( <div className="flex flex-col items-center justify-center min-h-[60vh] text-center"><h2 className="text-2xl font-bold text-red-600 mb-2">{error}</h2><button onClick={() => navigate('/shop')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Back to Shop</button></div>);
+    if (loading || loadingSettings) return <Loader fullScreen={true} withHeaderFooter={true} size="large" text="Loading waterpark details..." />;
+  if (error) return ( <div className="flex flex-col items-center justify-center min-h-[60vh] text-center"><h2 className="text-2xl font-bold text-red-600 mb-2">{error}</h2><button onClick={() => navigate('/shop')} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Back to waterpark</button></div>);
   if (!product) return null;
 
   const productSEO = seoConfig.product(product);
