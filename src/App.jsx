@@ -49,7 +49,6 @@ import WhatsAppButton from './components/Whatsappicon';
 import WaterParkCursor from './components/WaterParkCursor/WaterParkCursor';
 import PerformanceOptimizer from './components/PerformanceOptimizer/PerformanceOptimizer';
 import PerformanceMonitor from './components/PerformanceMonitor/PerformanceMonitor';
-import PaymentRetry from './components/PaymentRetry';
 
 
 // Protected Route component
@@ -232,7 +231,6 @@ function AppContent() {
         <Route path="/policies" element={<Policies />} />
       
         <Route path="/payment/status" element={<PaymentStatus />} />
-        <Route path="/payment/retry" element={<PaymentRetry />} />
 
       </Routes>
       <Footer />
