@@ -250,7 +250,7 @@ const Shop = () => {
 
         {loading ? (
           <div className="w-full h-[60vh] flex items-center justify-center">
-            <Loader size="large" text="Loading products..." />
+            <Loader size="large" text="Loading waterparks..." />
           </div>
         ) : (
         <div className="flex flex-col md:flex-row justify-between items-start gap-8">
@@ -640,11 +640,11 @@ const Shop = () => {
                     d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Products Available</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No waterpark Available</h3>
                 <p className="text-gray-600 text-center mb-6">
                   {selectedCategories.main
-                    ? "No products found matching your selected filters. Try adjusting your filters or browse other categories."
-                    : "No products found in this category. Please check back later or browse other categories."}
+                    ? "No waterparks found matching your selected filters. Try adjusting your filters or browse other categories."
+                    : "No waterparks found in this category. Please check back later or browse other categories."}
                 </p>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
