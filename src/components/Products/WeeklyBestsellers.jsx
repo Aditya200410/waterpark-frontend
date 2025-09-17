@@ -181,7 +181,7 @@ export default function WeeklyBestsellers() {
             <div className="max-w-md mx-auto">
               
               <Link 
-                to="/shop" 
+                to="/waterparks" 
                 className="inline-flex items-center px-6 md:px-8 py-3 md:py-4 bg-[#0077B6] text-white rounded-xl font-semibold hover:from-[#0077B6]  transition-all duration-300 text-sm shadow-lg hover:shadow-xl"
               >
                 View More Parks
