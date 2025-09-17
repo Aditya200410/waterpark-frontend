@@ -169,7 +169,7 @@ export default function MostLoved() {
             className="text-center mt-8 md:mt-12"
           >
             <Link
-              to="/shop"
+              to="/waterparks"
               className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-[#0077B6] to-[#0077B6] hover:from-[#0077B6]  transition-all duration-300 shadow-lg hover:shadow-xl"
             >
               View More parks

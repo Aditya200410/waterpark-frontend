@@ -228,6 +228,9 @@ function AppContent() {
         <Route path="/location/waterparks/:idOrSlug" element={<ProductView />} />
         <Route path="/:idOrSlug" element={<ProductView />} />
         <Route path="/waterparks/:idOrSlug" element={<ProductView />} />
+        <Route path="waterpark/:idOrSlug" element={<ProductView />} />
+        <Route path="/shop/:idOrSlug" element={<ProductView />} />
+        <Route path="/location/waterpark/:idOrSlug" element={<ProductView />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/policies" element={<Policies />} />
       
