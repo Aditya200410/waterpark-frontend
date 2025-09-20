@@ -79,88 +79,6 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
     }
   }, [user]);
 
-  // Enhanced recovery mechanism for pending bookings
-  useEffect(() => {
-    const checkPendingBooking = () => {
-      const pendingBooking = localStorage.getItem('pendingBooking');
-      if (pendingBooking) {
-        try {
-          const bookingData = JSON.parse(pendingBooking);
-          const timeDiff = Date.now() - bookingData.timestamp;
-          
-          console.log("🔍 Found pending booking:", {
-            customBookingId: bookingData.customBookingId,
-            age: Math.round(timeDiff / 1000) + "s"
-          });
-          
-          // If less than 10 minutes old, try to confirm it
-          if (timeDiff < 10 * 60 * 1000) {
-            console.log("🔄 Attempting to confirm pending booking...");
-            toast.info("Confirming your previous booking...");
-            
-            axios.post(
-              `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/confirm-and-notify`,
-              {
-                razorpay_order_id: bookingData.razorpay_order_id,
-                razorpay_payment_id: bookingData.razorpay_payment_id,
-                razorpay_signature: bookingData.razorpay_signature,
-                bookingId: bookingData.bookingId,
-                customBookingId: bookingData.customBookingId,
-              }
-            ).then((response) => {
-              if (response.data.success) {
-                console.log("✅ Pending booking confirmed successfully");
-                localStorage.removeItem('pendingBooking');
-                toast.success("Your booking has been confirmed!");
-              } else {
-                throw new Error("Confirmation failed");
-              }
-            }).catch(err => {
-              console.error("❌ Failed to confirm pending booking:", err);
-              
-              // If it's been more than 5 minutes, show warning
-              if (timeDiff > 5 * 60 * 1000) {
-                toast.warning("Booking confirmation is taking longer than expected. Please contact support if needed.");
-              }
-              
-              // Remove very old pending bookings (30+ minutes)
-              if (timeDiff > 30 * 60 * 1000) {
-                console.log("🗑️ Removing old pending booking");
-                localStorage.removeItem('pendingBooking');
-                toast.error("Old pending booking removed. Please contact support if you made a payment.");
-              }
-            });
-          } else {
-            // Remove old pending booking
-            console.log("🗑️ Removing old pending booking");
-            localStorage.removeItem('pendingBooking');
-          }
-        } catch (error) {
-          console.error("❌ Error processing pending booking:", error);
-          localStorage.removeItem('pendingBooking');
-        }
-      }
-    };
-
-    // Check immediately
-    checkPendingBooking();
-    
-    // Also check every 30 seconds for the first 5 minutes
-    const interval = setInterval(() => {
-      const pendingBooking = localStorage.getItem('pendingBooking');
-      if (pendingBooking) {
-        checkPendingBooking();
-      } else {
-        clearInterval(interval);
-      }
-    }, 30000);
-    
-    // Clean up interval after 5 minutes
-    setTimeout(() => clearInterval(interval), 5 * 60 * 1000);
-    
-    return () => clearInterval(interval);
-  }, []);
-
   const [paymentMethod, setPaymentMethod] = useState("razorpay");
 
   const handleInputChange = (e) => {
@@ -235,8 +153,10 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
       toast.error("Please fill all the details");
       return;
     }
-  
+
     try {
+     
+
       const response = await axios.post(
         `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/create`,
         {
@@ -249,14 +169,16 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           date: formattedDate,
           adults: adultCount,
           children: childCount,
+          // MODIFIED: Send discounted total and original advance amount
           total: discountedTotalAmount,
           advanceAmount: finalTotal,
-          paymentType: paymentType,
-          paymentMethod: paymentMethod,
-          terms: terms,
+          paymentType: paymentType, // Use product's payment type, not payment method
+          paymentMethod: paymentMethod, // Add payment method separately
+          terms:terms
+      
         }
       );
-  
+
       const {
         success,
         orderId,
@@ -268,48 +190,51 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         description,
         prefill,
       } = response.data;
-  
+
       if (!success) {
+        console.error("Error:", response.data.message);
         toast.error("Failed to create booking. Please try again.");
         return;
       }
-  
+
       if (paymentMethod === "razorpay" && orderId) {
+        // Initialize Razorpay payment
         const options = {
-          key,
-          amount,
-          currency,
-          name,
-          description,
+          key: key,
+          amount: amount,
+          currency: currency,
+          name: name,
+          description: description,
           order_id: orderId,
-          prefill,
-          // 🚫 no callback_url → we control success
-          handler: async function (res) {
+          prefill: prefill,
+          handler: async function (response) {
             try {
-              toast.success("Payment successful! Confirming booking...");
-  
-              const confirmRes = await axios.post(
-                `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/confirm-and-notify`,
+              // Verify payment on backend
+              const verifyResponse = await 
+              axios.post(
+                `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
                 {
-                  razorpay_order_id: res.razorpay_order_id,
-                  razorpay_payment_id: res.razorpay_payment_id,
-                  razorpay_signature: res.razorpay_signature,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
                   bookingId: booking._id,
-                  customBookingId: booking.customBookingId,
                 }
               );
-  
-              if (confirmRes.data.success) {
-                toast.success("Booking confirmed!");
-                navigate(`/booking/${booking.customBookingId}`);
+
+              if (verifyResponse.data.success) {
+                toast.success("Payment successful!");
+                // Navigate to the new booking route with customBookingId
+                navigate(`/booking/${verifyResponse.data.booking.customBookingId}`);
               } else {
-                toast.error("Payment verified, but booking confirmation failed.");
-                navigate(`/booking/${booking.customBookingId}`);
+                toast.error(
+                  "Payment verification failed. Please contact support."
+                );
               }
-            } catch (err) {
-              console.error("❌ Confirm error:", err);
-              toast.error("Payment captured. Please check booking page.");
-              navigate(`/booking/${booking.customBookingId}`);
+            } catch (error) {
+              console.error("Payment verification error:", error);
+              toast.error(
+                "Payment verification failed. Please contact support."
+              );
             }
           },
           modal: {
@@ -318,11 +243,12 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
             },
           },
         };
-  
+
         const rzp = new window.Razorpay(options);
         rzp.open();
       } else if (paymentMethod === "cash") {
         toast.success("Booking created successfully with cash payment.");
+        // Navigate to the new booking route with customBookingId
         navigate(`/booking/${booking.customBookingId}`);
       }
     } catch (error) {
@@ -330,7 +256,6 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
       toast.error("Payment initiation failed. Please try again.");
     }
   };
-  
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-cyan-200 via-blue-200 to-blue-300 overflow-hidden">
