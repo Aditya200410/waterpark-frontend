@@ -26,7 +26,7 @@ const Ticket = () => {
     const finalTicketId = ticketId.startsWith("#") ? ticketId.slice(1) : ticketId;
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${finalTicketId}`);
+      const res = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${finalTicketId.toLowerCase()}`);
       
       if (!res.ok) {
         throw new Error("Ticket not found or invalid ID.");
