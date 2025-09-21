@@ -271,6 +271,28 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           🎢 Water Park Checkout 💦
         </h1>
 
+        {/* Payment Warning Notification */}
+        <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border-2 border-cyan-300 rounded-xl p-4 mb-6 shadow-lg">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-lg font-bold">ℹ️</span>
+              </div>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-cyan-800 mb-2">
+                Important Payment Notice
+              </h3>
+              <div className="text-cyan-700 space-y-1">
+                <p className="font-medium">🚫 <strong>Do NOT exit the website</strong> after making payment!</p>
+                <p className="text-sm">⏱️ Please wait for <strong>4 seconds</strong> for payment confirmation and ticket generation.</p>
+                <p className="text-sm">🎫 Your ticket will be displayed automatically once processing is complete.</p>
+                <p className="text-sm">📱 Keep this page open until you receive your booking confirmation.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <form className="space-y-10">
           {/* Billing Details (Unchanged) */}
           <div>
