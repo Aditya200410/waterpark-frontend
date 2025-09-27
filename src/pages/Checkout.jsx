@@ -11,6 +11,8 @@ function CheckoutPage() {
   const { user } = useAuth(); // ✅ logged-in user info
 
   const [loading, setLoading] = useState(false);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [currentBookingId, setCurrentBookingId] = useState(null);
 
   // START: Coupon Code State
   const [couponCode, setCouponCode] = useState("");
@@ -141,6 +143,100 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   const finalTotal = paid; // Advance amount remains the same
   const remainingAmount = discountedTotalAmount - finalTotal;
 
+  // Function to check booking status (for webhook-based confirmation)
+  const checkBookingStatus = async (bookingId, maxAttempts = 15) => {
+    let attempts = 0;
+    
+    const pollStatus = async () => {
+      try {
+        // Use the new status endpoint to check booking status (any status)
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/status/${bookingId}`
+        );
+        
+        if (response.data.success) {
+          const { paymentStatus } = response.data.booking;
+          console.log(`[checkBookingStatus] Booking ${bookingId} status: ${paymentStatus}`);
+          
+          if (paymentStatus === "Completed") {
+            setPaymentProcessing(false);
+            toast.success("Payment successful! Booking confirmed.");
+            navigate(`/booking/${bookingId}`);
+            return true;
+          }
+        }
+        
+        attempts++;
+        if (attempts < maxAttempts) {
+          // Poll every 2 seconds
+          setTimeout(pollStatus, 2000);
+        } else {
+          // Timeout after 30 seconds - return false to trigger fallback
+          console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts`);
+          return false;
+        }
+        
+        return false;
+      } catch (error) {
+        // If 404, booking might not exist yet - continue polling
+        if (error.response?.status === 404) {
+          console.log(`[checkBookingStatus] Booking ${bookingId} not found yet, continuing to poll...`);
+          attempts++;
+          if (attempts < maxAttempts) {
+            setTimeout(pollStatus, 2000);
+          } else {
+            console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts`);
+            return false;
+          }
+          return false;
+        }
+        
+        // For other errors, log and continue polling
+        console.error("Error checking booking status:", error);
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(pollStatus, 2000);
+        } else {
+          console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts`);
+          return false;
+        }
+        return false;
+      }
+    };
+    
+    return pollStatus();
+  };
+
+  // Manual payment verification fallback
+  const manualPaymentVerification = async (razorpayResponse, bookingId) => {
+    try {
+      console.log("[manualPaymentVerification] Starting manual verification...");
+      
+      const verifyResponse = await axios.post(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
+        {
+          razorpay_order_id: razorpayResponse.razorpay_order_id,
+          razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+          razorpay_signature: razorpayResponse.razorpay_signature,
+          bookingId: bookingId,
+        }
+      );
+
+      if (verifyResponse.data.success) {
+        setPaymentProcessing(false);
+        toast.success("Payment verified successfully!");
+        navigate(`/booking/${verifyResponse.data.booking.customBookingId}`);
+      } else {
+        setPaymentProcessing(false);
+        toast.error("Payment verification failed. Please contact support.");
+      }
+    } catch (error) {
+      console.error("Manual payment verification error:", error);
+      setPaymentProcessing(false);
+      toast.error("Payment verification failed. Please contact support.");
+    }
+  };
+
   const handlePayment = async (e) => {
     e.preventDefault();
     if (
@@ -198,6 +294,10 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
       }
 
       if (paymentMethod === "razorpay" && orderId) {
+        // Store booking ID for status checking
+        setCurrentBookingId(booking.customBookingId);
+        setPaymentProcessing(true);
+        
         // Initialize Razorpay payment
         const options = {
           key: key,
@@ -209,36 +309,27 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           prefill: prefill,
           handler: async function (response) {
             try {
-              // Verify payment on backend
-              const verifyResponse = await 
-              axios.post(
-                `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
-                {
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                  bookingId: booking._id,
-                }
-              );
-
-              if (verifyResponse.data.success) {
-                toast.success("Payment successful!");
-                // Navigate to the new booking route with customBookingId
-                navigate(`/booking/${verifyResponse.data.booking.customBookingId}`);
-              } else {
-                toast.error(
-                  "Payment verification failed. Please contact support."
-                );
+              // Payment successful - try webhook confirmation first, then fallback to manual verification
+              toast.info("Payment successful! Confirming your booking...");
+              
+              // Start checking booking status (webhook will update it)
+              const webhookConfirmed = await checkBookingStatus(booking.customBookingId);
+              
+              // If webhook didn't confirm within timeout, use manual verification as fallback
+              if (!webhookConfirmed) {
+                console.log("[Payment Handler] Webhook timeout, using manual verification as fallback");
+                await manualPaymentVerification(response, booking._id);
               }
+              
             } catch (error) {
-              console.error("Payment verification error:", error);
-              toast.error(
-                "Payment verification failed. Please contact support."
-              );
+              console.error("Payment processing error:", error);
+              setPaymentProcessing(false);
+              toast.error("Payment processing failed. Please contact support.");
             }
           },
           modal: {
             ondismiss: function () {
+              setPaymentProcessing(false);
               toast.info("Payment cancelled");
             },
           },
@@ -271,27 +362,33 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           🎢 Water Park Checkout 💦
         </h1>
 
-        {/* Payment Warning Notification */}
-        <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border-2 border-cyan-300 rounded-xl p-4 mb-6 shadow-lg">
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-lg font-bold">ℹ️</span>
+       
+
+        {/* Payment Processing Status */}
+        {paymentProcessing && (
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-300 rounded-xl p-4 mb-6 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                </div>
               </div>
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-cyan-800 mb-2">
-                Important Payment Notice
-              </h3>
-              <div className="text-cyan-700 space-y-1">
-                <p className="font-medium">🚫 <strong>Do NOT exit the website</strong> after making payment!</p>
-                <p className="text-sm">⏱️ Please wait for <strong>4 seconds</strong> for payment confirmation and ticket generation.</p>
-                <p className="text-sm">🎫 Your ticket will be displayed automatically once processing is complete.</p>
-                <p className="text-sm">📱 Keep this page open until you receive your booking confirmation.</p>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-green-800 mb-1">
+                  Processing Your Payment...
+                </h3>
+                <p className="text-green-700 text-sm">
+                  Please wait while we confirm your booking. This usually takes 2-5 seconds.
+                </p>
+                {currentBookingId && (
+                  <p className="text-green-600 text-xs mt-1 font-mono">
+                    Booking ID: {currentBookingId}
+                  </p>
+                )}
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         <form className="space-y-10">
           {/* Billing Details (Unchanged) */}
@@ -481,9 +578,21 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
 
           <button
             onClick={handlePayment}
-            className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-blue-500 hover:to-cyan-400 text-white py-3 rounded-xl shadow-lg transform transition duration-300 hover:scale-105"
+            disabled={paymentProcessing}
+            className={`w-full py-3 rounded-xl shadow-lg transform transition duration-300 ${
+              paymentProcessing
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-blue-500 hover:to-cyan-400 hover:scale-105"
+            } text-white`}
           >
-            🌊 Chill & Pay Now
+            {paymentProcessing ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                Processing Payment...
+              </div>
+            ) : (
+              "🌊 Chill & Pay Now"
+            )}
           </button>
         </form>
       </div>

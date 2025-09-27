@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:5175',
+      '/api': process.env.VITE_APP_API_BASE_URL || 'http://api.waterparkchalo.com',
     },
   },
   build: {
