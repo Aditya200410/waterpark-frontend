@@ -66,11 +66,8 @@ const Ticket = () => {
         
         {/* Header */}
         <div className="text-center mb-8 max-w-2xl mx-auto">
-          <h1 className="text-4xl font-bold text-blue-700 mb-4">🎫 Access Your Ticket</h1>
-          <p className="text-gray-600 mb-6">
-            Enter your Booking ID to view and download your water park ticket. 
-            Your ticket is always accessible, even if you close your browser!
-          </p>
+          <h1 className="text-4xl font-bold text-blue-700 mb-4">🎫 Get Your Ticket</h1>
+          
         </div>
         <AnimatedBubbles />
         
@@ -84,7 +81,7 @@ const Ticket = () => {
         >
           <div className="w-full space-y-6">
             <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-blue-900">Retrieve Your Ticket</h2>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-blue-900">Get Your Ticket</h2>
               <p className="mt-2 text-blue-800/80">
                 Enter your Booking ID to view and download your pass.
               </p>
@@ -102,7 +99,7 @@ const Ticket = () => {
               </div>
               <button type="submit" disabled={loading} className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-semibold text-white hover:scale-105 shadow-lg hover:shadow-cyan-500/40 flex justify-center items-center space-x-2 transition-all duration-300 disabled:opacity-60 disabled:scale-100 disabled:cursor-not-allowed">
                 {loading ? <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" /> : <TicketIcon className="h-5 w-5" />}
-                <span>Find My Ticket</span>
+                <span>Get My Ticket</span>
               </button>
             </form>
              {error && <p className="text-red-700 bg-red-100 border border-red-200 p-3 rounded-lg text-sm font-medium text-center">{error}</p>}
