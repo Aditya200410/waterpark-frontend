@@ -144,8 +144,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   const remainingAmount = discountedTotalAmount - finalTotal;
 
   // Function to check booking status (for webhook-based confirmation)
-  const checkBookingStatus = async (bookingId, maxAttempts = 10) => {
+  const checkBookingStatus = async (bookingId, maxAttempts = 15) => {
     let attempts = 0;
+    let isCompleted = false;
     
     const pollStatus = async () => {
       try {
@@ -159,20 +160,21 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           console.log(`[checkBookingStatus] Booking ${bookingId} status: ${paymentStatus} (attempt ${attempts + 1})`);
           
           if (paymentStatus === "Completed") {
+            isCompleted = true;
             setPaymentProcessing(false);
-            toast.success("Payment successful! Booking confirmed.");
+            toast.success("Payment successful! Booking confirmed via webhook.");
             navigate(`/booking/${bookingId}`);
             return true;
           }
         }
         
         attempts++;
-        if (attempts < maxAttempts) {
-          // Poll every 1.5 seconds for faster response (reduced from 2 seconds)
+        if (attempts < maxAttempts && !isCompleted) {
+          // Poll every 1.5 seconds for faster response
           setTimeout(pollStatus, 1500);
-        } else {
-          // Timeout after 15 seconds - return false to trigger fallback
-          console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts (15 seconds)`);
+        } else if (!isCompleted) {
+          // Timeout after 22.5 seconds - return false to trigger fallback
+          console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts (22.5 seconds)`);
           return false;
         }
         
@@ -182,9 +184,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         if (error.response?.status === 404) {
           console.log(`[checkBookingStatus] Booking ${bookingId} not found yet, continuing to poll... (attempt ${attempts + 1})`);
           attempts++;
-          if (attempts < maxAttempts) {
+          if (attempts < maxAttempts && !isCompleted) {
             setTimeout(pollStatus, 1500);
-          } else {
+          } else if (!isCompleted) {
             console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts`);
             return false;
           }
@@ -194,9 +196,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         // For other errors, log and continue polling
         console.error("Error checking booking status:", error);
         attempts++;
-        if (attempts < maxAttempts) {
+        if (attempts < maxAttempts && !isCompleted) {
           setTimeout(pollStatus, 1500);
-        } else {
+        } else if (!isCompleted) {
           console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts`);
           return false;
         }
@@ -211,6 +213,20 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   const manualPaymentVerification = async (razorpayResponse, bookingId) => {
     try {
       console.log("[manualPaymentVerification] Starting manual verification...");
+      
+      // First, check if the booking is already completed (webhook might have processed it)
+      const statusResponse = await axios.get(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/status/${bookingId}`
+      );
+      
+      if (statusResponse.data.success && statusResponse.data.booking.paymentStatus === "Completed") {
+        console.log("[manualPaymentVerification] Booking already completed via webhook, skipping manual verification");
+        setPaymentProcessing(false);
+        toast.success("Payment already confirmed via webhook!");
+        navigate(`/booking/${bookingId}`);
+        return;
+      }
+      
       toast.info("Verifying payment manually...");
       
       const verifyResponse = await axios.post(
@@ -225,7 +241,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
 
       if (verifyResponse.data.success) {
         setPaymentProcessing(false);
-        toast.success("Payment verified successfully!");
+        toast.success("Payment verified successfully via manual verification!");
         console.log("[manualPaymentVerification] Manual verification successful");
         navigate(`/booking/${verifyResponse.data.booking.customBookingId}`);
       } else {
@@ -322,7 +338,24 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
               
               // If webhook didn't confirm within timeout, use manual verification as fallback
               if (!webhookConfirmed) {
-                console.log("[Payment Handler] Webhook timeout, using manual verification as fallback");
+                console.log("[Payment Handler] Webhook timeout after 22.5 seconds, checking if webhook processed in background...");
+                
+                // Give webhook a bit more time and check one more time before manual verification
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                const finalCheck = await axios.get(
+                  `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/status/${booking.customBookingId}`
+                );
+                
+                if (finalCheck.data.success && finalCheck.data.booking.paymentStatus === "Completed") {
+                  console.log("[Payment Handler] Webhook processed in background, booking confirmed!");
+                  setPaymentProcessing(false);
+                  toast.success("Payment successful! Booking confirmed via webhook.");
+                  navigate(`/booking/${booking.customBookingId}`);
+                  return;
+                }
+                
+                console.log("[Payment Handler] Webhook still not processed, using manual verification as fallback");
                 toast.info("Webhook confirmation taking longer than expected, verifying manually...");
                 await manualPaymentVerification(response, booking._id);
               } else {
