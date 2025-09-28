@@ -144,7 +144,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   const remainingAmount = discountedTotalAmount - finalTotal;
 
   // Function to check booking status (for webhook-based confirmation)
-  const checkBookingStatus = async (bookingId, maxAttempts = 15) => {
+  const checkBookingStatus = async (bookingId, maxAttempts = 10) => {
     let attempts = 0;
     
     const pollStatus = async () => {
@@ -156,7 +156,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         
         if (response.data.success) {
           const { paymentStatus } = response.data.booking;
-          console.log(`[checkBookingStatus] Booking ${bookingId} status: ${paymentStatus}`);
+          console.log(`[checkBookingStatus] Booking ${bookingId} status: ${paymentStatus} (attempt ${attempts + 1})`);
           
           if (paymentStatus === "Completed") {
             setPaymentProcessing(false);
@@ -168,11 +168,11 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         
         attempts++;
         if (attempts < maxAttempts) {
-          // Poll every 2 seconds
-          setTimeout(pollStatus, 2000);
+          // Poll every 1.5 seconds for faster response (reduced from 2 seconds)
+          setTimeout(pollStatus, 1500);
         } else {
-          // Timeout after 30 seconds - return false to trigger fallback
-          console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts`);
+          // Timeout after 15 seconds - return false to trigger fallback
+          console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts (15 seconds)`);
           return false;
         }
         
@@ -180,10 +180,10 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
       } catch (error) {
         // If 404, booking might not exist yet - continue polling
         if (error.response?.status === 404) {
-          console.log(`[checkBookingStatus] Booking ${bookingId} not found yet, continuing to poll...`);
+          console.log(`[checkBookingStatus] Booking ${bookingId} not found yet, continuing to poll... (attempt ${attempts + 1})`);
           attempts++;
           if (attempts < maxAttempts) {
-            setTimeout(pollStatus, 2000);
+            setTimeout(pollStatus, 1500);
           } else {
             console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts`);
             return false;
@@ -195,7 +195,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         console.error("Error checking booking status:", error);
         attempts++;
         if (attempts < maxAttempts) {
-          setTimeout(pollStatus, 2000);
+          setTimeout(pollStatus, 1500);
         } else {
           console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts`);
           return false;
@@ -211,6 +211,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   const manualPaymentVerification = async (razorpayResponse, bookingId) => {
     try {
       console.log("[manualPaymentVerification] Starting manual verification...");
+      toast.info("Verifying payment manually...");
       
       const verifyResponse = await axios.post(
         `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
@@ -225,15 +226,18 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
       if (verifyResponse.data.success) {
         setPaymentProcessing(false);
         toast.success("Payment verified successfully!");
+        console.log("[manualPaymentVerification] Manual verification successful");
         navigate(`/booking/${verifyResponse.data.booking.customBookingId}`);
       } else {
         setPaymentProcessing(false);
+        console.error("[manualPaymentVerification] Verification failed:", verifyResponse.data.message);
         toast.error("Payment verification failed. Please contact support.");
       }
     } catch (error) {
       console.error("Manual payment verification error:", error);
       setPaymentProcessing(false);
-      toast.error("Payment verification failed. Please contact support.");
+      const errorMessage = error.response?.data?.message || "Payment verification failed. Please contact support.";
+      toast.error(errorMessage);
     }
   };
 
@@ -311,6 +315,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
             try {
               // Payment successful - try webhook confirmation first, then fallback to manual verification
               toast.info("Payment successful! Confirming your booking...");
+              console.log("[Payment Handler] Razorpay payment successful, starting webhook confirmation...");
               
               // Start checking booking status (webhook will update it)
               const webhookConfirmed = await checkBookingStatus(booking.customBookingId);
@@ -318,7 +323,10 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
               // If webhook didn't confirm within timeout, use manual verification as fallback
               if (!webhookConfirmed) {
                 console.log("[Payment Handler] Webhook timeout, using manual verification as fallback");
+                toast.info("Webhook confirmation taking longer than expected, verifying manually...");
                 await manualPaymentVerification(response, booking._id);
+              } else {
+                console.log("[Payment Handler] Webhook confirmation successful!");
               }
               
             } catch (error) {
@@ -378,12 +386,17 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                   Processing Your Payment...
                 </h3>
                 <p className="text-green-700 text-sm">
-                  Please wait while we confirm your booking. This usually takes 2-5 seconds.
+                  Please wait while we confirm your booking. This usually takes 1-3 seconds with our improved webhook system.
                 </p>
                 {currentBookingId && (
-                  <p className="text-green-600 text-xs mt-1 font-mono">
-                    Booking ID: {currentBookingId}
-                  </p>
+                  <div className="mt-2">
+                    <p className="text-green-600 text-xs font-mono">
+                      Booking ID: {currentBookingId}
+                    </p>
+                    <p className="text-green-600 text-xs mt-1">
+                      💡 Using webhook confirmation for faster processing
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
