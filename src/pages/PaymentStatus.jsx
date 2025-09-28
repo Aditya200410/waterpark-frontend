@@ -91,8 +91,16 @@ const PaymentStatus = () => {
   useEffect(() => {
     if (status === 'success') {
       const timer = setTimeout(() => {
-        navigate('/');
-      }, 5000);
+        // Redirect to ticket page instead of home page
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('orderId');
+        const transactionId = urlParams.get('transactionId');
+        if (orderId || transactionId) {
+          navigate(`/ticket?bookingId=${orderId || transactionId}`);
+        } else {
+          navigate('/');
+        }
+      }, 4000); // Reduced to 4 seconds as requested
       return () => clearTimeout(timer);
     }
   }, [status, navigate]);
