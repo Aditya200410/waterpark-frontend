@@ -220,7 +220,7 @@ const WaterparkTicket = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100">
         <AnimatedBubbles />
-        <div className="text-center text-red-600 max-w-md mx-auto p-6">
+        <div className="text-center text-blue-600 max-w-md mx-auto p-6">
           <h2 className="text-2xl font-bold mb-4">Ticket Not Found</h2>
           <p className="mb-4">{error || "No booking information available"}</p>
           <div className="space-y-2 text-sm text-gray-600">
