@@ -507,9 +507,7 @@ const ProductView = () => {
             {getDisplayPrice(product, 'adultprice', selectedDate, isSpecialDay) !== product.adultprice && !isSpecialDay && (
               <p className="text-xs text-blue-600 font-medium">Special Price</p>
             )}
-            {isSpecialDay && (
-              <p className="text-xs text-orange-600 font-medium">Weekend Price (Sunday)</p>
-            )}
+            
           </div>
           <div>
             <span className="font-sans text-sm font-medium text-sky-700">Child Ticket</span>
@@ -519,18 +517,14 @@ const ProductView = () => {
             {getDisplayPrice(product, 'childprice', selectedDate, isSpecialDay) !== product.childprice && !isSpecialDay && (
               <p className="text-xs text-blue-600 font-medium">Special Price</p>
             )}
-            {isSpecialDay && (
-              <p className="text-xs text-orange-600 font-medium">Weekend Price (Sunday)</p>
-            )}
+            
           </div>
           <div>
             <span className="font-sans text-sm font-medium text-sky-700">Advance Payment</span>
             <p className="font-display font-bold text-3xl text-cyan-600 mt-1">
               ₹{getDisplayPrice(product, 'advanceprice', selectedDate, isSpecialDay)?.toFixed(0) || 'N/A'}
             </p>
-            {isSpecialDay && (
-              <p className="text-xs text-orange-600 font-medium">Weekend Price (Sunday)</p>
-            )}
+           
           </div>
         </div>
       </div>
@@ -643,11 +637,7 @@ const ProductView = () => {
                       <motion.tr className="border-t border-white/30 hover:bg-white/10 transition">
                         <td className="px-4 py-3 font-medium">
                           Adult above 8 year
-                          {isSpecialDay && (
-                            <span className="ml-2 px-2 py-1 bg-orange-200 text-orange-700 text-xs font-medium rounded-full">
-                              Weekend
-                            </span>
-                          )}
+                         
                         </td>
                         <td className="px-4 py-3 text-center">{adultquantity}</td>
                         <td className="px-4 py-3 text-right">
@@ -660,11 +650,7 @@ const ProductView = () => {
                       <motion.tr className="border-t border-white/30 hover:bg-white/10 transition">
                         <td className="px-4 py-3 font-medium">
                           Child 3 to 8 year
-                          {isSpecialDay && (
-                            <span className="ml-2 px-2 py-1 bg-orange-200 text-orange-700 text-xs font-medium rounded-full">
-                              Weekend
-                            </span>
-                          )}
+                          
                         </td>
                         <td className="px-4 py-3 text-center">{childquantity}</td>
                         <td className="px-4 py-3 text-right">
