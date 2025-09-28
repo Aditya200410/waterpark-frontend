@@ -403,7 +403,38 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           🎢 Water Park Checkout 💦
         </h1>
 
-       
+        {/* Important Points */}
+        <div className="bg-gradient-to-r from-blue-50 to-blue-50 border-2 border-blue-300 rounded-xl p-4 mb-2 shadow-lg">
+          <h3 className="text-sm font-bold text-blue-800 mb-4 flex items-center gap-2">
+            ⚠️ Important Points to Remember
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-sm">•</span>
+              <p className="text-blue-700">
+                <strong>Wait for 4 seconds</strong> after payment to get your booking confirmed
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-sm">•</span>
+              <p className="text-blue-700">
+                <strong>View your ticket</strong> after payment completion - you'll be redirected automatically
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-sm">•</span>
+              <p className="text-blue-700">
+                <strong>Keep your Ticket</strong> safe - you'll need it for entry
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-sm">•</span>
+              <p className="text-blue-700">
+                <strong>Check your email/WhatsApp</strong> for booking confirmation and ticket details directly from waterpark
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* Payment Processing Status */}
         {paymentProcessing && (
