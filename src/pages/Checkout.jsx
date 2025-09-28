@@ -164,9 +164,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
             setPaymentProcessing(false);
             toast.success("🎉 Payment successful! Booking confirmed via webhook.");
             // Generate persistent ticket URL that works even if browser is closed
-            const ticketUrl = `${window.location.origin}/booking/${bookingId}`;
+            const ticketUrl = `${window.location.origin}/ticket?bookingId=${bookingId}`;
             console.log("[checkBookingStatus] Ticket URL generated:", ticketUrl);
-            navigate(`/booking/${bookingId}`);
+            navigate(`/ticket?bookingId=${bookingId}`);
             return true;
           }
         }
@@ -390,7 +390,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
       } else if (paymentMethod === "cash") {
         toast.success("Booking created successfully with cash payment.");
         // Navigate to the new booking route with customBookingId
-        navigate(`/booking/${booking.customBookingId}`);
+        navigate(`/ticket?bookingId=${booking.customBookingId}`);
       }
     } catch (error) {
       console.error("Error initiating payment:", error);
