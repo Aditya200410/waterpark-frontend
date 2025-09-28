@@ -144,7 +144,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   const remainingAmount = discountedTotalAmount - finalTotal;
 
   // Function to check booking status (for webhook-based confirmation)
-  const checkBookingStatus = async (bookingId, maxAttempts = 15) => {
+  const checkBookingStatus = async (bookingId, maxAttempts = 20) => {
     let attempts = 0;
     let isCompleted = false;
     
@@ -162,7 +162,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           if (paymentStatus === "Completed") {
             isCompleted = true;
             setPaymentProcessing(false);
-            toast.success("Payment successful! Booking confirmed via webhook.");
+            toast.success("🎉 Payment successful! Booking confirmed via webhook.");
             navigate(`/booking/${bookingId}`);
             return true;
           }
@@ -170,11 +170,11 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         
         attempts++;
         if (attempts < maxAttempts && !isCompleted) {
-          // Poll every 1.5 seconds for faster response
-          setTimeout(pollStatus, 1500);
+          // Poll every 1 second for faster response (increased frequency)
+          setTimeout(pollStatus, 1000);
         } else if (!isCompleted) {
-          // Timeout after 22.5 seconds - return false to trigger fallback
-          console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts (22.5 seconds)`);
+          // Timeout after 20 seconds - return false to trigger fallback
+          console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts (20 seconds)`);
           return false;
         }
         
@@ -185,7 +185,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           console.log(`[checkBookingStatus] Booking ${bookingId} not found yet, continuing to poll... (attempt ${attempts + 1})`);
           attempts++;
           if (attempts < maxAttempts && !isCompleted) {
-            setTimeout(pollStatus, 1500);
+            setTimeout(pollStatus, 1000);
           } else if (!isCompleted) {
             console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts`);
             return false;
@@ -197,7 +197,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         console.error("Error checking booking status:", error);
         attempts++;
         if (attempts < maxAttempts && !isCompleted) {
-          setTimeout(pollStatus, 1500);
+          setTimeout(pollStatus, 1000);
         } else if (!isCompleted) {
           console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts`);
           return false;
@@ -222,7 +222,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
       if (statusResponse.data.success && statusResponse.data.booking.paymentStatus === "Completed") {
         console.log("[manualPaymentVerification] Booking already completed via webhook, skipping manual verification");
         setPaymentProcessing(false);
-        toast.success("Payment already confirmed via webhook!");
+        toast.success("🎉 Payment already confirmed via webhook!");
         navigate(`/booking/${bookingId}`);
         return;
       }
@@ -241,13 +241,13 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
 
       if (verifyResponse.data.success) {
         setPaymentProcessing(false);
-        toast.success("Payment verified successfully via manual verification!");
+        toast.success("🎉 Payment verified successfully via manual verification!");
         console.log("[manualPaymentVerification] Manual verification successful");
         navigate(`/booking/${verifyResponse.data.booking.customBookingId}`);
       } else {
         setPaymentProcessing(false);
         console.error("[manualPaymentVerification] Verification failed:", verifyResponse.data.message);
-        toast.error("Payment verification failed. Please contact support.");
+        toast.error("❌ Payment verification failed. Please contact support.");
       }
     } catch (error) {
       console.error("Manual payment verification error:", error);
@@ -338,10 +338,10 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
               
               // If webhook didn't confirm within timeout, use manual verification as fallback
               if (!webhookConfirmed) {
-                console.log("[Payment Handler] Webhook timeout after 22.5 seconds, checking if webhook processed in background...");
+                console.log("[Payment Handler] Webhook timeout after 20 seconds, checking if webhook processed in background...");
                 
                 // Give webhook a bit more time and check one more time before manual verification
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                await new Promise(resolve => setTimeout(resolve, 3000));
                 
                 const finalCheck = await axios.get(
                   `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/status/${booking.customBookingId}`
@@ -350,13 +350,13 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                 if (finalCheck.data.success && finalCheck.data.booking.paymentStatus === "Completed") {
                   console.log("[Payment Handler] Webhook processed in background, booking confirmed!");
                   setPaymentProcessing(false);
-                  toast.success("Payment successful! Booking confirmed via webhook.");
+                  toast.success("🎉 Payment successful! Booking confirmed via webhook.");
                   navigate(`/booking/${booking.customBookingId}`);
                   return;
                 }
                 
                 console.log("[Payment Handler] Webhook still not processed, using manual verification as fallback");
-                toast.info("Webhook confirmation taking longer than expected, verifying manually...");
+                toast.info("⏳ Webhook confirmation taking longer than expected, verifying manually...");
                 await manualPaymentVerification(response, booking._id);
               } else {
                 console.log("[Payment Handler] Webhook confirmation successful!");
@@ -412,7 +412,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
             <div className="flex items-start gap-3">
               <span className="text-blue-600 font-bold text-sm">•</span>
               <p className="text-blue-700">
-                <strong>Wait for 4 seconds</strong> after payment to get your booking confirmed
+                <strong>Wait for 1-2 seconds</strong> after payment to get your booking confirmed
               </p>
             </div>
             <div className="flex items-start gap-3">
@@ -450,7 +450,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                   Processing Your Payment...
                 </h3>
                 <p className="text-green-700 text-sm">
-                  Please wait while we confirm your booking. This usually takes 1-3 seconds with our improved webhook system.
+                  Please wait while we confirm your booking. This usually takes 1-2 seconds with our optimized webhook system.
                 </p>
                 {currentBookingId && (
                   <div className="mt-2">
@@ -458,7 +458,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                       Booking ID: {currentBookingId}
                     </p>
                     <p className="text-green-600 text-xs mt-1">
-                      💡 Using webhook confirmation for faster processing
+                      ⚡ Using production webhook for instant confirmation
                     </p>
                   </div>
                 )}

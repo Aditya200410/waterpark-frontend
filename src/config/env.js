@@ -6,7 +6,7 @@
 
 const env = {
   // API Configuration
-  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://api.rikocraft.com/api/',
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://api.waterparkchalo.com',
   
   // Feature Flags
   ENABLE_ANALYTICS: import.meta.env.VITE_ENABLE_ANALYTICS === 'true',
@@ -19,17 +19,17 @@ const env = {
     CLIENT_VERSION: import.meta.env.VITE_PHONEPE_CLIENT_VERSION || '1',
     ENV: import.meta.env.VITE_PHONEPE_ENV || 'production',
     FRONTEND_URL: import.meta.env.VITE_FRONTEND_URL || 'https://pawn-shop-git-local-host-api-used-aditya200410s-projects.vercel.app',
-    BACKEND_URL: import.meta.env.VITE_BACKEND_URL || 'https://api.rikocraft.com/api/',
+    BACKEND_URL: import.meta.env.VITE_BACKEND_URL || 'https://api.waterparkchalo.com/api/',
   },
   
   // Image CDN
-  IMAGE_CDN_URL: import.meta.env.VITE_IMAGE_CDN_URL || 'https://api.rikocraft.com/api/',
+  IMAGE_CDN_URL: import.meta.env.VITE_IMAGE_CDN_URL || 'https://api.waterparkchalo.com/api/',
   
   // App Configuration
   APP: {
-    NAME: import.meta.env.VITE_APP_NAME || 'RIKO CRAFT',
+    NAME: import.meta.env.VITE_APP_NAME || 'WATER PARK CHALO',
     DESCRIPTION: import.meta.env.VITE_APP_DESCRIPTION || 'Your one-stop shop for unique handcrafted items',
-    CONTACT_EMAIL: import.meta.env.VITE_CONTACT_EMAIL || 'support@rikocraft.com',
+    CONTACT_EMAIL: import.meta.env.VITE_CONTACT_EMAIL || 'support@waterparkchalo.com',
     SUPPORT_PHONE: import.meta.env.VITE_SUPPORT_PHONE || '+91 98765 43210',
   },
   
