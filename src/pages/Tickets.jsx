@@ -65,10 +65,7 @@ const Ticket = () => {
         <AnimatedBubbles />
         
         {/* Header */}
-        <div className="text-center mb-8 max-w-2xl mx-auto">
-          <h1 className="text-4xl font-bold text-blue-700 mb-4">🎫 Get Your Ticket</h1>
-          
-        </div>
+       
         <AnimatedBubbles />
         
         {/* The main input form container */}
