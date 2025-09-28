@@ -8,7 +8,7 @@ const config = {
   ...env,
   
   // Backend API URL - Change this to switch between environments
-    API_BASE_URL:  `${import.meta.env.VITE_APP_API_BASE_URL}`,
+    API_BASE_URL:  import.meta.env.VITE_APP_API_BASE_URL ,
   
   // API endpoints
   API_ENDPOINTS: {
