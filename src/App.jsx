@@ -115,7 +115,7 @@ function AppContent() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // SEO configuration 
+  // SEO c
   const getSEOConfig = () => {
     const path = location.pathname;
     
