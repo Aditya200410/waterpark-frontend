@@ -93,7 +93,7 @@ const config = {
   // Production configuration
   get PROD_CONFIG() {
     return {
-      API_BASE_URL: 'https//localhost:5175',
+      API_BASE_URL: 'https://localhost:5175',
       ENABLE_LOGGING: false,
       ENABLE_ANALYTICS: true,
     };
