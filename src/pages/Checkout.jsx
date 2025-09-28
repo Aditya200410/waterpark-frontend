@@ -163,6 +163,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
             isCompleted = true;
             setPaymentProcessing(false);
             toast.success("🎉 Payment successful! Booking confirmed via webhook.");
+            // Generate persistent ticket URL that works even if browser is closed
+            const ticketUrl = `${window.location.origin}/booking/${bookingId}`;
+            console.log("[checkBookingStatus] Ticket URL generated:", ticketUrl);
             navigate(`/booking/${bookingId}`);
             return true;
           }
@@ -223,6 +226,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         console.log("[manualPaymentVerification] Booking already completed via webhook, skipping manual verification");
         setPaymentProcessing(false);
         toast.success("🎉 Payment already confirmed via webhook!");
+        // Generate persistent ticket URL that works even if browser is closed
+        const ticketUrl = `${window.location.origin}/booking/${bookingId}`;
+        console.log("[manualPaymentVerification] Ticket URL generated:", ticketUrl);
         navigate(`/booking/${bookingId}`);
         return;
       }
@@ -243,6 +249,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
         setPaymentProcessing(false);
         toast.success("🎉 Payment verified successfully via manual verification!");
         console.log("[manualPaymentVerification] Manual verification successful");
+        // Generate persistent ticket URL that works even if browser is closed
+        const ticketUrl = `${window.location.origin}/booking/${verifyResponse.data.booking.customBookingId}`;
+        console.log("[manualPaymentVerification] Ticket URL generated:", ticketUrl);
         navigate(`/booking/${verifyResponse.data.booking.customBookingId}`);
       } else {
         setPaymentProcessing(false);
@@ -351,6 +360,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                   console.log("[Payment Handler] Webhook processed in background, booking confirmed!");
                   setPaymentProcessing(false);
                   toast.success("🎉 Payment successful! Booking confirmed via webhook.");
+                  // Generate persistent ticket URL that works even if browser is closed
+                  const ticketUrl = `${window.location.origin}/booking/${booking.customBookingId}`;
+                  console.log("[Payment Handler] Ticket URL generated:", ticketUrl);
                   navigate(`/booking/${booking.customBookingId}`);
                   return;
                 }
@@ -419,6 +431,12 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
               <span className="text-blue-600 font-bold text-sm">•</span>
               <p className="text-blue-700">
                 <strong>View your ticket</strong> after payment completion - you'll be redirected automatically
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600 font-bold text-sm">•</span>
+              <p className="text-blue-700">
+                <strong>Access anytime</strong> - Your ticket URL works even if you close the browser
               </p>
             </div>
             <div className="flex items-start gap-3">

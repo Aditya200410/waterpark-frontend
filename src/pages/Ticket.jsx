@@ -220,8 +220,14 @@ const WaterparkTicket = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100">
         <AnimatedBubbles />
-        <div className="text-center text-red-600">
-          {error || "No booking information available"}
+        <div className="text-center text-red-600 max-w-md mx-auto p-6">
+          <h2 className="text-2xl font-bold mb-4">Ticket Not Found</h2>
+          <p className="mb-4">{error || "No booking information available"}</p>
+          <div className="space-y-2 text-sm text-gray-600">
+            <p>If you just completed payment, please wait a moment and refresh the page.</p>
+            <p>You can also access your ticket anytime using your Booking ID at:</p>
+            <p className="font-mono bg-gray-100 p-2 rounded">{window.location.origin}/tickets</p>
+          </div>
         </div>
       </div>
     );
@@ -233,6 +239,23 @@ const WaterparkTicket = () => {
     <div className="flex flex-col items-center min-h-screen py-10 pb-24 relative">
       <AnimatedBubbles />
       
+      {/* Success Message and Ticket URL */}
+      <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-8 max-w-2xl mx-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-green-800 mb-2">🎉 Booking Confirmed!</h2>
+          <p className="text-green-700 mb-4">Your water park ticket is ready. You can access it anytime using the link below:</p>
+          <div className="bg-white border border-green-300 rounded-lg p-3 mb-4">
+            <p className="text-sm text-gray-600 mb-1">Persistent Ticket URL:</p>
+            <p className="font-mono text-sm break-all text-green-800">
+              {window.location.origin}/booking/{booking.customBookingId}
+            </p>
+          </div>
+          <p className="text-sm text-gray-600">
+            💡 <strong>Tip:</strong> Bookmark this page or save the URL above to access your ticket anytime, even if you close your browser!
+          </p>
+        </div>
+      </div>
+
       {/* Status and Download buttons */}
       <div className="flex flex-col items-center gap-4 mb-8">
         <div className="flex flex-wrap gap-4">

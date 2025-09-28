@@ -61,7 +61,17 @@ const Ticket = () => {
 
   return (
     <>
-      <div className="h-fit md:max-h-screen w-full flex flex-col items-center justify-start py-10 px-4 font-sans relative  overflow-hidden ">
+      <div className="h-fit md:max-h-screen w-full flex flex-col items-center justify-start py-10 px-4 font-sans relative overflow-hidden">
+        <AnimatedBubbles />
+        
+        {/* Header */}
+        <div className="text-center mb-8 max-w-2xl mx-auto">
+          <h1 className="text-4xl font-bold text-blue-700 mb-4">🎫 Access Your Ticket</h1>
+          <p className="text-gray-600 mb-6">
+            Enter your Booking ID to view and download your water park ticket. 
+            Your ticket is always accessible, even if you close your browser!
+          </p>
+        </div>
         <AnimatedBubbles />
         
         {/* The main input form container */}
