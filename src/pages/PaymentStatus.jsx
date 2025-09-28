@@ -87,21 +87,18 @@ const PaymentStatus = () => {
     // eslint-disable-next-line
   }, [status]);
 
-  // Add redirect after payment success
+  // Redirect immediately after payment success
   useEffect(() => {
     if (status === 'success') {
-      const timer = setTimeout(() => {
-        // Redirect to ticket page instead of home page
-        const urlParams = new URLSearchParams(window.location.search);
-        const orderId = urlParams.get('orderId');
-        const transactionId = urlParams.get('transactionId');
-        if (orderId || transactionId) {
-          navigate(`/ticket?bookingId=${orderId || transactionId}`);
-        } else {
-          navigate('/');
-        }
-      }, 4000); // Reduced to 4 seconds as requested
-      return () => clearTimeout(timer);
+      // Redirect to ticket page immediately
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderId = urlParams.get('orderId');
+      const transactionId = urlParams.get('transactionId');
+      if (orderId || transactionId) {
+        navigate(`/ticket?bookingId=${orderId || transactionId}`);
+      } else {
+        navigate('/');
+      }
     }
   }, [status, navigate]);
 
