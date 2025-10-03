@@ -144,7 +144,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   const remainingAmount = discountedTotalAmount - finalTotal;
 
 // Optimized: check booking status via webhook
-const checkBookingStatus = async (bookingId, maxAttempts = 15, interval = 2000) => {
+const checkBookingStatus = async (bookingId, maxAttempts = 3, interval = 2000) => {
   let attempts = 0;
 
   return new Promise((resolve) => {
