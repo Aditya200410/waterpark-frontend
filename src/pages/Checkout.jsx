@@ -213,9 +213,9 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   };
 
   // Manual payment verification fallback
-  const handlePaymentVerification = async (razorpayResponse, customBookingId) => {
+  const manualPaymentVerification = async (razorpayResponse, customBookingId) => {
     try {
-      console.log("[Payment Verification] Starting payment verification...");
+      console.log("[manualPaymentVerification] Starting manual verification...");
       
       // First, check if the booking is already completed (webhook might have processed it)
       const statusResponse = await axios.get(
@@ -223,79 +223,56 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
       );
       
       if (statusResponse.data.success && statusResponse.data.booking.paymentStatus === "Completed") {
-        console.log("[Payment Verification] Booking already completed via webhook");
+        console.log("[manualPaymentVerification] Booking already completed via webhook, skipping manual verification");
         setPaymentProcessing(false);
-        toast.success("🎉 Payment confirmed via webhook!");
+        toast.success("🎉 Payment already confirmed via webhook!");
+        // Generate persistent ticket URL that works even if browser is closed
+        const ticketUrl = `${window.location.origin}/booking/${customBookingId}`;
+        console.log("[manualPaymentVerification] Ticket URL generated:", ticketUrl);
         navigate(`/booking/${customBookingId}`);
         return;
       }
       
-      toast.info("Verifying payment...");
+      toast.info("Verifying payment manually...");
       
-      // Use the new Razorpay verification endpoint
+      // We need to find the booking by customBookingId to get the MongoDB _id for verification
+      const bookingResponse = await axios.get(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/any/${customBookingId}`
+      );
+      
+      if (!bookingResponse.data.success) {
+        throw new Error("Booking not found for verification");
+      }
+      
       const verifyResponse = await axios.post(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/api/razorpay/verify-payment`,
+        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
         {
           razorpay_order_id: razorpayResponse.razorpay_order_id,
           razorpay_payment_id: razorpayResponse.razorpay_payment_id,
-          razorpay_signature: razorpayResponse.razorpay_signature
+          razorpay_signature: razorpayResponse.razorpay_signature,
+          bookingId: bookingResponse.data.booking._id, // Use MongoDB _id for verification
         }
       );
-      
+
       if (verifyResponse.data.success) {
-        // Payment signature is valid, now check booking status again
-        // The webhook should have processed the payment by now
-        await checkBookingStatusAfterPayment(customBookingId);
+        setPaymentProcessing(false);
+        toast.success("🎉 Payment verified successfully via manual verification!");
+        console.log("[manualPaymentVerification] Manual verification successful");
+        // Generate persistent ticket URL that works even if browser is closed
+        const ticketUrl = `${window.location.origin}/booking/${verifyResponse.data.booking.customBookingId}`;
+        console.log("[manualPaymentVerification] Ticket URL generated:", ticketUrl);
+        navigate(`/booking/${verifyResponse.data.booking.customBookingId}`);
       } else {
         setPaymentProcessing(false);
-        console.error("[Payment Verification] Signature verification failed:", verifyResponse.data.message);
+        console.error("[manualPaymentVerification] Verification failed:", verifyResponse.data.message);
         toast.error("❌ Payment verification failed. Please contact support.");
       }
     } catch (error) {
-      console.error("Payment verification error:", error);
+      console.error("Manual payment verification error:", error);
       setPaymentProcessing(false);
       const errorMessage = error.response?.data?.message || "Payment verification failed. Please contact support.";
       toast.error(errorMessage);
     }
-  };
-
-  const checkBookingStatusAfterPayment = async (customBookingId, maxRetries = 10) => {
-    let retries = 0;
-    
-    const checkStatus = async () => {
-      try {
-        const statusResponse = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/status/${customBookingId}`
-        );
-        
-        if (statusResponse.data.success && statusResponse.data.booking.paymentStatus === "Completed") {
-          setPaymentProcessing(false);
-          toast.success("🎉 Payment confirmed successfully!");
-          navigate(`/booking/${customBookingId}`);
-          return;
-        }
-        
-        retries++;
-        if (retries < maxRetries) {
-          console.log(`[Payment Verification] Checking booking status... (${retries}/${maxRetries})`);
-          setTimeout(checkStatus, 1000); // Check again after 1 second
-        } else {
-          setPaymentProcessing(false);
-          toast.error("❌ Payment confirmation is taking longer than expected. Please contact support.");
-        }
-      } catch (error) {
-        console.error("Error checking booking status:", error);
-        retries++;
-        if (retries < maxRetries) {
-          setTimeout(checkStatus, 1000);
-        } else {
-          setPaymentProcessing(false);
-          toast.error("❌ Unable to confirm payment status. Please contact support.");
-        }
-      }
-    };
-    
-    checkStatus();
   };
 
   const handlePayment = async (e) => {
@@ -374,12 +351,12 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
           redirect: false,
           handler: async function (response) {
             try {
-              // Payment successful - verify and wait for webhook processing
+              // Payment successful - go directly to manual verification for faster processing
               toast.info("Payment successful! Verifying your booking...");
-              console.log("[Payment Handler] Razorpay payment successful, starting webhook-based verification...");
+              console.log("[Payment Handler] Razorpay payment successful, starting manual verification...");
               
-              // Use new webhook-based verification
-              await handlePaymentVerification(response, booking.customBookingId);
+              // Use manual verification immediately - no webhook polling
+              await manualPaymentVerification(response, booking.customBookingId);
               
             } catch (error) {
               console.error("Payment processing error:", error);
@@ -444,7 +421,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
             <div className="flex items-start gap-3">
               <span className="text-blue-600 font-bold text-sm">•</span>
               <p className="text-blue-700">
-                <strong>Wait for 1-2 seconds</strong> after payment to get your booking confirmed via webhook
+                <strong>Wait for 1-2 seconds</strong> after payment to get your booking confirmed instantly
               </p>
             </div>
             <div className="flex items-start gap-3">
@@ -488,7 +465,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                   Processing Your Payment...
                 </h3>
                 <p className="text-green-700 text-sm">
-                  Please wait while we confirm your booking. This usually takes 1-2 seconds with our webhook verification system.
+                  Please wait while we confirm your booking. This usually takes 1-2 seconds with our direct verification system.
                 </p>
                 {currentBookingId && (
                   <div className="mt-2">
@@ -496,7 +473,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
                       Booking ID: {currentBookingId}
                     </p>
                     <p className="text-green-600 text-xs mt-1">
-                      ⚡ Using webhook verification for instant confirmation
+                      ⚡ Using direct verification for instant confirmation
                     </p>
                   </div>
                 )}
