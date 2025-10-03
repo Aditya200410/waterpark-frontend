@@ -143,260 +143,214 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   const finalTotal = paid; // Advance amount remains the same
   const remainingAmount = discountedTotalAmount - finalTotal;
 
-  // Function to check booking status (for webhook-based confirmation)
-  const checkBookingStatus = async (bookingId, maxAttempts = 15) => {
-    let attempts = 0;
-    let isCompleted = false;
-    
-    const pollStatus = async () => {
+// Optimized: check booking status via webhook
+const checkBookingStatus = async (bookingId, maxAttempts = 15, interval = 2000) => {
+  let attempts = 0;
+
+  return new Promise((resolve) => {
+    const poll = async () => {
       try {
-        // Use the new status endpoint to check booking status (any status)
         const response = await axios.get(
           `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/status/${bookingId}`
         );
-        
+
         if (response.data.success) {
           const { paymentStatus } = response.data.booking;
-          console.log(`[checkBookingStatus] Booking ${bookingId} status: ${paymentStatus} (attempt ${attempts + 1})`);
-          
+          console.log(`[Webhook Poll] Booking ${bookingId} status: ${paymentStatus} (attempt ${attempts + 1})`);
+
           if (paymentStatus === "Completed") {
-            isCompleted = true;
+            toast.success("🎉 Booking confirmed via webhook!");
             setPaymentProcessing(false);
-            toast.success("🎉 Payment successful! Booking confirmed via webhook.");
-            // Generate persistent ticket URL that works even if browser is closed
-            const ticketUrl = `${window.location.origin}/ticket?bookingId=${bookingId}`;
-            console.log("[checkBookingStatus] Ticket URL generated:", ticketUrl);
             navigate(`/ticket?bookingId=${bookingId}`);
-            return true;
+            return resolve(true); // Stop polling immediately
           }
         }
-        
+
         attempts++;
-        if (attempts < maxAttempts && !isCompleted) {
-          // Poll every 2 seconds for better server performance
-          setTimeout(pollStatus, 2000);
-        } else if (!isCompleted) {
-          // Timeout after 30 seconds - return false to trigger fallback
-          console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts (30 seconds)`);
-          return false;
+        if (attempts < maxAttempts) {
+          setTimeout(poll, interval);
+        } else {
+          console.log(`[Webhook Poll] Timeout after ${maxAttempts} attempts`);
+          resolve(false); // Not confirmed via webhook
         }
-        
-        return false;
       } catch (error) {
-        // If 404, booking might not exist yet - continue polling
-        if (error.response?.status === 404) {
-          console.log(`[checkBookingStatus] Booking ${bookingId} not found yet, continuing to poll... (attempt ${attempts + 1})`);
-          attempts++;
-          if (attempts < maxAttempts && !isCompleted) {
-            setTimeout(pollStatus, 2000);
-          } else if (!isCompleted) {
-            console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts`);
-            return false;
-          }
-          return false;
-        }
-        
-        // For other errors, log and continue polling
-        console.error("Error checking booking status:", error);
+        console.error(`[Webhook Poll] Error on attempt ${attempts + 1}:`, error);
         attempts++;
-        if (attempts < maxAttempts && !isCompleted) {
-          setTimeout(pollStatus, 2000);
-        } else if (!isCompleted) {
-          console.log(`[checkBookingStatus] Webhook timeout after ${maxAttempts} attempts`);
-          return false;
+        if (attempts < maxAttempts) {
+          setTimeout(poll, interval);
+        } else {
+          console.log(`[Webhook Poll] Timeout after ${maxAttempts} attempts`);
+          resolve(false); // Not confirmed via webhook
         }
-        return false;
       }
     };
-    
-    return pollStatus();
-  };
 
-  // Manual payment verification fallback
-  const manualPaymentVerification = async (razorpayResponse, customBookingId) => {
-    try {
-      console.log("[manualPaymentVerification] Starting manual verification...");
-      
-      // First, check if the booking is already completed (webhook might have processed it)
-      const statusResponse = await axios.get(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/status/${customBookingId}`
-      );
-      
-      if (statusResponse.data.success && statusResponse.data.booking.paymentStatus === "Completed") {
-        console.log("[manualPaymentVerification] Booking already completed via webhook, skipping manual verification");
-        setPaymentProcessing(false);
-        toast.success("🎉 Payment already confirmed via webhook!");
-        // Generate persistent ticket URL that works even if browser is closed
-        const ticketUrl = `${window.location.origin}/booking/${customBookingId}`;
-        console.log("[manualPaymentVerification] Ticket URL generated:", ticketUrl);
-        navigate(`/booking/${customBookingId}`);
-        return;
-      }
-      
-      toast.info("Verifying payment manually...");
-      
-      // We need to find the booking by customBookingId to get the MongoDB _id for verification
-      const bookingResponse = await axios.get(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/any/${customBookingId}`
-      );
-      
-      if (!bookingResponse.data.success) {
-        throw new Error("Booking not found for verification");
-      }
-      
-      const verifyResponse = await axios.post(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
-        {
-          razorpay_order_id: razorpayResponse.razorpay_order_id,
-          razorpay_payment_id: razorpayResponse.razorpay_payment_id,
-          razorpay_signature: razorpayResponse.razorpay_signature,
-          bookingId: bookingResponse.data.booking._id, // Use MongoDB _id for verification
-        }
-      );
+    poll();
+  });
+};
 
-      if (verifyResponse.data.success) {
-        setPaymentProcessing(false);
-        toast.success("🎉 Payment verified successfully via manual verification!");
-        console.log("[manualPaymentVerification] Manual verification successful");
-        // Generate persistent ticket URL that works even if browser is closed
-        const ticketUrl = `${window.location.origin}/booking/${verifyResponse.data.booking.customBookingId}`;
-        console.log("[manualPaymentVerification] Ticket URL generated:", ticketUrl);
-        navigate(`/booking/${verifyResponse.data.booking.customBookingId}`);
-      } else {
-        setPaymentProcessing(false);
-        console.error("[manualPaymentVerification] Verification failed:", verifyResponse.data.message);
-        toast.error("❌ Payment verification failed. Please contact support.");
-      }
-    } catch (error) {
-      console.error("Manual payment verification error:", error);
+
+// Manual verification (fallback)
+const manualPaymentVerification = async (razorpayResponse, customBookingId) => {
+  try {
+    console.log("[Manual Verify] Starting...");
+
+    // Double-check webhook again before manual verify
+    const statusResponse = await axios.get(
+      `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/status/${customBookingId}`
+    );
+
+    if (statusResponse.data.success && statusResponse.data.booking.paymentStatus === "Completed") {
+      console.log("[Manual Verify] Already completed via webhook, skipping");
       setPaymentProcessing(false);
-      const errorMessage = error.response?.data?.message || "Payment verification failed. Please contact support.";
-      toast.error(errorMessage);
-    }
-  };
-
-  const handlePayment = async (e) => {
-    e.preventDefault();
-    if (
-      billingDetails.email === "" ||
-      billingDetails.firstName === "" ||
-      billingDetails.lastName === "" ||
-      billingDetails.phone === "" ||
-      billingDetails.city === ""
-    ) {
-      toast.error("Please fill all the details");
+      toast.success("🎉 Payment already confirmed!");
+      navigate(`/ticket?bookingId=${customBookingId}`);
       return;
     }
 
-    try {
-     
+    toast.info("Verifying payment manually...");
 
-      const response = await axios.post(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/create`,
-        {
-          waterpark: resortId,
-          waternumber: waternumber,
-          waterparkName: resortName,
-          name: `${billingDetails.firstName} ${billingDetails.lastName}`,
-          email: billingDetails.email,
-          phone: billingDetails.phone,
-          date: formattedDate,
-          adults: adultCount,
-          children: childCount,
-          // MODIFIED: Send discounted total and original advance amount
-          total: discountedTotalAmount,
-          advanceAmount: finalTotal,
-          paymentType: paymentType, // Use product's payment type, not payment method
-          paymentMethod: paymentMethod, // Add payment method separately
-          terms:terms
-      
-        }
-      );
+    const bookingResponse = await axios.get(
+      `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/any/${customBookingId}`
+    );
 
-      const {
-        success,
-        orderId,
-        booking,
-        key,
-        amount,
-        currency,
-        name,
-        description,
-        prefill,
-      } = response.data;
+    if (!bookingResponse.data.success) throw new Error("Booking not found for manual verify");
 
-      if (!success) {
-        console.error("Error:", response.data.message);
-        toast.error("Failed to create booking. Please try again.");
-        return;
+    const verifyResponse = await axios.post(
+      `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
+      {
+        razorpay_order_id: razorpayResponse.razorpay_order_id,
+        razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+        razorpay_signature: razorpayResponse.razorpay_signature,
+        bookingId: bookingResponse.data.booking._id,
       }
+    );
 
-      if (paymentMethod === "razorpay" && orderId) {
-        // Store booking ID for status checking
-        setCurrentBookingId(booking.customBookingId);
-        setPaymentProcessing(true);
-        
-        // Initialize Razorpay payment
-        const options = {
-          key: key,
-          amount: amount,
-          currency: currency,
-          name: name,
-          description: description,
-          order_id: orderId,
-          prefill: prefill,
-          // ✅ NO callback_url - this prevents Razorpay redirect
-          // ✅ Only using handler for payment processing
-          // ✅ Explicitly disable redirects
-          redirect: false,
-          handler: async function (response) {
-            try {
-              // Payment successful - go directly to manual verification for faster processing
-              toast.info("Payment successful! Verifying your booking...");
-              console.log("[Payment Handler] Razorpay payment successful, starting manual verification...");
-              
-              // Use manual verification immediately - no webhook polling
-              await manualPaymentVerification(response, booking.customBookingId);
-              
-            } catch (error) {
-              console.error("Payment processing error:", error);
-              setPaymentProcessing(false);
-              toast.error("Payment processing failed. Please contact support.");
-            }
-          },
-          modal: {
-            ondismiss: function () {
-              setPaymentProcessing(false);
-              toast.info("Payment cancelled");
-            },
-          },
-        };
-        
-        // 🔍 Debug: Log the options to check for callback_url
-        console.log("[Razorpay Debug] Options being passed to Razorpay:", options);
-        console.log("[Razorpay Debug] Checking for callback_url:", options.callback_url);
-        console.log("[Razorpay Debug] Has handler:", !!options.handler);
-        console.log("[Razorpay Debug] If you see callback_url above, that's causing the redirect!");
-        
-        // Additional debugging for potential redirect causes
-        console.log("[Razorpay Debug] Order ID:", orderId);
-        console.log("[Razorpay Debug] Amount:", amount);
-        console.log("[Razorpay Debug] Currency:", currency);
-        console.log("[Razorpay Debug] Redirect setting:", options.redirect);
-        console.log("[Razorpay Debug] If redirects still happen, check Razorpay Dashboard settings!");
-
-        const rzp = new window.Razorpay(options);
-        rzp.open();
-      } else if (paymentMethod === "cash") {
-        toast.success("Booking created successfully with cash payment.");
-        // Navigate to the new booking route with customBookingId
-        navigate(`/ticket?bookingId=${booking.customBookingId}`);
-      }
-    } catch (error) {
-      console.error("Error initiating payment:", error);
-      toast.error("Payment initiation failed. Please try again.");
+    if (verifyResponse.data.success) {
+      setPaymentProcessing(false);
+      toast.success("🎉 Payment verified manually!");
+      navigate(`/ticket?bookingId=${verifyResponse.data.booking.customBookingId}`);
+    } else {
+      setPaymentProcessing(false);
+      toast.error("❌ Manual verification failed, please contact support.");
     }
-  };
+  } catch (error) {
+    console.error("[Manual Verify] Error:", error);
+    setPaymentProcessing(false);
+    toast.error("Payment verification failed. Please contact support.");
+  }
+};
+
+const handlePayment = async (e) => {
+  e.preventDefault();
+
+  // ✅ Validate billing details
+  if (
+    !billingDetails.email ||
+    !billingDetails.firstName ||
+    !billingDetails.lastName ||
+    !billingDetails.phone ||
+    !billingDetails.city
+  ) {
+    toast.error("Please fill all the details");
+    return;
+  }
+
+  try {
+    console.log("[handlePayment] Creating booking...");
+
+    // ✅ Create booking
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/create`,
+      {
+        waterpark: resortId,
+        waternumber: waternumber,
+        waterparkName: resortName,
+        name: `${billingDetails.firstName} ${billingDetails.lastName}`,
+        email: billingDetails.email,
+        phone: billingDetails.phone,
+        date: formattedDate,
+        adults: adultCount,
+        children: childCount,
+        total: discountedTotalAmount,
+        advanceAmount: finalTotal,
+        paymentType: paymentType,
+        paymentMethod: paymentMethod,
+        terms: terms,
+      }
+    );
+
+    const { success, orderId, booking, key, amount, currency, name, description, prefill } = response.data;
+
+    if (!success) {
+      console.error("[handlePayment] Booking creation failed:", response.data.message);
+      toast.error("Failed to create booking. Please try again.");
+      return;
+    }
+
+    console.log("[handlePayment] Booking created:", booking);
+
+    // ✅ Cash Payment
+    if (paymentMethod === "cash") {
+      toast.success("Booking created successfully with cash payment.");
+      console.log("[handlePayment] Redirecting to ticket page for cash booking...");
+      navigate(`/ticket?bookingId=${booking.customBookingId}`);
+      return;
+    }
+
+    // ✅ Razorpay Payment
+    if (paymentMethod === "razorpay" && orderId) {
+      setCurrentBookingId(booking.customBookingId);
+      setPaymentProcessing(true);
+
+      const options = {
+        key: key,
+        amount: amount,
+        currency: currency,
+        name: name,
+        description: description,
+        order_id: orderId,
+        prefill: prefill,
+        redirect: false, // disable redirect
+        handler: async (razorpayResponse) => {
+          console.log("[Razorpay Handler] Payment successful, response:", razorpayResponse);
+
+          try {
+            toast.info("Payment successful! Verifying your booking...");
+            
+            // ✅ First try webhook check
+            const webhookSuccess = await checkBookingStatus(booking.customBookingId);
+            if (webhookSuccess) return;
+
+            // ✅ If webhook fails, fallback to manual verification
+            console.log("[Razorpay Handler] Webhook verification failed or timed out. Starting manual verification...");
+            await manualPaymentVerification(razorpayResponse, booking.customBookingId);
+          } catch (error) {
+            console.error("[Razorpay Handler] Payment verification error:", error);
+            setPaymentProcessing(false);
+            toast.error("Payment verification failed. Please contact support.");
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setPaymentProcessing(false);
+            toast.info("Payment cancelled by user");
+            console.log("[Razorpay] Payment modal dismissed");
+          },
+        },
+      };
+
+      console.log("[handlePayment] Opening Razorpay with options:", options);
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    }
+  } catch (error) {
+    console.error("[handlePayment] Error initiating payment:", error);
+    toast.error("Payment initiation failed. Please try again.");
+    setPaymentProcessing(false);
+  }
+};
+
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-cyan-200 via-blue-200 to-blue-300 overflow-hidden">
