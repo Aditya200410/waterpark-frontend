@@ -1,19 +1,12 @@
 export const categories = [
     {
-      name: "Mumbai Water Parks",
+      name: "Mumbai Waterpark",
    
     },
     {
-      name: "Pune Water Parks",
+      name: "Navi Mumbai Waterpark",
       
     
     },
-    {
-      name: "Delhi Water Parks",
-     
-    },
-    {
-      name: "Bangalore Water Parks",
    
-    }
   ]; 

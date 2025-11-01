@@ -55,6 +55,7 @@ const PaymentStatus = () => {
 
   const orderId = searchParams.get('orderId');
   const transactionId = searchParams.get('transactionId');
+  const bookingId = searchParams.get('bookingId'); // For bookings
 
   // Use cart from localStorage if contextCartItems is empty
   const cartItems = (contextCartItems && contextCartItems.length > 0) ? contextCartItems : savedCartItems;
@@ -68,14 +69,14 @@ const PaymentStatus = () => {
   };
 
   useEffect(() => {
-    if (!orderId && !transactionId) {
-      setError('No order ID or transaction ID provided');
+    if (!orderId && !transactionId && !bookingId) {
+      setError('No order ID, transaction ID, or booking ID provided');
       setLoading(false);
       return;
     }
     checkPaymentStatus();
     // eslint-disable-next-line
-  }, [orderId, transactionId, retryCount]);
+  }, [orderId, transactionId, bookingId, retryCount]);
 
   // Place order after payment is successful (for testing, also on failed/pending)
   useEffect(() => {
@@ -92,10 +93,15 @@ const PaymentStatus = () => {
     if (status === 'success') {
       // Redirect to ticket page immediately
       const urlParams = new URLSearchParams(window.location.search);
-      const orderId = urlParams.get('orderId');
-      const transactionId = urlParams.get('transactionId');
-      if (orderId || transactionId) {
-        navigate(`/ticket?bookingId=${orderId || transactionId}`);
+      const bookingIdParam = urlParams.get('bookingId');
+      const orderIdParam = urlParams.get('orderId');
+      const transactionIdParam = urlParams.get('transactionId');
+      
+      // Priority: bookingId > orderId > transactionId
+      const finalBookingId = bookingIdParam || orderIdParam || transactionIdParam;
+      
+      if (finalBookingId) {
+        navigate(`/ticket?bookingId=${finalBookingId}`);
       } else {
         navigate('/');
       }
@@ -106,12 +112,53 @@ const PaymentStatus = () => {
     try {
       setLoading(true);
       setError(null);
-      const idToCheck = orderId || transactionId;
+      
+      // Use bookingId first, then orderId, then transactionId
+      const idToCheck = bookingId || orderId || transactionId;
+      
+      // Try to check status via orders API (works for both bookings and orders)
+      try {
+        const response = await fetch(
+          `${config.API_BASE_URL}/api/orders/status/${idToCheck}`
+        );
+        const data = await response.json();
+        
+        if (data.success) {
+          const paymentStatus = data.booking?.paymentStatus || data.order?.paymentStatus;
+          
+          if (paymentStatus === 'completed') {
+            setStatus('success');
+          } else if (paymentStatus === 'failed') {
+            setStatus('failed');
+          } else {
+            setStatus('pending');
+          }
+          
+          setOrderDetails({
+            orderId: data.booking?.customBookingId || data.order?._id,
+            merchantOrderId: data.booking?.customBookingId || data.order?.merchantOrderId,
+            amount: (data.booking?.totalAmount || data.order?.totalAmount) * 100, // Convert to paise
+            state: paymentStatus === 'completed' ? 'COMPLETED' : paymentStatus === 'failed' ? 'FAILED' : 'PENDING'
+          });
+          return;
+        }
+      } catch (orderApiError) {
+        console.warn('[PaymentStatus] Orders API failed, trying PhonePe API:', orderApiError);
+      }
+      
+      // Fallback to PhonePe API if orders API fails
       const response = await paymentService.getPhonePeStatus(idToCheck);
-      setStatus(response.status);
+      if (response.status === 'success') {
+        setStatus('success');
+      } else if (response.status === 'failed') {
+        setStatus('failed');
+      } else {
+        setStatus('pending');
+      }
       setOrderDetails(response.data?.data || response.data);
-      // No redirect here; wait for order placement
+      
     } catch (err) {
+      console.error('[PaymentStatus] Error:', err);
       setError(err.message || 'Failed to check payment status');
       setStatus('error');
     } finally {
@@ -246,19 +293,19 @@ const PaymentStatus = () => {
   };
 
   const handleGoHome = () => {
-    navigate('/');
+    navigate('/booking/' + bookingId);
   };
 
   const handleGoToOrders = () => {
-    navigate('/account?tab=orders');
+    navigate('/');
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-500 via-white to-pink-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 flex items-center justify-center">
         <div className="text-center">
           <Loader />
-          <p className="mt-4 text-pink-700">Checking payment status...</p>
+          <p className="mt-4 text-cyan-700 font-semibold">Checking payment status...</p>
         </div>
       </div>
     );
@@ -266,7 +313,7 @@ const PaymentStatus = () => {
 
   if (error && !status) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-500 via-white to-pink-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -281,7 +328,7 @@ const PaymentStatus = () => {
             <div className="space-y-3">
               <button
                 onClick={handleRetry}
-                className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
+                className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all transform hover:scale-105"
               >
                 <RefreshCw size={20} className="inline mr-2" />
                 Try Again
@@ -316,70 +363,27 @@ const PaymentStatus = () => {
           <CheckCircle size={40} className="text-green-500" />
         </motion.div>
         <h1 className="text-3xl font-bold text-green-600 mb-2">Payment Successful!</h1>
-        <p className="text-gray-600 mb-4">Your order has been confirmed and payment received.</p>
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
-          <p className="text-green-700 text-sm">
-            <Shield size={16} className="inline mr-2" />
-            Your payment is secure and your order is being processed
-          </p>
-        </div>
+        <p className="text-gray-600 mb-4">Your booking has been confirmed and payment received.</p>
+        
       </div>
 
-      {orderDetails && (
-        <div className="space-y-4 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">Order Details</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Order ID:</span>
-                  <span className="font-medium">{orderDetails.merchantOrderId || orderDetails.orderId}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Amount:</span>
-                  <span className="font-medium">₹{(orderDetails.amount / 100).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Status:</span>
-                  <span className="text-green-600 font-medium">Completed</span>
-                </div>
-              </div>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">What's Next?</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center">
-                  <Truck size={16} className="text-pink-500 mr-2" />
-                  <span>Order will be shipped within 5-7 days</span>
-                </div>
-               
-                <div className="flex items-center">
-                  <Shield size={16} className="text-pink-500 mr-2" />
-                  <span>Secure payment processed successfully</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+     
 
       <div className="text-center">
-        <p className="text-gray-500 text-sm mb-4">
-          Redirecting to home page in 5 seconds...
-        </p>
+      
         <div className="space-y-3">
           <button
             onClick={handleGoHome}
-            className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
+            className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all transform hover:scale-105"
           >
             <Home size={20} className="inline mr-2" />
-            Go Home Now
+            View Ticket
           </button>
           <button
             onClick={handleGoToOrders}
             className="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
           >
-            View My Orders
+           Home
           </button>
         </div>
       </div>
@@ -403,8 +407,8 @@ const PaymentStatus = () => {
         </motion.div>
         <h1 className="text-3xl font-bold text-red-600 mb-2">Payment Failed</h1>
         <p className="text-gray-600 mb-4">Your payment could not be processed. Please try again.</p>
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
-          <p className="text-red-700 text-sm">
+        <div className="bg-blue-100 border border-red-200 rounded-xl p-4 mb-6">
+          <p className="text-blue -700 text-sm">
             <AlertCircle size={16} className="inline mr-2" />
             No amount has been deducted from your account
           </p>
@@ -415,12 +419,9 @@ const PaymentStatus = () => {
         <div className="space-y-4 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">Order Details</h3>
+              <h3 className="font-semibold text-gray-700 mb-2">Booking Details</h3>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Order ID:</span>
-                  <span className="font-medium">{orderDetails.merchantOrderId || orderDetails.orderId}</span>
-                </div>
+               
                 <div className="flex justify-between">
                   <span className="text-gray-600">Amount:</span>
                   <span className="font-medium">₹{(orderDetails.amount / 100).toFixed(2)}</span>
@@ -437,19 +438,19 @@ const PaymentStatus = () => {
                 )}
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">What You Can Do</h3>
+            <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-4 border border-cyan-200">
+              <h3 className="font-semibold text-cyan-800 mb-2">What You Can Do</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center">
-                  <RefreshCw size={16} className="text-pink-500 mr-2" />
+                  <RefreshCw size={16} className="text-cyan-600 mr-2" />
                   <span>Try the payment again</span>
                 </div>
                 <div className="flex items-center">
-                  <CreditCard size={16} className="text-pink-500 mr-2" />
+                  <CreditCard size={16} className="text-cyan-600 mr-2" />
                   <span>Use a different payment method</span>
                 </div>
                 <div className="flex items-center">
-                  <Shield size={16} className="text-pink-500 mr-2" />
+                  <Shield size={16} className="text-cyan-600 mr-2" />
                   <span>Contact support if issue persists</span>
                 </div>
               </div>
@@ -461,7 +462,7 @@ const PaymentStatus = () => {
       <div className="text-center space-y-3">
         <button
           onClick={() => navigate('/checkout')}
-          className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
+          className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all transform hover:scale-105"
         >
           <RefreshCw size={20} className="inline mr-2" />
           Try Payment Again
@@ -505,12 +506,9 @@ const PaymentStatus = () => {
         <div className="space-y-4 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">Order Details</h3>
+              <h3 className="font-semibold text-gray-700 mb-2">Booking Details</h3>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Order ID:</span>
-                  <span className="font-medium">{orderDetails.merchantOrderId || orderDetails.orderId}</span>
-                </div>
+
                 <div className="flex justify-between">
                   <span className="text-gray-600">Amount:</span>
                   <span className="font-medium">₹{(orderDetails.amount / 100).toFixed(2)}</span>
@@ -521,19 +519,19 @@ const PaymentStatus = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">What's Happening</h3>
+            <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-4 border border-cyan-200">
+              <h3 className="font-semibold text-cyan-800 mb-2">What's Happening</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center">
-                  <RefreshCw size={16} className="text-pink-500 mr-2" />
+                  <RefreshCw size={16} className="text-cyan-600 mr-2" />
                   <span>Payment is being verified</span>
                 </div>
                 <div className="flex items-center">
-                  <Shield size={16} className="text-pink-500 mr-2" />
+                  <Shield size={16} className="text-cyan-600 mr-2" />
                   <span>Your money is safe</span>
                 </div>
                 <div className="flex items-center">
-                  <Clock size={16} className="text-pink-500 mr-2" />
+                  <Clock size={16} className="text-cyan-600 mr-2" />
                   <span>Please wait for confirmation</span>
                 </div>
               </div>
@@ -546,7 +544,7 @@ const PaymentStatus = () => {
         <button
           onClick={handleRetry}
           disabled={retryCount >= 3}
-          className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
           <RefreshCw size={20} className="inline mr-2" />
           Check Status Again ({3 - retryCount} attempts left)
@@ -583,7 +581,7 @@ const PaymentStatus = () => {
       <div className="text-center space-y-3">
         <button
           onClick={handleRetry}
-          className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
+          className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all transform hover:scale-105"
         >
           <RefreshCw size={20} className="inline mr-2" />
           Try Again
@@ -600,11 +598,11 @@ const PaymentStatus = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-500 via-white to-pink-100 flex items-center justify-center p-4 relative">
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 flex items-center justify-center p-4 relative">
       <AnimatedBubbles />
       <AnimatePresence mode="wait">
         {status === 'success' && renderSuccessStatus()}
-        {status === 'failed' && renderFailedStatus()}
+        {status === 'failed' && renderSuccessStatus()}
         {status === 'pending' && renderPendingStatus()}
         {status === 'unknown' && renderUnknownStatus()}
       </AnimatePresence>

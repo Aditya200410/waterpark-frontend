@@ -32,8 +32,7 @@ const itemVariants = {
 const categoryImages = {
   "water park mumbai": "/images/categories/wooden-craft.jpg",
   "water park pune": "/images/categories/terracotta.jpg",
-  "water park banglore": "/images/categories/dokra-art.jpg",
-  "water park delhi": "/images/categories/jewellery.jpg"
+  
 };
 
 const Categories = () => {

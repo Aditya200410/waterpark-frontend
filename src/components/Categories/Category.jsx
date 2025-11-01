@@ -34,8 +34,7 @@ const itemVariants = {
 const categoryImages = {
   "water park mumbai": "/images/waterparks/mumbai-park.jpg",
   "water park pune": "/images/waterparks/pune-park.jpg",
-  "water park banglore": "/images/waterparks/banglore-park.jpg",
-  "water park delhi": "/images/waterparks/delhi-park.jpg",
+ 
 };
 
 const Category = () => {
