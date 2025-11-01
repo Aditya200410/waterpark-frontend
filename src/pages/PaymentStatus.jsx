@@ -150,42 +150,70 @@ const PaymentStatus = () => {
   const verifyPaymentStatusInBackground = useCallback(async (currentStatus = 'failed') => {
     try {
       if (bookingId) {
-        // Don't check paymentStatus === 'Completed' from database
-        // Instead, verify payment status with PhonePe API via verifyPayment endpoint
-        // This will check PhonePe and update status to Completed if payment succeeded
-        console.log(`[PaymentStatus] status=${currentStatus} in URL - verifying actual payment status with PhonePe`);
+        // Don't check paymentStatus === 'Completed' from database - PhonePe gives 'success' not 'Completed'
+        // Instead, check PhonePe API directly to get actual payment state (COMPLETED/FAILED/PENDING)
+        console.log(`[PaymentStatus] status=${currentStatus} in URL - checking PhonePe API directly`);
         
-        const response = await fetch(
-          `${config.API_BASE_URL}/api/bookings/verify`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              customBookingId: bookingId
-            })
-          }
+        // First, get the booking to find PhonePe orderId
+        const bookingResponse = await fetch(
+          `${config.API_BASE_URL}/api/bookings/any/${bookingId}`
         );
+        const bookingData = await bookingResponse.json();
         
-        const data = await response.json();
+        if (!bookingData.success || !bookingData.booking) {
+          console.warn('[PaymentStatus] Booking not found');
+          return;
+        }
         
-        if (data.success) {
-          // Payment verified successfully - PhonePe confirmed payment is COMPLETED
-          // verifyPayment endpoint already updated status to Completed
-          console.log('[PaymentStatus] Payment actually succeeded - status updated to Completed');
+        const phonepeOrderId = bookingData.booking.phonepeOrderId;
+        if (!phonepeOrderId) {
+          console.warn('[PaymentStatus] PhonePe orderId not found');
+          return;
+        }
+        
+        // Check PhonePe status directly using paymentService
+        console.log('[PaymentStatus] Checking PhonePe status for orderId:', phonepeOrderId);
+        const phonepeResponse = await paymentService.getPhonePeStatus(phonepeOrderId);
+        
+        console.log('[PaymentStatus] PhonePe API response:', phonepeResponse);
+        
+        // PhonePe API returns: { status: 'success'|'failed'|'pending', data: { state: 'COMPLETED'|'FAILED'|'PENDING' } }
+        if (phonepeResponse.status === 'success') {
+          // PhonePe confirmed payment is COMPLETED
+          console.log('[PaymentStatus] Payment actually succeeded (PhonePe state: COMPLETED)');
           setStatus('success');
-          navigate(`/ticket?bookingId=${bookingId}`);
-        } else {
-          // Payment verification failed - check if it's actually failed or still pending
-          console.log('[PaymentStatus] Payment verification result:', data.message);
           
-          // If verification explicitly says failed, update to failed
-          if (data.state === 'FAILED' || data.message?.toLowerCase().includes('failed')) {
-            console.log('[PaymentStatus] Payment verification confirmed failure');
-            setStatus('failed');
+          // Update booking status to Completed via verifyPayment endpoint
+          try {
+            await fetch(
+              `${config.API_BASE_URL}/api/bookings/verify`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  customBookingId: bookingId
+                })
+              }
+            );
+          } catch (verifyErr) {
+            console.warn('[PaymentStatus] Failed to update booking status:', verifyErr);
           }
-          // Otherwise keep the current status (pending/failed)
+          
+          navigate(`/ticket?bookingId=${bookingId}`);
+        } else if (phonepeResponse.status === 'failed') {
+          // PhonePe confirmed payment is FAILED
+          console.log('[PaymentStatus] Payment actually failed (PhonePe state: FAILED)');
+          setStatus('failed');
+        } else if (phonepeResponse.status === 'pending') {
+          // PhonePe confirmed payment is still PENDING
+          console.log('[PaymentStatus] Payment still pending (PhonePe state: PENDING)');
+          setStatus('pending');
+        } else {
+          // Unknown status from PhonePe
+          console.log('[PaymentStatus] Unknown PhonePe status:', phonepeResponse.status);
+          // Keep current status
         }
       }
     } catch (err) {
