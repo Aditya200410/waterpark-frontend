@@ -54,6 +54,8 @@ const PaymentStatus = () => {
 
   const orderId = searchParams.get('orderId');
   const transactionId = searchParams.get('transactionId');
+  const bookingId = searchParams.get('bookingId');
+  const statusParam = searchParams.get('status');
 
   // Use cart from localStorage if contextCartItems is empty
   const cartItems = (contextCartItems && contextCartItems.length > 0) ? contextCartItems : savedCartItems;
@@ -67,34 +69,34 @@ const PaymentStatus = () => {
   };
 
   useEffect(() => {
-    if (!orderId && !transactionId) {
-      setError('No order ID or transaction ID provided');
+    // Handle bookingId with status from phonePeRedirect
+    if (bookingId && statusParam) {
+      setStatus(statusParam);
+      setLoading(false);
+      // Redirect directly to ticket page for successful bookings
+      if (statusParam === 'success') {
+        navigate(`/ticket?bookingId=${bookingId}`);
+      }
+      return;
+    }
+    
+    if (!orderId && !transactionId && !bookingId) {
+      setError('No order ID, transaction ID, or booking ID provided');
       setLoading(false);
       return;
     }
     checkPaymentStatus();
     // eslint-disable-next-line
-  }, [orderId, transactionId, retryCount]);
+  }, [orderId, transactionId, bookingId, statusParam, retryCount]);
 
   // Place order after payment is successful (for testing, also on failed/pending)
   useEffect(() => {
-    if (status === 'success' && !orderPlaced && !placingOrderRef.current) {
-
+    if (status === 'success' && !orderPlaced && !placingOrderRef.current && !bookingId) {
       placingOrderRef.current = true;
       placeOrderAfterPayment();
     }
     // eslint-disable-next-line
   }, [status]);
-
-  // Add redirect after payment success
-  useEffect(() => {
-    if (status === 'success') {
-      const timer = setTimeout(() => {
-        navigate('/');
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [status, navigate]);
 
   const checkPaymentStatus = async () => {
     try {
