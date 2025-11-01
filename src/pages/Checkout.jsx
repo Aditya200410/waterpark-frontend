@@ -143,51 +143,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   const finalTotal = paid; // Advance amount remains the same
   const remainingAmount = discountedTotalAmount - finalTotal;
 
-// Optimized: check booking status via webhook
-const checkBookingStatus = async (bookingId, maxAttempts = 1, interval = 2000) => {
-  let attempts = 0;
 
-  return new Promise((resolve) => {
-    const poll = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/status/${bookingId}`
-        );
-
-        if (response.data.success) {
-          const { paymentStatus } = response.data.booking;
-          console.log(`[Webhook Poll] Booking ${bookingId} status: ${paymentStatus} (attempt ${attempts + 1})`);
-
-          if (paymentStatus === "Completed") {
-            toast.success("🎉 Booking confirmed via webhook!");
-            setPaymentProcessing(false);
-            navigate(`/ticket?bookingId=${bookingId}`);
-            return resolve(true); // Stop polling immediately
-          }
-        }
-
-        attempts++;
-        if (attempts < maxAttempts) {
-          setTimeout(poll, interval);
-        } else {
-          console.log(`[Webhook Poll] Timeout after ${maxAttempts} attempts`);
-          resolve(false); // Not confirmed via webhook
-        }
-      } catch (error) {
-        console.error(`[Webhook Poll] Error on attempt ${attempts + 1}:`, error);
-        attempts++;
-        if (attempts < maxAttempts) {
-          setTimeout(poll, interval);
-        } else {
-          console.log(`[Webhook Poll] Timeout after ${maxAttempts} attempts`);
-          resolve(false); // Not confirmed via webhook
-        }
-      }
-    };
-
-    poll();
-  });
-};
 
 
 // Manual verification (fallback)
@@ -318,9 +274,7 @@ const handlePayment = async (e) => {
           try {
             toast.info("Payment successful! Verifying your booking...");
             
-            // ✅ First try webhook check
-            const webhookSuccess = await checkBookingStatus(booking.customBookingId);
-            if (webhookSuccess) return;
+          
 
             // ✅ If webhook fails, fallback to manual verification
             console.log("[Razorpay Handler] Webhook verification failed or timed out. Starting manual verification...");
