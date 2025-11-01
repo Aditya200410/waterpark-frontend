@@ -69,7 +69,7 @@ const PaymentStatus = () => {
     return total > 0 ? total : 0;
   };
 
-  // Helper to fetch booking details when status=failed
+  // Helper to fetch booking details
   const fetchBookingDetails = useCallback(async () => {
     try {
       if (bookingId) {
@@ -79,11 +79,19 @@ const PaymentStatus = () => {
         const data = await response.json();
         
         if (data.success && data.booking) {
+          // Determine state based on payment status
+          let state = 'PENDING';
+          if (data.booking.paymentStatus === 'Completed' || data.booking.paymentStatus === 'completed') {
+            state = 'COMPLETED';
+          } else if (data.booking.paymentStatus === 'Failed' || data.booking.paymentStatus === 'failed') {
+            state = 'FAILED';
+          }
+          
           setOrderDetails({
             orderId: data.booking.customBookingId,
             merchantOrderId: data.booking.customBookingId,
             amount: (data.booking.totalAmount || 0) * 100, // Convert to paise
-            state: 'FAILED'
+            state: state
           });
         }
       }
@@ -93,27 +101,90 @@ const PaymentStatus = () => {
     }
   }, [bookingId]);
 
+  // Update payment status to Completed when status=success
+  const updatePaymentStatusToCompleted = useCallback(async () => {
+    try {
+      if (bookingId) {
+        console.log('[PaymentStatus] status=success in URL - verifying payment and updating to Completed');
+        
+        // Use verifyPayment endpoint which checks PhonePe and updates status to Completed
+        // The endpoint expects customBookingId, merchantOrderId, or orderId
+        const response = await fetch(
+          `${config.API_BASE_URL}/api/bookings/verify`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              customBookingId: bookingId
+            })
+          }
+        );
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          console.log('[PaymentStatus] Payment verified and status updated to Completed');
+          setStatus('success');
+          // Redirect to ticket page
+          navigate(`/ticket?bookingId=${bookingId}`);
+        } else {
+          console.warn('[PaymentStatus] Payment verification failed:', data.message);
+          // Still redirect to ticket page even if verification fails (payment gateway confirmed success)
+          setStatus('success');
+          navigate(`/ticket?bookingId=${bookingId}`);
+        }
+      }
+    } catch (err) {
+      console.warn('[PaymentStatus] Failed to update payment status:', err);
+      // Still redirect to ticket page even if update fails
+      setStatus('success');
+      if (bookingId) {
+        navigate(`/ticket?bookingId=${bookingId}`);
+      }
+    }
+  }, [bookingId, navigate]);
+
   // Verify payment status in background (for cases where status=failed but payment actually succeeded)
   const verifyPaymentStatusInBackground = useCallback(async () => {
     try {
       if (bookingId) {
+        // Don't check paymentStatus === 'Completed' from database
+        // Instead, verify payment status with PhonePe API via verifyPayment endpoint
+        // This will check PhonePe and update status to Completed if payment succeeded
+        console.log('[PaymentStatus] status=failed in URL - verifying actual payment status with PhonePe');
+        
         const response = await fetch(
-          `${config.API_BASE_URL}/api/bookings/any/${bookingId}`
+          `${config.API_BASE_URL}/api/bookings/verify`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              customBookingId: bookingId
+            })
+          }
         );
+        
         const data = await response.json();
         
-        if (data.success && data.booking) {
-          // If payment is actually completed, redirect to ticket page immediately
-          if (data.booking.paymentStatus === 'Completed' || data.booking.paymentStatus === 'completed') {
-            console.log('[PaymentStatus] Payment actually succeeded - redirecting to ticket');
-            setStatus('success');
-            navigate(`/ticket?bookingId=${bookingId}`);
-          }
+        if (data.success) {
+          // Payment verified successfully - PhonePe confirmed payment is COMPLETED
+          // verifyPayment endpoint already updated status to Completed
+          console.log('[PaymentStatus] Payment actually succeeded - status updated to Completed');
+          setStatus('success');
+          navigate(`/ticket?bookingId=${bookingId}`);
+        } else {
+          // Payment verification failed - payment was actually failed
+          console.log('[PaymentStatus] Payment verification confirmed failure:', data.message);
+          // Keep status as 'failed' which is already set
         }
       }
     } catch (err) {
       console.warn('[PaymentStatus] Background verification failed:', err);
-      // Ignore errors in background check
+      // Ignore errors in background check - keep status as failed
     }
   }, [bookingId, navigate]);
 
@@ -127,17 +198,32 @@ const PaymentStatus = () => {
         if (bookingId) {
           fetchBookingDetails();
           // Also verify the actual payment status in background (in case payment succeeded but redirect was slow)
+          // Don't check paymentStatus === 'Completed', instead verify with PhonePe API
           verifyPaymentStatusInBackground();
         }
         return;
       } else if (statusParam === 'success') {
-        setStatus('success');
-        // Redirect immediately if success is in URL
-        const finalBookingId = bookingId || orderId || transactionId;
-        if (finalBookingId) {
-          navigate(`/ticket?bookingId=${finalBookingId}`);
+        // Don't check paymentStatus === 'Completed' in database
+        // Check status=success from URL, then set paymentStatus to Completed via API
+        if (bookingId) {
+          // Update payment status to Completed when status=success
+          updatePaymentStatusToCompleted();
         } else {
-          navigate('/');
+          // If no bookingId but status=success, just redirect
+          setStatus('success');
+          const finalBookingId = orderId || transactionId;
+          if (finalBookingId) {
+            navigate(`/ticket?bookingId=${finalBookingId}`);
+          } else {
+            navigate('/');
+          }
+        }
+        return;
+      } else if (statusParam === 'pending') {
+        setStatus('pending');
+        // Try to fetch booking details if bookingId is available
+        if (bookingId) {
+          fetchBookingDetails();
         }
         return;
       }
@@ -151,7 +237,7 @@ const PaymentStatus = () => {
     }
     checkPaymentStatus();
     // eslint-disable-next-line
-  }, [orderId, transactionId, bookingId, statusParam, retryCount, fetchBookingDetails, verifyPaymentStatusInBackground, navigate]);
+  }, [orderId, transactionId, bookingId, statusParam, retryCount, fetchBookingDetails, verifyPaymentStatusInBackground, updatePaymentStatusToCompleted, navigate]);
 
   // Place order after payment is successful (for testing, also on failed/pending)
   useEffect(() => {
@@ -201,9 +287,9 @@ const PaymentStatus = () => {
         if (data.success) {
           const paymentStatus = data.booking?.paymentStatus || data.order?.paymentStatus;
           
-          if (paymentStatus === 'completed') {
+          if (paymentStatus === 'Completed' || paymentStatus === 'completed') {
             setStatus('success');
-          } else if (paymentStatus === 'failed') {
+          } else if (paymentStatus === 'Failed' || paymentStatus === 'failed') {
             setStatus('failed');
           } else {
             setStatus('pending');
@@ -213,7 +299,7 @@ const PaymentStatus = () => {
             orderId: data.booking?.customBookingId || data.order?._id,
             merchantOrderId: data.booking?.customBookingId || data.order?.merchantOrderId,
             amount: (data.booking?.totalAmount || data.order?.totalAmount) * 100, // Convert to paise
-            state: paymentStatus === 'completed' ? 'COMPLETED' : paymentStatus === 'failed' ? 'FAILED' : 'PENDING'
+            state: (paymentStatus === 'Completed' || paymentStatus === 'completed') ? 'COMPLETED' : (paymentStatus === 'Failed' || paymentStatus === 'failed') ? 'FAILED' : 'PENDING'
           });
           return;
         }
