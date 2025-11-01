@@ -81,6 +81,8 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
     }
   }, [user]);
 
+  const [paymentMethod, setPaymentMethod] = useState("razorpay");
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setBillingDetails((prevDetails) => ({
@@ -141,6 +143,104 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
   const finalTotal = paid; // Advance amount remains the same
   const remainingAmount = discountedTotalAmount - finalTotal;
 
+// Optimized: check booking status via webhook
+const checkBookingStatus = async (bookingId, maxAttempts = 3, interval = 2000) => {
+  let attempts = 0;
+
+  return new Promise((resolve) => {
+    const poll = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/status/${bookingId}`
+        );
+
+        if (response.data.success) {
+          const { paymentStatus } = response.data.booking;
+          console.log(`[Webhook Poll] Booking ${bookingId} status: ${paymentStatus} (attempt ${attempts + 1})`);
+
+          if (paymentStatus === "Completed") {
+            toast.success("🎉 Booking confirmed via webhook!");
+            setPaymentProcessing(false);
+            navigate(`/ticket?bookingId=${bookingId}`);
+            return resolve(true); // Stop polling immediately
+          }
+        }
+
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(poll, interval);
+        } else {
+          console.log(`[Webhook Poll] Timeout after ${maxAttempts} attempts`);
+          resolve(false); // Not confirmed via webhook
+        }
+      } catch (error) {
+        console.error(`[Webhook Poll] Error on attempt ${attempts + 1}:`, error);
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(poll, interval);
+        } else {
+          console.log(`[Webhook Poll] Timeout after ${maxAttempts} attempts`);
+          resolve(false); // Not confirmed via webhook
+        }
+      }
+    };
+
+    poll();
+  });
+};
+
+
+// Manual verification (fallback)
+const manualPaymentVerification = async (razorpayResponse, customBookingId) => {
+  try {
+    console.log("[Manual Verify] Starting...");
+
+    // Double-check webhook again before manual verify
+    const statusResponse = await axios.get(
+      `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/status/${customBookingId}`
+    );
+
+    if (statusResponse.data.success && statusResponse.data.booking.paymentStatus === "Completed") {
+      console.log("[Manual Verify] Already completed via webhook, skipping");
+      setPaymentProcessing(false);
+      toast.success("🎉 Payment already confirmed!");
+      navigate(`/ticket?bookingId=${customBookingId}`);
+      return;
+    }
+
+    toast.info("Verifying payment manually...");
+
+    const bookingResponse = await axios.get(
+      `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/any/${customBookingId}`
+    );
+
+    if (!bookingResponse.data.success) throw new Error("Booking not found for manual verify");
+
+    const verifyResponse = await axios.post(
+      `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
+      {
+        razorpay_order_id: razorpayResponse.razorpay_order_id,
+        razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+        razorpay_signature: razorpayResponse.razorpay_signature,
+        bookingId: bookingResponse.data.booking._id,
+      }
+    );
+
+    if (verifyResponse.data.success) {
+      setPaymentProcessing(false);
+      toast.success("🎉 Payment verified manually!");
+      navigate(`/ticket?bookingId=${verifyResponse.data.booking.customBookingId}`);
+    } else {
+      setPaymentProcessing(false);
+      toast.error("❌ Manual verification failed, please contact support.");
+    }
+  } catch (error) {
+    console.error("[Manual Verify] Error:", error);
+    setPaymentProcessing(false);
+    toast.error("Payment verification failed. Please contact support.");
+  }
+};
+
 const handlePayment = async (e) => {
   e.preventDefault();
 
@@ -159,9 +259,9 @@ const handlePayment = async (e) => {
   try {
     console.log("[handlePayment] Creating booking...");
 
-    // ✅ Create booking via order controller
+    // ✅ Create booking
     const response = await axios.post(
-      `${import.meta.env.VITE_APP_API_BASE_URL}/api/orders`,
+      `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/create`,
       {
         waterpark: resortId,
         waternumber: waternumber,
@@ -175,12 +275,12 @@ const handlePayment = async (e) => {
         total: discountedTotalAmount,
         advanceAmount: finalTotal,
         paymentType: paymentType,
+        paymentMethod: paymentMethod,
         terms: terms,
       }
     );
 
-    const { success, booking } = response.data;
-    const bookingData = booking || response.data.booking;
+    const { success, orderId, booking, key, amount, currency, name, description, prefill } = response.data;
 
     if (!success) {
       console.error("[handlePayment] Booking creation failed:", response.data.message);
@@ -188,17 +288,62 @@ const handlePayment = async (e) => {
       return;
     }
 
-    console.log("[handlePayment] Booking created:", bookingData);
+    console.log("[handlePayment] Booking created:", booking);
 
-    // ✅ Booking created successfully
-    if (bookingData) {
-      toast.success("Booking created successfully!");
-      console.log("[handlePayment] Redirecting to ticket page for booking...");
-      navigate(`/ticket?bookingId=${bookingData.customBookingId}`);
+    // ✅ Cash Payment
+    if (paymentMethod === "cash") {
+      toast.success("Booking created successfully with cash payment.");
+      console.log("[handlePayment] Redirecting to ticket page for cash booking...");
+      navigate(`/ticket?bookingId=${booking.customBookingId}`);
       return;
     }
-    
-    toast.error("Booking created but no booking data received.");
+
+    // ✅ Razorpay Payment
+    if (paymentMethod === "razorpay" && orderId) {
+      setCurrentBookingId(booking.customBookingId);
+      setPaymentProcessing(true);
+
+      const options = {
+        key: key,
+        amount: amount,
+        currency: currency,
+        name: name,
+        description: description,
+        order_id: orderId,
+        prefill: prefill,
+        redirect: false, // disable redirect
+        handler: async (razorpayResponse) => {
+          console.log("[Razorpay Handler] Payment successful, response:", razorpayResponse);
+
+          try {
+            toast.info("Payment successful! Verifying your booking...");
+            
+            // ✅ First try webhook check
+            const webhookSuccess = await checkBookingStatus(booking.customBookingId);
+            if (webhookSuccess) return;
+
+            // ✅ If webhook fails, fallback to manual verification
+            console.log("[Razorpay Handler] Webhook verification failed or timed out. Starting manual verification...");
+            await manualPaymentVerification(razorpayResponse, booking.customBookingId);
+          } catch (error) {
+            console.error("[Razorpay Handler] Payment verification error:", error);
+            setPaymentProcessing(false);
+            toast.error("Payment verification failed. Please contact support.");
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setPaymentProcessing(false);
+            toast.info("Payment cancelled by user");
+            console.log("[Razorpay] Payment modal dismissed");
+          },
+        },
+      };
+
+      console.log("[handlePayment] Opening Razorpay with options:", options);
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    }
   } catch (error) {
     console.error("[handlePayment] Error initiating payment:", error);
     toast.error("Payment initiation failed. Please try again.");
@@ -461,6 +606,20 @@ const handlePayment = async (e) => {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Payment (Unchanged) */}
+          <div>
+            <h2 className="text-2xl font-semibold text-cyan-600 mb-4">
+              Payment Method
+            </h2>
+            <select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+              className="px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="razorpay">Razorpay</option>
+            </select>
           </div>
 
           <button

@@ -18,6 +18,7 @@ import orderService from '../services/orderService';
 import config from '../config/config';
 import { toast } from 'react-hot-toast';
 import Loader from '../components/Loader';
+import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -54,8 +55,6 @@ const PaymentStatus = () => {
 
   const orderId = searchParams.get('orderId');
   const transactionId = searchParams.get('transactionId');
-  const bookingId = searchParams.get('bookingId');
-  const statusParam = searchParams.get('status');
 
   // Use cart from localStorage if contextCartItems is empty
   const cartItems = (contextCartItems && contextCartItems.length > 0) ? contextCartItems : savedCartItems;
@@ -69,34 +68,39 @@ const PaymentStatus = () => {
   };
 
   useEffect(() => {
-    // Handle bookingId with status from phonePeRedirect
-    if (bookingId && statusParam) {
-      setStatus(statusParam);
-      setLoading(false);
-      // Redirect directly to ticket page for successful bookings
-      if (statusParam === 'success') {
-        navigate(`/ticket?bookingId=${bookingId}`);
-      }
-      return;
-    }
-    
-    if (!orderId && !transactionId && !bookingId) {
-      setError('No order ID, transaction ID, or booking ID provided');
+    if (!orderId && !transactionId) {
+      setError('No order ID or transaction ID provided');
       setLoading(false);
       return;
     }
     checkPaymentStatus();
     // eslint-disable-next-line
-  }, [orderId, transactionId, bookingId, statusParam, retryCount]);
+  }, [orderId, transactionId, retryCount]);
 
   // Place order after payment is successful (for testing, also on failed/pending)
   useEffect(() => {
-    if (status === 'success' && !orderPlaced && !placingOrderRef.current && !bookingId) {
+    if (status === 'success' && !orderPlaced && !placingOrderRef.current) {
+
       placingOrderRef.current = true;
       placeOrderAfterPayment();
     }
     // eslint-disable-next-line
   }, [status]);
+
+  // Redirect immediately after payment success
+  useEffect(() => {
+    if (status === 'success') {
+      // Redirect to ticket page immediately
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderId = urlParams.get('orderId');
+      const transactionId = urlParams.get('transactionId');
+      if (orderId || transactionId) {
+        navigate(`/ticket?bookingId=${orderId || transactionId}`);
+      } else {
+        navigate('/');
+      }
+    }
+  }, [status, navigate]);
 
   const checkPaymentStatus = async () => {
     try {
@@ -251,10 +255,10 @@ const PaymentStatus = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-500 via-white to-blue-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-pink-500 via-white to-pink-100 flex items-center justify-center">
         <div className="text-center">
           <Loader />
-          <p className="mt-4 text-blue-700">Checking payment status...</p>
+          <p className="mt-4 text-pink-700">Checking payment status...</p>
         </div>
       </div>
     );
@@ -262,7 +266,7 @@ const PaymentStatus = () => {
 
   if (error && !status) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-500 via-white to-blue-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-pink-500 via-white to-pink-100 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -277,7 +281,7 @@ const PaymentStatus = () => {
             <div className="space-y-3">
               <button
                 onClick={handleRetry}
-                className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors"
+                className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
               >
                 <RefreshCw size={20} className="inline mr-2" />
                 Try Again
@@ -345,12 +349,12 @@ const PaymentStatus = () => {
               <h3 className="font-semibold text-gray-700 mb-2">What's Next?</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center">
-                  <Truck size={16} className="text-blue-500 mr-2" />
+                  <Truck size={16} className="text-pink-500 mr-2" />
                   <span>Order will be shipped within 5-7 days</span>
                 </div>
                
                 <div className="flex items-center">
-                  <Shield size={16} className="text-blue-500 mr-2" />
+                  <Shield size={16} className="text-pink-500 mr-2" />
                   <span>Secure payment processed successfully</span>
                 </div>
               </div>
@@ -366,7 +370,7 @@ const PaymentStatus = () => {
         <div className="space-y-3">
           <button
             onClick={handleGoHome}
-            className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors"
+            className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
           >
             <Home size={20} className="inline mr-2" />
             Go Home Now
@@ -437,15 +441,15 @@ const PaymentStatus = () => {
               <h3 className="font-semibold text-gray-700 mb-2">What You Can Do</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center">
-                  <RefreshCw size={16} className="text-blue-500 mr-2" />
+                  <RefreshCw size={16} className="text-pink-500 mr-2" />
                   <span>Try the payment again</span>
                 </div>
                 <div className="flex items-center">
-                  <CreditCard size={16} className="text-blue-500 mr-2" />
+                  <CreditCard size={16} className="text-pink-500 mr-2" />
                   <span>Use a different payment method</span>
                 </div>
                 <div className="flex items-center">
-                  <Shield size={16} className="text-blue-500 mr-2" />
+                  <Shield size={16} className="text-pink-500 mr-2" />
                   <span>Contact support if issue persists</span>
                 </div>
               </div>
@@ -457,7 +461,7 @@ const PaymentStatus = () => {
       <div className="text-center space-y-3">
         <button
           onClick={() => navigate('/checkout')}
-          className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors"
+          className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
         >
           <RefreshCw size={20} className="inline mr-2" />
           Try Payment Again
@@ -521,15 +525,15 @@ const PaymentStatus = () => {
               <h3 className="font-semibold text-gray-700 mb-2">What's Happening</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center">
-                  <RefreshCw size={16} className="text-blue-500 mr-2" />
+                  <RefreshCw size={16} className="text-pink-500 mr-2" />
                   <span>Payment is being verified</span>
                 </div>
                 <div className="flex items-center">
-                  <Shield size={16} className="text-blue-500 mr-2" />
+                  <Shield size={16} className="text-pink-500 mr-2" />
                   <span>Your money is safe</span>
                 </div>
                 <div className="flex items-center">
-                  <Clock size={16} className="text-blue-500 mr-2" />
+                  <Clock size={16} className="text-pink-500 mr-2" />
                   <span>Please wait for confirmation</span>
                 </div>
               </div>
@@ -542,7 +546,7 @@ const PaymentStatus = () => {
         <button
           onClick={handleRetry}
           disabled={retryCount >= 3}
-          className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <RefreshCw size={20} className="inline mr-2" />
           Check Status Again ({3 - retryCount} attempts left)
@@ -579,7 +583,7 @@ const PaymentStatus = () => {
       <div className="text-center space-y-3">
         <button
           onClick={handleRetry}
-          className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors"
+          className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
         >
           <RefreshCw size={20} className="inline mr-2" />
           Try Again
@@ -596,7 +600,8 @@ const PaymentStatus = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-white to-blue-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-pink-500 via-white to-pink-100 flex items-center justify-center p-4 relative">
+      <AnimatedBubbles />
       <AnimatePresence mode="wait">
         {status === 'success' && renderSuccessStatus()}
         {status === 'failed' && renderFailedStatus()}
