@@ -146,14 +146,14 @@ const PaymentStatus = () => {
     }
   }, [bookingId, navigate]);
 
-  // Verify payment status in background (for cases where status=failed but payment actually succeeded)
-  const verifyPaymentStatusInBackground = useCallback(async () => {
+  // Verify payment status in background (for cases where status=failed/pending but payment actually succeeded)
+  const verifyPaymentStatusInBackground = useCallback(async (currentStatus = 'failed') => {
     try {
       if (bookingId) {
         // Don't check paymentStatus === 'Completed' from database
         // Instead, verify payment status with PhonePe API via verifyPayment endpoint
         // This will check PhonePe and update status to Completed if payment succeeded
-        console.log('[PaymentStatus] status=failed in URL - verifying actual payment status with PhonePe');
+        console.log(`[PaymentStatus] status=${currentStatus} in URL - verifying actual payment status with PhonePe`);
         
         const response = await fetch(
           `${config.API_BASE_URL}/api/bookings/verify`,
@@ -177,14 +177,20 @@ const PaymentStatus = () => {
           setStatus('success');
           navigate(`/ticket?bookingId=${bookingId}`);
         } else {
-          // Payment verification failed - payment was actually failed
-          console.log('[PaymentStatus] Payment verification confirmed failure:', data.message);
-          // Keep status as 'failed' which is already set
+          // Payment verification failed - check if it's actually failed or still pending
+          console.log('[PaymentStatus] Payment verification result:', data.message);
+          
+          // If verification explicitly says failed, update to failed
+          if (data.state === 'FAILED' || data.message?.toLowerCase().includes('failed')) {
+            console.log('[PaymentStatus] Payment verification confirmed failure');
+            setStatus('failed');
+          }
+          // Otherwise keep the current status (pending/failed)
         }
       }
     } catch (err) {
       console.warn('[PaymentStatus] Background verification failed:', err);
-      // Ignore errors in background check - keep status as failed
+      // Ignore errors in background check - keep current status
     }
   }, [bookingId, navigate]);
 
@@ -199,7 +205,7 @@ const PaymentStatus = () => {
           fetchBookingDetails();
           // Also verify the actual payment status in background (in case payment succeeded but redirect was slow)
           // Don't check paymentStatus === 'Completed', instead verify with PhonePe API
-          verifyPaymentStatusInBackground();
+          verifyPaymentStatusInBackground('failed');
         }
         return;
       } else if (statusParam === 'success') {
@@ -224,6 +230,9 @@ const PaymentStatus = () => {
         // Try to fetch booking details if bookingId is available
         if (bookingId) {
           fetchBookingDetails();
+          // Also verify the actual payment status in background (in case payment succeeded but redirect was slow)
+          // Don't check paymentStatus === 'Completed', instead verify with PhonePe API
+          verifyPaymentStatusInBackground('pending');
         }
         return;
       }
