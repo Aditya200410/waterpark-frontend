@@ -602,7 +602,7 @@ const PaymentStatus = () => {
       <AnimatedBubbles />
       <AnimatePresence mode="wait">
         {status === 'success' && renderSuccessStatus()}
-        {status === 'failed' && renderSuccessStatus()}
+        {status === 'failed' && renderFailedStatus()}
         {status === 'pending' && renderPendingStatus()}
         {status === 'unknown' && renderUnknownStatus()}
       </AnimatePresence>
