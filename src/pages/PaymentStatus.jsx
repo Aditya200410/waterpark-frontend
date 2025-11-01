@@ -165,11 +165,15 @@ const PaymentStatus = () => {
           return;
         }
         
-        const phonepeOrderId = bookingData.booking.phonepeOrderId;
+        let phonepeOrderId = bookingData.booking.phonepeOrderId;
         if (!phonepeOrderId) {
           console.warn('[PaymentStatus] PhonePe orderId not found');
           return;
         }
+        
+        // Sanitize orderId - remove any invalid characters like colons, semicolons, etc.
+        // PhonePe orderIds should not contain these characters
+        phonepeOrderId = String(phonepeOrderId).split(':')[0].split(';')[0].trim();
         
         // Check PhonePe status directly using paymentService
         console.log('[PaymentStatus] Checking PhonePe status for orderId:', phonepeOrderId);
@@ -229,13 +233,17 @@ const PaymentStatus = () => {
       setError(null);
       
       // Use orderId or transactionId (PhonePe orderId)
-      const idToCheck = orderId || transactionId;
+      let idToCheck = orderId || transactionId;
       
       if (!idToCheck) {
         setError('No order ID or transaction ID provided');
         setLoading(false);
         return;
       }
+      
+      // Sanitize orderId - remove any invalid characters like colons, semicolons, etc.
+      // PhonePe orderIds should not contain these characters
+      idToCheck = String(idToCheck).split(':')[0].split(';')[0].trim();
       
       console.log('[PaymentStatus] Checking PhonePe status for orderId:', idToCheck);
       
