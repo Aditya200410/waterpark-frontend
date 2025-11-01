@@ -194,59 +194,100 @@ const PaymentStatus = () => {
     }
   }, [bookingId, navigate]);
 
-  // Check status from URL parameter first (immediate display)
-  useEffect(() => {
-    if (statusParam) {
-      setLoading(false);
-      if (statusParam === 'failed') {
-        setStatus('failed');
-        // Try to fetch booking details if bookingId is available
-        if (bookingId) {
-          fetchBookingDetails();
-          // Also verify the actual payment status in background (in case payment succeeded but redirect was slow)
-          // Don't check paymentStatus === 'Completed', instead verify with PhonePe API
-          verifyPaymentStatusInBackground('failed');
-        }
-        return;
-      } else if (statusParam === 'success') {
-        // Don't check paymentStatus === 'Completed' in database
-        // Check status=success from URL, then set paymentStatus to Completed via API
-        if (bookingId) {
-          // Update payment status to Completed when status=success
-          updatePaymentStatusToCompleted();
-        } else {
-          // If no bookingId but status=success, just redirect
-          setStatus('success');
-          const finalBookingId = orderId || transactionId;
-          if (finalBookingId) {
-            navigate(`/ticket?bookingId=${finalBookingId}`);
-          } else {
-            navigate('/');
-          }
-        }
-        return;
-      } else if (statusParam === 'pending') {
-        setStatus('pending');
-        // Try to fetch booking details if bookingId is available
-        if (bookingId) {
-          fetchBookingDetails();
-          // Also verify the actual payment status in background (in case payment succeeded but redirect was slow)
-          // Don't check paymentStatus === 'Completed', instead verify with PhonePe API
-          verifyPaymentStatusInBackground('pending');
-        }
+  // Check payment status directly from PhonePe API (for orders)
+  const checkPaymentStatusFromPhonePe = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Use orderId or transactionId (PhonePe orderId)
+      const idToCheck = orderId || transactionId;
+      
+      if (!idToCheck) {
+        setError('No order ID or transaction ID provided');
+        setLoading(false);
         return;
       }
+      
+      console.log('[PaymentStatus] Checking PhonePe status for orderId:', idToCheck);
+      
+      // Call PhonePe API directly via paymentService
+      const response = await paymentService.getPhonePeStatus(idToCheck);
+      
+      console.log('[PaymentStatus] PhonePe status response:', response);
+      
+      // Set status based on PhonePe API response
+      // paymentService.getPhonePeStatus returns: { status: 'success'|'failed'|'pending', data: {...} }
+      if (response.status === 'success') {
+        setStatus('success');
+      } else if (response.status === 'failed') {
+        setStatus('failed');
+      } else if (response.status === 'pending') {
+        setStatus('pending');
+      } else {
+        setStatus('unknown');
+      }
+      
+      // Set order details from PhonePe response
+      if (response.data) {
+        setOrderDetails(response.data.data || response.data);
+      }
+      
+    } catch (err) {
+      console.error('[PaymentStatus] PhonePe status check error:', err);
+      setError(err.message || 'Failed to check payment status');
+      setStatus('error');
+    } finally {
+      setLoading(false);
+    }
+  }, [orderId, transactionId]);
+
+  // Check payment status using PhonePe API (for orders with orderId/transactionId)
+  useEffect(() => {
+    // For orders (orderId/transactionId), always check PhonePe API directly
+    if (orderId || transactionId) {
+      checkPaymentStatusFromPhonePe();
+      return;
     }
     
-    // If no status param, check via API
+    // For bookings (bookingId), use the booking-specific flow
+    if (bookingId) {
+      if (statusParam) {
+        setLoading(false);
+        if (statusParam === 'failed') {
+          setStatus('failed');
+          fetchBookingDetails();
+          verifyPaymentStatusInBackground('failed');
+          return;
+        } else if (statusParam === 'success') {
+          if (bookingId) {
+            updatePaymentStatusToCompleted();
+          } else {
+            setStatus('success');
+            navigate(`/ticket?bookingId=${bookingId}`);
+          }
+          return;
+        } else if (statusParam === 'pending') {
+          setStatus('pending');
+          fetchBookingDetails();
+          verifyPaymentStatusInBackground('pending');
+          return;
+        }
+      }
+      
+      // No status param for booking, check via API
+      checkPaymentStatus();
+      return;
+    }
+    
+    // No IDs provided
     if (!orderId && !transactionId && !bookingId) {
       setError('No order ID, transaction ID, or booking ID provided');
       setLoading(false);
       return;
     }
-    checkPaymentStatus();
     // eslint-disable-next-line
-  }, [orderId, transactionId, bookingId, statusParam, retryCount, fetchBookingDetails, verifyPaymentStatusInBackground, updatePaymentStatusToCompleted, navigate]);
+  }, [orderId, transactionId, bookingId, statusParam, retryCount, checkPaymentStatusFromPhonePe, fetchBookingDetails, verifyPaymentStatusInBackground, updatePaymentStatusToCompleted, navigate]);
 
   // Place order after payment is successful (for testing, also on failed/pending)
   useEffect(() => {
@@ -258,25 +299,14 @@ const PaymentStatus = () => {
     // eslint-disable-next-line
   }, [status]);
 
-  // Redirect immediately after payment success (only if not already redirected by statusParam)
+  // Redirect after payment success (for bookings only, orders redirect via placeOrderAfterPayment)
   useEffect(() => {
-    if (status === 'success' && !statusParam) {
-      // Redirect to ticket page immediately
-      const urlParams = new URLSearchParams(window.location.search);
-      const bookingIdParam = urlParams.get('bookingId');
-      const orderIdParam = urlParams.get('orderId');
-      const transactionIdParam = urlParams.get('transactionId');
-      
-      // Priority: bookingId > orderId > transactionId
-      const finalBookingId = bookingIdParam || orderIdParam || transactionIdParam;
-      
-      if (finalBookingId) {
-        navigate(`/ticket?bookingId=${finalBookingId}`);
-      } else {
-        navigate('/');
-      }
+    if (status === 'success' && !statusParam && bookingId) {
+      // For bookings only, redirect to ticket page
+      navigate(`/ticket?bookingId=${bookingId}`);
     }
-  }, [status, navigate, statusParam]);
+    // For orders, redirect happens in placeOrderAfterPayment after order is placed
+  }, [status, navigate, statusParam, bookingId]);
 
   const checkPaymentStatus = async () => {
     try {
