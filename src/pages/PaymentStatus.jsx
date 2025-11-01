@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -56,6 +56,7 @@ const PaymentStatus = () => {
   const orderId = searchParams.get('orderId');
   const transactionId = searchParams.get('transactionId');
   const bookingId = searchParams.get('bookingId'); // For bookings
+  const statusParam = searchParams.get('status'); // Read status from URL (failed, success, etc.)
 
   // Use cart from localStorage if contextCartItems is empty
   const cartItems = (contextCartItems && contextCartItems.length > 0) ? contextCartItems : savedCartItems;
@@ -68,7 +69,81 @@ const PaymentStatus = () => {
     return total > 0 ? total : 0;
   };
 
+  // Helper to fetch booking details when status=failed
+  const fetchBookingDetails = useCallback(async () => {
+    try {
+      if (bookingId) {
+        const response = await fetch(
+          `${config.API_BASE_URL}/api/bookings/any/${bookingId}`
+        );
+        const data = await response.json();
+        
+        if (data.success && data.booking) {
+          setOrderDetails({
+            orderId: data.booking.customBookingId,
+            merchantOrderId: data.booking.customBookingId,
+            amount: (data.booking.totalAmount || 0) * 100, // Convert to paise
+            state: 'FAILED'
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('[PaymentStatus] Could not fetch booking details:', err);
+      // Don't show error, just continue with what we have
+    }
+  }, [bookingId]);
+
+  // Verify payment status in background (for cases where status=failed but payment actually succeeded)
+  const verifyPaymentStatusInBackground = useCallback(async () => {
+    try {
+      if (bookingId) {
+        const response = await fetch(
+          `${config.API_BASE_URL}/api/bookings/any/${bookingId}`
+        );
+        const data = await response.json();
+        
+        if (data.success && data.booking) {
+          // If payment is actually completed, redirect to ticket page immediately
+          if (data.booking.paymentStatus === 'Completed' || data.booking.paymentStatus === 'completed') {
+            console.log('[PaymentStatus] Payment actually succeeded - redirecting to ticket');
+            setStatus('success');
+            navigate(`/ticket?bookingId=${bookingId}`);
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('[PaymentStatus] Background verification failed:', err);
+      // Ignore errors in background check
+    }
+  }, [bookingId, navigate]);
+
+  // Check status from URL parameter first (immediate display)
   useEffect(() => {
+    if (statusParam) {
+      setLoading(false);
+      if (statusParam === 'failed') {
+        setStatus('failed');
+        // Try to fetch booking details if bookingId is available
+        if (bookingId) {
+          fetchBookingDetails();
+          // Also verify the actual payment status in background (in case payment succeeded but redirect was slow)
+          verifyPaymentStatusInBackground();
+        }
+        return;
+      } else if (statusParam === 'success') {
+        setStatus('success');
+        // Redirect immediately if success is in URL
+        const finalBookingId = bookingId || orderId || transactionId;
+        if (finalBookingId) {
+          navigate(`/ticket?bookingId=${finalBookingId}`);
+        } else {
+          navigate('/');
+        }
+        return;
+      }
+    }
+    
+    // If no status param, check via API
     if (!orderId && !transactionId && !bookingId) {
       setError('No order ID, transaction ID, or booking ID provided');
       setLoading(false);
@@ -76,7 +151,7 @@ const PaymentStatus = () => {
     }
     checkPaymentStatus();
     // eslint-disable-next-line
-  }, [orderId, transactionId, bookingId, retryCount]);
+  }, [orderId, transactionId, bookingId, statusParam, retryCount, fetchBookingDetails, verifyPaymentStatusInBackground, navigate]);
 
   // Place order after payment is successful (for testing, also on failed/pending)
   useEffect(() => {
@@ -88,9 +163,9 @@ const PaymentStatus = () => {
     // eslint-disable-next-line
   }, [status]);
 
-  // Redirect immediately after payment success
+  // Redirect immediately after payment success (only if not already redirected by statusParam)
   useEffect(() => {
-    if (status === 'success') {
+    if (status === 'success' && !statusParam) {
       // Redirect to ticket page immediately
       const urlParams = new URLSearchParams(window.location.search);
       const bookingIdParam = urlParams.get('bookingId');
@@ -106,7 +181,7 @@ const PaymentStatus = () => {
         navigate('/');
       }
     }
-  }, [status, navigate]);
+  }, [status, navigate, statusParam]);
 
   const checkPaymentStatus = async () => {
     try {
@@ -406,9 +481,9 @@ const PaymentStatus = () => {
           <XCircle size={40} className="text-red-500" />
         </motion.div>
         <h1 className="text-3xl font-bold text-red-600 mb-2">Payment Failed</h1>
-        <p className="text-gray-600 mb-4">Your payment could not be processed. Please try again.</p>
-        <div className="bg-blue-100 border border-red-200 rounded-xl p-4 mb-6">
-          <p className="text-blue -700 text-sm">
+        <p className="text-gray-600 mb-4">Payment was not successful. Please try again.</p>
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+          <p className="text-red-700 text-sm">
             <AlertCircle size={16} className="inline mr-2" />
             No amount has been deducted from your account
           </p>
