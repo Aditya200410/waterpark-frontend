@@ -21,7 +21,7 @@ const WaterparkTicket = () => {
 
   // This useEffect fetches the booking data and ticket
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (retryCount = 0) => {
       try {
         setLoading(true);
         setError(null);
@@ -45,10 +45,31 @@ const WaterparkTicket = () => {
         }
         // Priority 2: Fetch booking data if not provided and we have bookingId
         else if (!initialBooking && bookingId) {
-          const bookingResponse = await axios.get(
-            `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${bookingId}`
-          );
-          bookingData = bookingResponse.data.booking;
+          // Use "any" status endpoint to get booking even if payment is still pending
+          // This ensures we can fetch bookings from Booking model regardless of payment status
+          try {
+            const bookingResponse = await axios.get(
+              `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/any/${bookingId}`
+            );
+            bookingData = bookingResponse.data.booking;
+          } catch (error) {
+            // If not found and we're just after payment, retry a few times (in case of timing issues)
+            if (retryCount < 3 && (error.response?.status === 404 || !error.response)) {
+              console.log(`[Ticket] Booking not found, retrying... (attempt ${retryCount + 1}/3)`);
+              await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+              return fetchData(retryCount + 1); // Retry
+            }
+            
+            // Fallback to regular endpoint if "any" fails
+            try {
+              const bookingResponse = await axios.get(
+                `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${bookingId}`
+              );
+              bookingData = bookingResponse.data.booking;
+            } catch (fallbackError) {
+              throw error; // Throw original error
+            }
+          }
         }
         
         if (bookingData) {
@@ -69,11 +90,14 @@ const WaterparkTicket = () => {
           
           setTicket(ticketData);
         } else {
-          setError("No booking information found");
+          setError("No booking information found. If you just completed payment, please wait a moment and refresh the page. You can also access your ticket anytime using your Booking ID at: https://www.waterparkchalo.com/tickets");
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError("Failed to load booking information");
+        const errorMsg = error.response?.status === 404 
+          ? "Booking not found. If you just completed payment, please wait a moment and refresh the page. You can also access your ticket anytime using your Booking ID at: https://www.waterparkchalo.com/tickets"
+          : "Failed to load booking information. If you just completed payment, please wait a moment and refresh the page. You can also access your ticket anytime using your Booking ID at: https://www.waterparkchalo.com/tickets";
+        setError(errorMsg);
       } finally {
         setLoading(false);
       }
@@ -226,7 +250,9 @@ const WaterparkTicket = () => {
           <div className="space-y-2 text-sm text-gray-600">
             <p>If you just completed payment, please wait a moment and refresh the page.</p>
             <p>You can also access your ticket anytime using your Booking ID at:</p>
-            <p className="font-mono bg-gray-100 p-2 rounded">{window.location.origin}/tickets</p>
+            <a href="https://www.waterparkchalo.com/tickets" className="font-mono bg-gray-100 p-2 rounded block hover:bg-gray-200 transition-colors text-blue-600 underline">
+              https://www.waterparkchalo.com/tickets
+            </a>
           </div>
         </div>
       </div>
