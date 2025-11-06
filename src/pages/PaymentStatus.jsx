@@ -14,13 +14,10 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import paymentService from '../services/paymentService';
-import orderService from '../services/orderService';
-import config from '../config/config';
+import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import Loader from '../components/Loader';
 import AnimatedBubbles from '../components/AnimatedBubbles/AnimatedBubbles';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
 
 const PaymentStatus = () => {
   const [searchParams] = useSearchParams();
@@ -30,87 +27,79 @@ const PaymentStatus = () => {
   const [error, setError] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
-  const [orderPlaced, setOrderPlaced] = useState(false);
-  const placingOrderRef = useRef(false);
+  const [bookingVerified, setBookingVerified] = useState(false);
+  const verifyingRef = useRef(false);
 
-  // Get cart and user context
-  const { cartItems: contextCartItems, getTotalPrice, clearCart, getItemImage, sellerToken } = useCart();
-  const { user } = useAuth();
-
-  // Try to get form data and cart from localStorage (set in Checkout before payment)
-  let savedFormData = {};
-  let savedCoupon = null;
-  let savedCartItems = [];
-  try {
-    savedFormData = JSON.parse(localStorage.getItem('checkoutFormData') || '{}') || {};
-  } catch (e) { savedFormData = {}; }
-  try {
-    savedCoupon = JSON.parse(localStorage.getItem('appliedCoupon') || 'null') || JSON.parse(localStorage.getItem('checkoutAppliedCoupon') || 'null');
-  } catch (e) { savedCoupon = null; }
-  try {
-    savedCartItems = JSON.parse(localStorage.getItem('checkoutCartItems') || '[]') || [];
-  } catch (e) { savedCartItems = []; }
-
-  const savedCodUpfrontAmount = Number(localStorage.getItem('codUpfrontAmount') || 39);
-
-  const orderId = searchParams.get('orderId');
-  const transactionId = searchParams.get('transactionId');
-
-  // Use cart from localStorage if contextCartItems is empty
-  const cartItems = (contextCartItems && contextCartItems.length > 0) ? contextCartItems : savedCartItems;
-
-  // Helper to calculate total with coupon
-  const getFinalTotal = () => {
-    const subtotal = cartItems.reduce((sum, item) => sum + (item.product?.price || item.price) * item.quantity, 0);
-    const discount = savedCoupon && typeof savedCoupon.discountAmount === 'number' ? savedCoupon.discountAmount : 0;
-    const total = subtotal - discount;
-    return total > 0 ? total : 0;
-  };
+  const orderId = searchParams.get('orderId'); // PhonePe merchantOrderId
+  const bookingId = searchParams.get('bookingId'); // customBookingId
 
   useEffect(() => {
-    if (!orderId && !transactionId) {
-      setError('No order ID or transaction ID provided');
+    if (!orderId || !bookingId) {
+      setError('No order ID or booking ID provided');
       setLoading(false);
       return;
     }
     checkPaymentStatus();
     // eslint-disable-next-line
-  }, [orderId, transactionId, retryCount]);
+  }, [orderId, bookingId, retryCount]);
 
-  // Place order after payment is successful (for testing, also on failed/pending)
+  // Verify booking payment after payment is successful
   useEffect(() => {
-    if (status === 'success' && !orderPlaced && !placingOrderRef.current) {
-
-      placingOrderRef.current = true;
-      placeOrderAfterPayment();
+    if (status === 'success' && !bookingVerified && !verifyingRef.current) {
+      verifyingRef.current = true;
+      verifyBookingPayment();
     }
     // eslint-disable-next-line
   }, [status]);
 
-  // Redirect immediately after payment success
+  // Redirect to ticket page after successful verification
   useEffect(() => {
-    if (status === 'success') {
-      // Redirect to ticket page immediately
-      const urlParams = new URLSearchParams(window.location.search);
-      const orderId = urlParams.get('orderId');
-      const transactionId = urlParams.get('transactionId');
-      if (orderId || transactionId) {
-        navigate(`/ticket?bookingId=${orderId || transactionId}`);
-      } else {
-        navigate('/');
-      }
+    if (status === 'success' && bookingVerified && bookingId) {
+      // Small delay to ensure booking is updated in database
+      setTimeout(() => {
+        navigate(`/ticket?bookingId=${bookingId}`);
+      }, 1000);
     }
-  }, [status, navigate]);
+  }, [status, bookingVerified, bookingId, navigate]);
 
   const checkPaymentStatus = async () => {
     try {
       setLoading(true);
       setError(null);
-      const idToCheck = orderId || transactionId;
-      const response = await paymentService.getPhonePeStatus(idToCheck);
-      setStatus(response.status);
-      setOrderDetails(response.data?.data || response.data);
-      // No redirect here; wait for order placement
+      
+      // First, get PhonePe payment status using the orderId (merchantOrderId)
+      // We need to get the actual PhonePe transaction ID from the booking first
+      if (!bookingId) {
+        setError('Booking ID is required');
+        setLoading(false);
+        return;
+      }
+
+      // Get booking to find PhonePe orderId (transaction ID)
+      try {
+        const bookingResponse = await axios.get(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/any/${bookingId}`
+        );
+        
+        if (bookingResponse.data.success && bookingResponse.data.booking) {
+          const booking = bookingResponse.data.booking;
+          const phonePeOrderId = booking.phonepeOrderId || orderId;
+          
+          // Check PhonePe payment status
+          const response = await paymentService.getPhonePeStatus(phonePeOrderId);
+          setStatus(response.status);
+          setOrderDetails(response.data?.data || response.data);
+        } else {
+          setError('Booking not found');
+          setStatus('error');
+        }
+      } catch (bookingError) {
+        console.error('Error fetching booking:', bookingError);
+        // Try to check payment status directly with orderId
+        const response = await paymentService.getPhonePeStatus(orderId);
+        setStatus(response.status);
+        setOrderDetails(response.data?.data || response.data);
+      }
     } catch (err) {
       setError(err.message || 'Failed to check payment status');
       setStatus('error');
@@ -119,125 +108,61 @@ const PaymentStatus = () => {
     }
   };
 
-  // Place order after payment is successful
-  const placeOrderAfterPayment = async () => {
+  // Verify booking payment after payment is successful
+  const verifyBookingPayment = async () => {
     try {
-      // Check if order has already been placed for this payment
-      const orderKey = `order_placed_${orderId || transactionId}`;
-      const orderAlreadyPlaced = localStorage.getItem(orderKey);
+      if (!orderId || !bookingId) {
+        toast.error('Missing payment or booking information');
+        return;
+      }
+
+      // Check if booking has already been verified
+      const verifyKey = `booking_verified_${bookingId}`;
+      const alreadyVerified = localStorage.getItem(verifyKey);
       
-      if (orderAlreadyPlaced === 'true') {
+      if (alreadyVerified === 'true') {
+        setBookingVerified(true);
+        return;
+      }
+
+      toast.info('Verifying payment and updating booking...');
+
+      // Get booking to find PhonePe orderId (transaction ID)
+      let phonePeOrderId = orderId;
+      try {
+        const bookingResponse = await axios.get(
+          `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/any/${bookingId}`
+        );
         
-        setOrderPlaced(true);
-        return;
+        if (bookingResponse.data.success && bookingResponse.data.booking) {
+          const booking = bookingResponse.data.booking;
+          phonePeOrderId = booking.phonepeOrderId || orderId;
+        }
+      } catch (bookingError) {
+        console.warn('Could not fetch booking, using orderId directly:', bookingError);
       }
 
-      // Check if we have the required data
-      if (!orderId && !transactionId) {
-        toast.error('Missing payment/order ID. Cannot place order.');
-        // Clear persisted data
-        localStorage.removeItem('checkoutFormData');
-        localStorage.removeItem('checkoutCartItems');
-        localStorage.removeItem('appliedCoupon');
-        localStorage.removeItem('checkoutAppliedCoupon');
-        setError('Missing payment/order ID. Please try again.');
-        return;
-      }
-      if (!Array.isArray(cartItems) || cartItems.length === 0) {
-        toast.error('No items in cart to place order');
-        // Clear persisted data
-        localStorage.removeItem('checkoutFormData');
-        localStorage.removeItem('checkoutCartItems');
-        localStorage.removeItem('appliedCoupon');
-        localStorage.removeItem('checkoutAppliedCoupon');
-        // Redirect to checkout page to place order there
-        navigate('/checkout?paymentSuccess=true&orderId=' + (orderId || transactionId));
-        return;
-      }
+      // Verify payment with booking controller
+      const verifyResponse = await axios.post(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
+        {
+          orderId: phonePeOrderId,
+          merchantOrderId: orderId,
+          bookingId: bookingId,
+        }
+      );
 
-      // Check if we have form data and all required fields
-      const formData = savedFormData;
-      const requiredFields = [
-        'firstName', 'lastName', 'email', 'phone', 'address', 'city', 'state', 'zipCode', 'country'
-      ];
-      const missingFields = requiredFields.filter(f => !formData[f] || String(formData[f]).trim() === '');
-      if (missingFields.length > 0) {
-        toast.error('Missing required info: ' + missingFields.join(', '));
-        // Clear persisted data
-        localStorage.removeItem('checkoutFormData');
-        localStorage.removeItem('checkoutCartItems');
-        localStorage.removeItem('appliedCoupon');
-        localStorage.removeItem('checkoutAppliedCoupon');
-        // Redirect to checkout to fix
-        navigate('/checkout?paymentSuccess=true&orderId=' + (orderId || transactionId));
-        return;
-      }
-
-      // Use the same order creation logic as Checkout page
-      const appliedCoupon = savedCoupon;
-      
-      // Create order data similar to Checkout page
-      const orderData = {
-        customerName: `${formData.firstName || user?.name || ''} ${formData.lastName || ''}`.trim(),
-        email: formData.email || user?.email,
-        phone: formData.phone || user?.phone,
-        address: formData.address || user?.address,
-        city: formData.city || user?.city || '',
-        state: formData.state || user?.state || '',
-        pincode: formData.zipCode || user?.zipCode || '',
-        country: formData.country || user?.country || 'India',
-        items: cartItems.map(item => ({
-          productId: item.product?._id || item.id,
-          name: item.product?.name || item.name,
-          quantity: item.quantity,
-          price: item.product?.price || item.price,
-          image: getItemImage(item)
-        })),
-        totalAmount: getFinalTotal(),
-        shippingCost: 0, // No shipping cost for online payment
-        codExtraCharge: 0, // No COD charge for online payment
-        finalTotal: getFinalTotal(),
-        paymentMethod: 'phonepe',
-        paymentStatus: 'completed',
-        upfrontAmount: 0,
-        remainingAmount: 0,
-        sellerToken: sellerToken,
-        couponCode: appliedCoupon ? appliedCoupon.code : undefined,
-        phonepeOrderId: orderDetails?.orderId || orderId,
-      };
-
-      // Create the order using the same service as Checkout
-      const response = await orderService.createOrder(orderData);
-
-      if (response.success) {
-        // Mark this order as placed to prevent duplicates
-        localStorage.setItem(orderKey, 'true');
-        setOrderPlaced(true);
-        clearCart();
-        // Clear persisted checkout data after order placed
-        localStorage.removeItem('checkoutFormData');
-        localStorage.removeItem('checkoutCartItems');
-        localStorage.removeItem('appliedCoupon');
-        localStorage.removeItem('checkoutAppliedCoupon');
-        toast.success('Order placed successfully!');
+      if (verifyResponse.data.success) {
+        // Mark booking as verified to prevent duplicate verification
+        localStorage.setItem(verifyKey, 'true');
+        setBookingVerified(true);
+        toast.success('🎉 Payment verified successfully! Booking confirmed.');
       } else {
-        toast.error(response.message || 'Failed to place order');
-        // Clear persisted data on error
-        localStorage.removeItem('checkoutFormData');
-        localStorage.removeItem('checkoutCartItems');
-        localStorage.removeItem('appliedCoupon');
-        localStorage.removeItem('checkoutAppliedCoupon');
+        toast.error(verifyResponse.data.message || 'Payment verification failed');
       }
     } catch (err) {
-    
-      toast.error('Failed to place order after payment: ' + (err.message || 'Unknown error'));
-      // Clear persisted data on error
-      localStorage.removeItem('checkoutFormData');
-      localStorage.removeItem('checkoutCartItems');
-      localStorage.removeItem('appliedCoupon');
-      localStorage.removeItem('checkoutAppliedCoupon');
-      // If order placement fails, redirect to checkout to try again
-      navigate('/checkout?paymentSuccess=true&orderId=' + (orderId || transactionId));
+      console.error('Error verifying booking payment:', err);
+      toast.error(err.response?.data?.message || 'Failed to verify payment. Please contact support.');
     }
   };
 
@@ -249,8 +174,12 @@ const PaymentStatus = () => {
     navigate('/');
   };
 
-  const handleGoToOrders = () => {
-    navigate('/account?tab=orders');
+  const handleGoToTicket = () => {
+    if (bookingId) {
+      navigate(`/ticket?bookingId=${bookingId}`);
+    } else {
+      navigate('/');
+    }
   };
 
   if (loading) {
@@ -316,7 +245,7 @@ const PaymentStatus = () => {
           <CheckCircle size={40} className="text-green-500" />
         </motion.div>
         <h1 className="text-3xl font-bold text-green-600 mb-2">Payment Successful!</h1>
-        <p className="text-gray-600 mb-4">Your order has been confirmed and payment received.</p>
+        <p className="text-gray-600 mb-4">Your booking has been confirmed and payment received.</p>
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
           <p className="text-green-700 text-sm">
             <Shield size={16} className="inline mr-2" />
@@ -329,11 +258,11 @@ const PaymentStatus = () => {
         <div className="space-y-4 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">Order Details</h3>
+              <h3 className="font-semibold text-gray-700 mb-2">Booking Details</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Order ID:</span>
-                  <span className="font-medium">{orderDetails.merchantOrderId || orderDetails.orderId}</span>
+                  <span className="text-gray-600">Booking ID:</span>
+                  <span className="font-medium">{bookingId || orderDetails.merchantOrderId || orderDetails.orderId}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Amount:</span>
@@ -350,7 +279,7 @@ const PaymentStatus = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center">
                   <Truck size={16} className="text-pink-500 mr-2" />
-                  <span>Order will be shipped within 5-7 days</span>
+                  <span>Your booking is confirmed</span>
                 </div>
                
                 <div className="flex items-center">
@@ -365,21 +294,22 @@ const PaymentStatus = () => {
 
       <div className="text-center">
         <p className="text-gray-500 text-sm mb-4">
-          Redirecting to home page in 5 seconds...
+          {bookingVerified ? 'Redirecting to ticket page...' : 'Verifying payment...'}
         </p>
         <div className="space-y-3">
           <button
-            onClick={handleGoHome}
+            onClick={handleGoToTicket}
             className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
           >
-            <Home size={20} className="inline mr-2" />
-            Go Home Now
+            <Shield size={20} className="inline mr-2" />
+            View My Ticket
           </button>
           <button
-            onClick={handleGoToOrders}
+            onClick={handleGoHome}
             className="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
           >
-            View My Orders
+            <Home size={20} className="inline mr-2" />
+            Go Home
           </button>
         </div>
       </div>
@@ -415,11 +345,11 @@ const PaymentStatus = () => {
         <div className="space-y-4 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">Order Details</h3>
+              <h3 className="font-semibold text-gray-700 mb-2">Booking Details</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Order ID:</span>
-                  <span className="font-medium">{orderDetails.merchantOrderId || orderDetails.orderId}</span>
+                  <span className="text-gray-600">Booking ID:</span>
+                  <span className="font-medium">{bookingId || orderDetails.merchantOrderId || orderDetails.orderId}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Amount:</span>
@@ -505,11 +435,11 @@ const PaymentStatus = () => {
         <div className="space-y-4 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">Order Details</h3>
+              <h3 className="font-semibold text-gray-700 mb-2">Booking Details</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Order ID:</span>
-                  <span className="font-medium">{orderDetails.merchantOrderId || orderDetails.orderId}</span>
+                  <span className="text-gray-600">Booking ID:</span>
+                  <span className="font-medium">{bookingId || orderDetails.merchantOrderId || orderDetails.orderId}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Amount:</span>

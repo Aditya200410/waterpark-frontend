@@ -51,21 +51,29 @@ const WaterparkTicket = () => {
             const bookingResponse = await axios.get(
               `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/any/${bookingId}`
             );
-            bookingData = bookingResponse.data.booking;
+            if (bookingResponse.data.success && bookingResponse.data.booking) {
+              bookingData = bookingResponse.data.booking;
+            } else {
+              throw new Error('Booking not found in response');
+            }
           } catch (error) {
             // If not found and we're just after payment, retry a few times (in case of timing issues)
-            if (retryCount < 3 && (error.response?.status === 404 || !error.response)) {
-              console.log(`[Ticket] Booking not found, retrying... (attempt ${retryCount + 1}/3)`);
+            if (retryCount < 5 && (error.response?.status === 404 || !error.response)) {
+              console.log(`[Ticket] Booking not found, retrying... (attempt ${retryCount + 1}/5)`);
               await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
               return fetchData(retryCount + 1); // Retry
             }
             
-            // Fallback to regular endpoint if "any" fails
+            // Fallback to regular endpoint if "any" fails (for completed bookings only)
             try {
               const bookingResponse = await axios.get(
                 `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/${bookingId}`
               );
-              bookingData = bookingResponse.data.booking;
+              if (bookingResponse.data.success && bookingResponse.data.booking) {
+                bookingData = bookingResponse.data.booking;
+              } else {
+                throw error; // Throw original error
+              }
             } catch (fallbackError) {
               throw error; // Throw original error
             }
@@ -253,6 +261,16 @@ const WaterparkTicket = () => {
             <a href="https://www.waterparkchalo.com/tickets" className="font-mono bg-gray-100 p-2 rounded block hover:bg-gray-200 transition-colors text-blue-600 underline">
               https://www.waterparkchalo.com/tickets
             </a>
+            {bookingId && (
+              <div className="mt-4">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Refresh Page
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
