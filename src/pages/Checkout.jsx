@@ -81,7 +81,7 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
     }
   }, [user]);
 
-  const [paymentMethod, setPaymentMethod] = useState("razorpay");
+  const [paymentMethod, setPaymentMethod] = useState("phonepe");
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -146,54 +146,47 @@ const formattedDate = new Date(date).toISOString().split("T")[0];
 
 
 
-// Manual verification (fallback)
-const manualPaymentVerification = async (razorpayResponse, customBookingId) => {
+// PhonePe payment verification
+const verifyPhonePePayment = async (orderId, merchantOrderId, customBookingId) => {
   try {
-    console.log("[Manual Verify] Starting...");
+    console.log("[PhonePe Verify] Starting...");
 
-    // Double-check webhook again before manual verify
+    // Check booking status first
     const statusResponse = await axios.get(
       `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/status/${customBookingId}`
     );
 
     if (statusResponse.data.success && statusResponse.data.booking.paymentStatus === "Completed") {
-      console.log("[Manual Verify] Already completed via webhook, skipping");
+      console.log("[PhonePe Verify] Already completed, skipping");
       setPaymentProcessing(false);
       toast.success("🎉 Payment already confirmed!");
       navigate(`/ticket?bookingId=${customBookingId}`);
       return;
     }
 
-    toast.info("Verifying payment manually...");
-
-    const bookingResponse = await axios.get(
-      `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/any/${customBookingId}`
-    );
-
-    if (!bookingResponse.data.success) throw new Error("Booking not found for manual verify");
+    toast.info("Verifying payment...");
 
     const verifyResponse = await axios.post(
       `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
       {
-        razorpay_order_id: razorpayResponse.razorpay_order_id,
-        razorpay_payment_id: razorpayResponse.razorpay_payment_id,
-        razorpay_signature: razorpayResponse.razorpay_signature,
-        bookingId: bookingResponse.data.booking._id,
+        orderId: orderId,
+        merchantOrderId: merchantOrderId,
+        bookingId: customBookingId,
       }
     );
 
     if (verifyResponse.data.success) {
       setPaymentProcessing(false);
-      toast.success("🎉 Payment verified manually!");
-      navigate(`/ticket?bookingId=${verifyResponse.data.booking.customBookingId}`);
+      toast.success("🎉 Payment verified successfully!");
+      navigate(`/ticket?bookingId=${customBookingId}`);
     } else {
       setPaymentProcessing(false);
-      toast.error("❌ Manual verification failed, please contact support.");
+      toast.error(verifyResponse.data.message || "❌ Payment verification failed");
     }
   } catch (error) {
-    console.error("[Manual Verify] Error:", error);
+    console.error("[PhonePe Verify] Error:", error);
     setPaymentProcessing(false);
-    toast.error("Payment verification failed. Please contact support.");
+    toast.error(error.response?.data?.message || "Payment verification failed. Please contact support.");
   }
 };
 
@@ -236,7 +229,7 @@ const handlePayment = async (e) => {
       }
     );
 
-    const { success, orderId, booking, key, amount, currency, name, description, prefill } = response.data;
+    const { success, redirectUrl, orderId, merchantOrderId, booking } = response.data;
 
     if (!success) {
       console.error("[handlePayment] Booking creation failed:", response.data.message);
@@ -254,49 +247,18 @@ const handlePayment = async (e) => {
       return;
     }
 
-    // ✅ Razorpay Payment
-    if (paymentMethod === "razorpay" && orderId) {
+    // ✅ PhonePe Payment
+    if (paymentMethod === "phonepe" && redirectUrl) {
       setCurrentBookingId(booking.customBookingId);
       setPaymentProcessing(true);
-
-      const options = {
-        key: key,
-        amount: amount,
-        currency: currency,
-        name: name,
-        description: description,
-        order_id: orderId,
-        prefill: prefill,
-        redirect: false, // disable redirect
-        handler: async (razorpayResponse) => {
-          console.log("[Razorpay Handler] Payment successful, response:", razorpayResponse);
-
-          try {
-            toast.info("Payment successful! Verifying your booking...");
-            
-          
-
-            // ✅ If webhook fails, fallback to manual verification
-            console.log("[Razorpay Handler] Webhook verification failed or timed out. Starting manual verification...");
-            await manualPaymentVerification(razorpayResponse, booking.customBookingId);
-          } catch (error) {
-            console.error("[Razorpay Handler] Payment verification error:", error);
-            setPaymentProcessing(false);
-            toast.error("Payment verification failed. Please contact support.");
-          }
-        },
-        modal: {
-          ondismiss: () => {
-            setPaymentProcessing(false);
-            toast.info("Payment cancelled by user");
-            console.log("[Razorpay] Payment modal dismissed");
-          },
-        },
-      };
-
-      console.log("[handlePayment] Opening Razorpay with options:", options);
-      const rzp = new window.Razorpay(options);
-      rzp.open();
+      
+      console.log("[handlePayment] Redirecting to PhonePe payment page...");
+      console.log("[handlePayment] Redirect URL:", redirectUrl);
+      // Redirect to PhonePe payment page
+      window.location.href = redirectUrl;
+    } else if (paymentMethod === "phonepe") {
+      toast.error("Failed to initiate PhonePe payment. Please try again.");
+      setPaymentProcessing(false);
     }
   } catch (error) {
     console.error("[handlePayment] Error initiating payment:", error);
@@ -572,7 +534,7 @@ const handlePayment = async (e) => {
               onChange={(e) => setPaymentMethod(e.target.value)}
               className="px-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
-              <option value="razorpay">Razorpay</option>
+              <option value="phonepe">PhonePe</option>
             </select>
           </div>
 
