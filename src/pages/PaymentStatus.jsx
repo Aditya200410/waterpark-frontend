@@ -47,10 +47,11 @@ const PaymentStatus = () => {
     // eslint-disable-next-line
   }, [orderId, bookingId, retryCount]);
 
-  // Mark payment as completed when payment is successful (no verification needed)
+  // Mark payment as completed immediately when success status is detected
   useEffect(() => {
     if (status === 'success' && !bookingVerified && !verifyingRef.current) {
       verifyingRef.current = true;
+      // Immediately mark as completed without verification
       markPaymentCompleted();
     }
     // eslint-disable-next-line
@@ -127,10 +128,25 @@ const PaymentStatus = () => {
       if (alreadyCompleted === 'true') {
         setBookingVerified(true);
         setBookingPaymentStatus('Completed');
+        // Fetch booking data to display
+        try {
+          const bookingResponse = await axios.get(
+            `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/any/${bookingId}`
+          );
+          if (bookingResponse.data.success && bookingResponse.data.booking) {
+            setBookingData(bookingResponse.data.booking);
+            setBookingPaymentStatus(bookingResponse.data.booking.paymentStatus);
+          }
+        } catch (e) {
+          console.warn('Could not fetch booking:', e);
+        }
         return;
       }
 
-      toast.info('Updating booking status to Completed...');
+      // Set status immediately to show success
+      setBookingPaymentStatus('Completed');
+      setBookingVerified(true);
+      toast.success('🎉 Payment Successful! Updating booking status...');
 
       // Mark payment as completed (no verification needed)
       const markResponse = await axios.post(
@@ -145,7 +161,6 @@ const PaymentStatus = () => {
       if (markResponse.data.success) {
         // Mark booking as completed to prevent duplicate updates
         localStorage.setItem(verifyKey, 'true');
-        setBookingVerified(true);
         
         // Fetch updated booking to get the latest payment status
         try {
@@ -157,21 +172,22 @@ const PaymentStatus = () => {
             const updatedBooking = updatedBookingResponse.data.booking;
             setBookingData(updatedBooking);
             setBookingPaymentStatus(updatedBooking.paymentStatus);
-            console.log('[markPaymentCompleted] Booking payment status updated to:', updatedBooking.paymentStatus);
+            console.log('[markPaymentCompleted] ✅ Booking payment status saved as:', updatedBooking.paymentStatus);
           }
         } catch (fetchError) {
           console.warn('[markPaymentCompleted] Could not fetch updated booking:', fetchError);
-          // Still set status to Completed based on successful update
-          setBookingPaymentStatus('Completed');
+          // Status already set to Completed above
         }
         
-        toast.success('🎉 Payment marked as completed! Booking confirmed with status: Completed.');
+        toast.success('✅ Booking confirmed! Payment status: Completed');
       } else {
         toast.error(markResponse.data.message || 'Failed to mark payment as completed');
+        setBookingVerified(false);
       }
     } catch (err) {
       console.error('Error marking payment as completed:', err);
       toast.error(err.response?.data?.message || 'Failed to update booking status. Please contact support.');
+      setBookingVerified(false);
     }
   };
 
@@ -267,13 +283,11 @@ const PaymentStatus = () => {
           <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-xl p-4 mb-6 shadow-sm">
             <p className="text-cyan-800 text-sm font-medium">
               <Shield size={16} className="inline mr-2" />
-              Payment Status: <span className="font-bold text-cyan-700">{bookingPaymentStatus || (bookingVerified ? 'Completed' : 'Verifying...')}</span>
+              Payment Status: <span className="font-bold text-cyan-700">{bookingPaymentStatus || 'Completed'}</span>
             </p>
-            {bookingVerified && bookingPaymentStatus === 'Completed' && (
-              <p className="text-cyan-700 text-xs mt-2">
-                ✅ Your booking has been saved with payment status: <strong>Completed</strong>
-              </p>
-            )}
+            <p className="text-cyan-700 text-xs mt-2">
+              ✅ Payment is successful! Booking status: <strong>Completed</strong>
+            </p>
           </div>
         </div>
 
@@ -301,7 +315,7 @@ const PaymentStatus = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Payment Status:</span>
                     <span className="px-3 py-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full text-xs font-semibold">
-                      {bookingPaymentStatus || (bookingVerified ? 'Completed' : 'Processing...')}
+                      {bookingPaymentStatus || 'Completed'}
                     </span>
                   </div>
                   {bookingData?.paymentId && (
@@ -334,7 +348,7 @@ const PaymentStatus = () => {
 
         <div className="text-center">
           <p className="text-gray-600 text-sm mb-6 font-medium">
-            {bookingVerified ? '🎉 Redirecting to ticket page...' : '⏳ Verifying payment...'}
+            {bookingVerified ? '🎉 Payment successful! Redirecting to ticket page...' : '✅ Payment successful! Updating booking...'}
           </p>
           <div className="space-y-3">
             <button
