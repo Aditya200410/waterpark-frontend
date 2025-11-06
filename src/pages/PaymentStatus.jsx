@@ -30,6 +30,8 @@ const PaymentStatus = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
   const [bookingVerified, setBookingVerified] = useState(false);
+  const [bookingPaymentStatus, setBookingPaymentStatus] = useState(null); // Track booking payment status
+  const [bookingData, setBookingData] = useState(null); // Store booking data
   const verifyingRef = useRef(false);
 
   const orderId = searchParams.get('orderId'); // PhonePe merchantOrderId
@@ -158,7 +160,26 @@ const PaymentStatus = () => {
         // Mark booking as verified to prevent duplicate verification
         localStorage.setItem(verifyKey, 'true');
         setBookingVerified(true);
-        toast.success('🎉 Payment verified successfully! Booking confirmed.');
+        
+        // Fetch updated booking to get the latest payment status
+        try {
+          const updatedBookingResponse = await axios.get(
+            `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/any/${bookingId}`
+          );
+          
+          if (updatedBookingResponse.data.success && updatedBookingResponse.data.booking) {
+            const updatedBooking = updatedBookingResponse.data.booking;
+            setBookingData(updatedBooking);
+            setBookingPaymentStatus(updatedBooking.paymentStatus);
+            console.log('[verifyBookingPayment] Booking payment status updated to:', updatedBooking.paymentStatus);
+          }
+        } catch (fetchError) {
+          console.warn('[verifyBookingPayment] Could not fetch updated booking:', fetchError);
+          // Still set status to Completed based on successful verification
+          setBookingPaymentStatus('Completed');
+        }
+        
+        toast.success('🎉 Payment verified successfully! Booking confirmed with status: Completed.');
       } else {
         toast.error(verifyResponse.data.message || 'Payment verification failed');
       }
@@ -260,8 +281,13 @@ const PaymentStatus = () => {
           <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-xl p-4 mb-6 shadow-sm">
             <p className="text-cyan-800 text-sm font-medium">
               <Shield size={16} className="inline mr-2" />
-              Your payment is secure and your booking is being processed
+              Payment Status: <span className="font-bold text-cyan-700">{bookingPaymentStatus || (bookingVerified ? 'Completed' : 'Verifying...')}</span>
             </p>
+            {bookingVerified && bookingPaymentStatus === 'Completed' && (
+              <p className="text-cyan-700 text-xs mt-2">
+                ✅ Your booking has been saved with payment status: <strong>Completed</strong>
+              </p>
+            )}
           </div>
         </div>
 
@@ -282,10 +308,22 @@ const PaymentStatus = () => {
                     <span className="text-gray-600">Amount:</span>
                     <span className="font-bold text-blue-600">₹{(orderDetails.amount / 100).toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Status:</span>
-                    <span className="px-3 py-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full text-xs font-semibold">Completed</span>
+                  <div className="flex justify-between items-center pb-2 border-b border-cyan-100">
+                    <span className="text-gray-600">Payment Method:</span>
+                    <span className="font-bold text-cyan-700">{bookingData?.paymentType || 'PhonePe'}</span>
                   </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Payment Status:</span>
+                    <span className="px-3 py-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full text-xs font-semibold">
+                      {bookingPaymentStatus || (bookingVerified ? 'Completed' : 'Processing...')}
+                    </span>
+                  </div>
+                  {bookingData?.paymentId && (
+                    <div className="flex justify-between items-center pt-2 border-t border-cyan-100">
+                      <span className="text-gray-600">Transaction ID:</span>
+                      <span className="font-mono text-xs text-gray-600">{bookingData.paymentId}</span>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-5 border border-blue-100 shadow-sm">
