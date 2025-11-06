@@ -47,11 +47,11 @@ const PaymentStatus = () => {
     // eslint-disable-next-line
   }, [orderId, bookingId, retryCount]);
 
-  // Verify booking payment after payment is successful
+  // Mark payment as completed when payment is successful (no verification needed)
   useEffect(() => {
     if (status === 'success' && !bookingVerified && !verifyingRef.current) {
       verifyingRef.current = true;
-      verifyBookingPayment();
+      markPaymentCompleted();
     }
     // eslint-disable-next-line
   }, [status]);
@@ -112,52 +112,38 @@ const PaymentStatus = () => {
     }
   };
 
-  // Verify booking payment after payment is successful
-  const verifyBookingPayment = async () => {
+  // Mark payment as completed (no verification needed - payment success page means payment is successful)
+  const markPaymentCompleted = async () => {
     try {
-      if (!orderId || !bookingId) {
-        toast.error('Missing payment or booking information');
+      if (!bookingId) {
+        toast.error('Missing booking information');
         return;
       }
 
-      // Check if booking has already been verified
-      const verifyKey = `booking_verified_${bookingId}`;
-      const alreadyVerified = localStorage.getItem(verifyKey);
+      // Check if booking has already been marked as completed
+      const verifyKey = `booking_completed_${bookingId}`;
+      const alreadyCompleted = localStorage.getItem(verifyKey);
       
-      if (alreadyVerified === 'true') {
+      if (alreadyCompleted === 'true') {
         setBookingVerified(true);
+        setBookingPaymentStatus('Completed');
         return;
       }
 
-      toast.info('Verifying payment and updating booking...');
+      toast.info('Updating booking status to Completed...');
 
-      // Get booking to find PhonePe orderId (transaction ID)
-      let phonePeOrderId = orderId;
-      try {
-        const bookingResponse = await axios.get(
-          `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/any/${bookingId}`
-        );
-        
-        if (bookingResponse.data.success && bookingResponse.data.booking) {
-          const booking = bookingResponse.data.booking;
-          phonePeOrderId = booking.phonepeOrderId || orderId;
-        }
-      } catch (bookingError) {
-        console.warn('Could not fetch booking, using orderId directly:', bookingError);
-      }
-
-      // Verify payment with booking controller
-      const verifyResponse = await axios.post(
-        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/verify`,
+      // Mark payment as completed (no verification needed)
+      const markResponse = await axios.post(
+        `${import.meta.env.VITE_APP_API_BASE_URL}/api/bookings/mark-completed`,
         {
-          orderId: phonePeOrderId,
+          orderId: orderId,
           merchantOrderId: orderId,
           bookingId: bookingId,
         }
       );
 
-      if (verifyResponse.data.success) {
-        // Mark booking as verified to prevent duplicate verification
+      if (markResponse.data.success) {
+        // Mark booking as completed to prevent duplicate updates
         localStorage.setItem(verifyKey, 'true');
         setBookingVerified(true);
         
@@ -171,21 +157,21 @@ const PaymentStatus = () => {
             const updatedBooking = updatedBookingResponse.data.booking;
             setBookingData(updatedBooking);
             setBookingPaymentStatus(updatedBooking.paymentStatus);
-            console.log('[verifyBookingPayment] Booking payment status updated to:', updatedBooking.paymentStatus);
+            console.log('[markPaymentCompleted] Booking payment status updated to:', updatedBooking.paymentStatus);
           }
         } catch (fetchError) {
-          console.warn('[verifyBookingPayment] Could not fetch updated booking:', fetchError);
-          // Still set status to Completed based on successful verification
+          console.warn('[markPaymentCompleted] Could not fetch updated booking:', fetchError);
+          // Still set status to Completed based on successful update
           setBookingPaymentStatus('Completed');
         }
         
-        toast.success('🎉 Payment verified successfully! Booking confirmed with status: Completed.');
+        toast.success('🎉 Payment marked as completed! Booking confirmed with status: Completed.');
       } else {
-        toast.error(verifyResponse.data.message || 'Payment verification failed');
+        toast.error(markResponse.data.message || 'Failed to mark payment as completed');
       }
     } catch (err) {
-      console.error('Error verifying booking payment:', err);
-      toast.error(err.response?.data?.message || 'Failed to verify payment. Please contact support.');
+      console.error('Error marking payment as completed:', err);
+      toast.error(err.response?.data?.message || 'Failed to update booking status. Please contact support.');
     }
   };
 
