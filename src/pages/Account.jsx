@@ -401,9 +401,15 @@ const Account = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-cyan-600">Order Date</p>
+                      <p className="text-xs text-cyan-600">Purchase Date</p>
                       <p className="font-medium text-cyan-900">
-                       
+                        {order.bookingDate 
+                          ? new Date(order.bookingDate).toLocaleDateString('en-GB', { 
+                              day: '2-digit', 
+                              month: 'short', 
+                              year: 'numeric' 
+                            })
+                          : 'N/A'}
                       </p>
                     </div>
                   </div>
@@ -420,10 +426,7 @@ const Account = () => {
                         {order.paymentStatus || 'pending'}
                       </p>
                     </div>
-                    <div>
-                      <p className="text-xs text-cyan-600">Status</p>
-                      <p className="text-sm font-medium capitalize">{order.orderStatus}</p>
-                    </div>
+                  
                   </div>
 
                   {/* Items */}

@@ -11,7 +11,9 @@ import {
   CreditCard,
   Truck,
   Shield,
-  ArrowLeft
+  ArrowLeft,
+  FileText,
+  Waves
 } from 'lucide-react';
 import paymentService from '../services/paymentService';
 import axios from 'axios';
@@ -184,10 +186,13 @@ const PaymentStatus = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-500 via-white to-pink-100 flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen bg-gradient-to-br from-cyan-500 via-blue-400 to-cyan-300 flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+        }}></div>
+        <div className="text-center relative z-10">
           <Loader />
-          <p className="mt-4 text-pink-700">Checking payment status...</p>
+          <p className="mt-4 text-white font-semibold text-lg">Checking payment status...</p>
         </div>
       </div>
     );
@@ -195,14 +200,17 @@ const PaymentStatus = () => {
 
   if (error && !status) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-500 via-white to-pink-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-cyan-500 via-blue-400 to-cyan-300 flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+        }}></div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-4"
+          className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4 border border-white/20 relative z-10"
         >
           <div className="text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 ring-4 ring-red-50">
               <AlertCircle size={32} className="text-red-500" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Error</h2>
@@ -210,14 +218,14 @@ const PaymentStatus = () => {
             <div className="space-y-3">
               <button
                 onClick={handleRetry}
-                className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
+                className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:from-cyan-700 hover:to-blue-700 transition-all transform hover:scale-105 shadow-lg"
               >
                 <RefreshCw size={20} className="inline mr-2" />
                 Try Again
               </button>
               <button
                 onClick={handleGoHome}
-                className="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
+                className="w-full bg-white/80 text-gray-700 px-6 py-3 rounded-xl font-medium hover:bg-white transition-all border border-gray-200"
               >
                 <Home size={20} className="inline mr-2" />
                 Go Home
@@ -233,84 +241,93 @@ const PaymentStatus = () => {
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full mx-4"
+      className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 max-w-2xl w-full mx-4 border border-white/20 relative overflow-hidden"
     >
-      <div className="text-center mb-8">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
-        >
-          <CheckCircle size={40} className="text-green-500" />
-        </motion.div>
-        <h1 className="text-3xl font-bold text-green-600 mb-2">Payment Successful!</h1>
-        <p className="text-gray-600 mb-4">Your booking has been confirmed and payment received.</p>
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
-          <p className="text-green-700 text-sm">
-            <Shield size={16} className="inline mr-2" />
-            Your payment is secure and your order is being processed
-          </p>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-cyan-200/30 to-blue-200/30 rounded-full -mr-32 -mt-32"></div>
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-cyan-100/30 to-blue-100/30 rounded-full -ml-24 -mb-24"></div>
+      <div className="relative z-10">
+        <div className="text-center mb-8">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="w-24 h-24 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg ring-4 ring-cyan-100"
+          >
+            <CheckCircle size={48} className="text-white" />
+          </motion.div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent mb-3">Payment Successful!</h1>
+          <p className="text-gray-700 mb-4 text-lg">Your booking has been confirmed and payment received.</p>
+          <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-xl p-4 mb-6 shadow-sm">
+            <p className="text-cyan-800 text-sm font-medium">
+              <Shield size={16} className="inline mr-2" />
+              Your payment is secure and your booking is being processed
+            </p>
+          </div>
         </div>
-      </div>
 
-      {orderDetails && (
-        <div className="space-y-4 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">Booking Details</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Booking ID:</span>
-                  <span className="font-medium">{bookingId || orderDetails.merchantOrderId || orderDetails.orderId}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Amount:</span>
-                  <span className="font-medium">₹{(orderDetails.amount / 100).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Status:</span>
-                  <span className="text-green-600 font-medium">Completed</span>
+        {orderDetails && (
+          <div className="space-y-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-5 border border-cyan-100 shadow-sm">
+                <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <FileText size={18} className="text-cyan-600 mr-2" />
+                  Booking Details
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between items-center pb-2 border-b border-cyan-100">
+                    <span className="text-gray-600">Booking ID:</span>
+                    <span className="font-bold text-cyan-700">{bookingId || orderDetails.merchantOrderId || orderDetails.orderId}</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2 border-b border-cyan-100">
+                    <span className="text-gray-600">Amount:</span>
+                    <span className="font-bold text-blue-600">₹{(orderDetails.amount / 100).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Status:</span>
+                    <span className="px-3 py-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full text-xs font-semibold">Completed</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">What's Next?</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center">
-                  <Truck size={16} className="text-pink-500 mr-2" />
-                  <span>Your booking is confirmed</span>
-                </div>
-               
-                <div className="flex items-center">
-                  <Shield size={16} className="text-pink-500 mr-2" />
-                  <span>Secure payment processed successfully</span>
+              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-5 border border-blue-100 shadow-sm">
+                <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Waves size={18} className="text-blue-600 mr-2" />
+                  What's Next?
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center text-gray-700">
+                    <Truck size={18} className="text-cyan-500 mr-3" />
+                    <span>Your booking is confirmed</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <Shield size={18} className="text-blue-500 mr-3" />
+                    <span>Secure payment processed successfully</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="text-center">
-        <p className="text-gray-500 text-sm mb-4">
-          {bookingVerified ? 'Redirecting to ticket page...' : 'Verifying payment...'}
-        </p>
-        <div className="space-y-3">
-          <button
-            onClick={handleGoToTicket}
-            className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
-          >
-            <Shield size={20} className="inline mr-2" />
-            View My Ticket
-          </button>
-          <button
-            onClick={handleGoHome}
-            className="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
-          >
-            <Home size={20} className="inline mr-2" />
-            Go Home
-          </button>
+        <div className="text-center">
+          <p className="text-gray-600 text-sm mb-6 font-medium">
+            {bookingVerified ? '🎉 Redirecting to ticket page...' : '⏳ Verifying payment...'}
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={handleGoToTicket}
+              className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-4 rounded-xl font-semibold hover:from-cyan-700 hover:to-blue-700 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center"
+            >
+              <Shield size={20} className="mr-2" />
+              View My Ticket
+            </button>
+            <button
+              onClick={handleGoHome}
+              className="w-full bg-white/80 text-gray-700 px-6 py-4 rounded-xl font-medium hover:bg-white transition-all border-2 border-gray-200 flex items-center justify-center"
+            >
+              <Home size={20} className="mr-2" />
+              Go Home
+            </button>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -320,89 +337,98 @@ const PaymentStatus = () => {
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full mx-4"
+      className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 max-w-2xl w-full mx-4 border border-white/20 relative overflow-hidden"
     >
-      <div className="text-center mb-8">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6"
-        >
-          <XCircle size={40} className="text-red-500" />
-        </motion.div>
-        <h1 className="text-3xl font-bold text-red-600 mb-2">Payment Failed</h1>
-        <p className="text-gray-600 mb-4">Your payment could not be processed. Please try again.</p>
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
-          <p className="text-red-700 text-sm">
-            <AlertCircle size={16} className="inline mr-2" />
-            No amount has been deducted from your account
-          </p>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-red-100/30 to-orange-100/30 rounded-full -mr-32 -mt-32"></div>
+      <div className="relative z-10">
+        <div className="text-center mb-8">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="w-24 h-24 bg-gradient-to-br from-red-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg ring-4 ring-red-100"
+          >
+            <XCircle size={48} className="text-white" />
+          </motion.div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent mb-3">Payment Failed</h1>
+          <p className="text-gray-700 mb-4 text-lg">Your payment could not be processed. Please try again.</p>
+          <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl p-4 mb-6 shadow-sm">
+            <p className="text-red-800 text-sm font-medium">
+              <AlertCircle size={16} className="inline mr-2" />
+              No amount has been deducted from your account
+            </p>
+          </div>
         </div>
-      </div>
 
-      {orderDetails && (
-        <div className="space-y-4 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">Booking Details</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Booking ID:</span>
-                  <span className="font-medium">{bookingId || orderDetails.merchantOrderId || orderDetails.orderId}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Amount:</span>
-                  <span className="font-medium">₹{(orderDetails.amount / 100).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Status:</span>
-                  <span className="text-red-600 font-medium">Failed</span>
-                </div>
-                {orderDetails.errorCode && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Error Code:</span>
-                    <span className="font-medium text-red-600">{orderDetails.errorCode}</span>
+        {orderDetails && (
+          <div className="space-y-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl p-5 border border-red-100 shadow-sm">
+                <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <FileText size={18} className="text-red-600 mr-2" />
+                  Booking Details
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between items-center pb-2 border-b border-red-100">
+                    <span className="text-gray-600">Booking ID:</span>
+                    <span className="font-bold text-red-700">{bookingId || orderDetails.merchantOrderId || orderDetails.orderId}</span>
                   </div>
-                )}
+                  <div className="flex justify-between items-center pb-2 border-b border-red-100">
+                    <span className="text-gray-600">Amount:</span>
+                    <span className="font-bold text-orange-600">₹{(orderDetails.amount / 100).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2 border-b border-red-100">
+                    <span className="text-gray-600">Status:</span>
+                    <span className="px-3 py-1 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-full text-xs font-semibold">Failed</span>
+                  </div>
+                  {orderDetails.errorCode && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Error Code:</span>
+                      <span className="font-bold text-red-600">{orderDetails.errorCode}</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">What You Can Do</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center">
-                  <RefreshCw size={16} className="text-pink-500 mr-2" />
-                  <span>Try the payment again</span>
-                </div>
-                <div className="flex items-center">
-                  <CreditCard size={16} className="text-pink-500 mr-2" />
-                  <span>Use a different payment method</span>
-                </div>
-                <div className="flex items-center">
-                  <Shield size={16} className="text-pink-500 mr-2" />
-                  <span>Contact support if issue persists</span>
+              <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-5 border border-orange-100 shadow-sm">
+                <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Waves size={18} className="text-orange-600 mr-2" />
+                  What You Can Do
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center text-gray-700">
+                    <RefreshCw size={18} className="text-red-500 mr-3" />
+                    <span>Try the payment again</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <CreditCard size={18} className="text-orange-500 mr-3" />
+                    <span>Use a different payment method</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <Shield size={18} className="text-red-500 mr-3" />
+                    <span>Contact support if issue persists</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="text-center space-y-3">
-        <button
-          onClick={() => navigate('/checkout')}
-          className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
-        >
-          <RefreshCw size={20} className="inline mr-2" />
-          Try Payment Again
-        </button>
-        <button
-          onClick={handleGoHome}
-          className="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
-        >
-          <Home size={20} className="inline mr-2" />
-          Go Home
-        </button>
+        <div className="text-center space-y-3">
+          <button
+            onClick={() => navigate('/checkout')}
+            className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-4 rounded-xl font-semibold hover:from-cyan-700 hover:to-blue-700 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center"
+          >
+            <RefreshCw size={20} className="mr-2" />
+            Try Payment Again
+          </button>
+          <button
+            onClick={handleGoHome}
+            className="w-full bg-white/80 text-gray-700 px-6 py-4 rounded-xl font-medium hover:bg-white transition-all border-2 border-gray-200 flex items-center justify-center"
+          >
+            <Home size={20} className="mr-2" />
+            Go Home
+          </button>
+        </div>
       </div>
     </motion.div>
   );
@@ -411,83 +437,92 @@ const PaymentStatus = () => {
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full mx-4"
+      className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 max-w-2xl w-full mx-4 border border-white/20 relative overflow-hidden"
     >
-      <div className="text-center mb-8">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6"
-        >
-          <Clock size={40} className="text-yellow-500" />
-        </motion.div>
-        <h1 className="text-3xl font-bold text-yellow-600 mb-2">Payment Pending</h1>
-        <p className="text-gray-600 mb-4">Your payment is being processed. Please wait...</p>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
-          <p className="text-yellow-700 text-sm">
-            <Clock size={16} className="inline mr-2" />
-            This may take a few minutes to complete
-          </p>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-yellow-200/30 to-amber-200/30 rounded-full -mr-32 -mt-32"></div>
+      <div className="relative z-10">
+        <div className="text-center mb-8">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg ring-4 ring-yellow-100"
+          >
+            <Clock size={48} className="text-white" />
+          </motion.div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent mb-3">Payment Pending</h1>
+          <p className="text-gray-700 mb-4 text-lg">Your payment is being processed. Please wait...</p>
+          <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-xl p-4 mb-6 shadow-sm">
+            <p className="text-yellow-800 text-sm font-medium">
+              <Clock size={16} className="inline mr-2" />
+              This may take a few minutes to complete
+            </p>
+          </div>
         </div>
-      </div>
 
-      {orderDetails && (
-        <div className="space-y-4 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">Booking Details</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Booking ID:</span>
-                  <span className="font-medium">{bookingId || orderDetails.merchantOrderId || orderDetails.orderId}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Amount:</span>
-                  <span className="font-medium">₹{(orderDetails.amount / 100).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Status:</span>
-                  <span className="text-yellow-600 font-medium">Pending</span>
+        {orderDetails && (
+          <div className="space-y-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-5 border border-yellow-100 shadow-sm">
+                <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <FileText size={18} className="text-yellow-600 mr-2" />
+                  Booking Details
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between items-center pb-2 border-b border-yellow-100">
+                    <span className="text-gray-600">Booking ID:</span>
+                    <span className="font-bold text-yellow-700">{bookingId || orderDetails.merchantOrderId || orderDetails.orderId}</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2 border-b border-yellow-100">
+                    <span className="text-gray-600">Amount:</span>
+                    <span className="font-bold text-amber-600">₹{(orderDetails.amount / 100).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Status:</span>
+                    <span className="px-3 py-1 bg-gradient-to-r from-yellow-500 to-amber-500 text-white rounded-full text-xs font-semibold">Pending</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">What's Happening</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center">
-                  <RefreshCw size={16} className="text-pink-500 mr-2" />
-                  <span>Payment is being verified</span>
-                </div>
-                <div className="flex items-center">
-                  <Shield size={16} className="text-pink-500 mr-2" />
-                  <span>Your money is safe</span>
-                </div>
-                <div className="flex items-center">
-                  <Clock size={16} className="text-pink-500 mr-2" />
-                  <span>Please wait for confirmation</span>
+              <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-5 border border-amber-100 shadow-sm">
+                <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Waves size={18} className="text-amber-600 mr-2" />
+                  What's Happening
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center text-gray-700">
+                    <RefreshCw size={18} className="text-yellow-500 mr-3" />
+                    <span>Payment is being verified</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <Shield size={18} className="text-amber-500 mr-3" />
+                    <span>Your money is safe</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <Clock size={18} className="text-yellow-500 mr-3" />
+                    <span>Please wait for confirmation</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="text-center space-y-3">
-        <button
-          onClick={handleRetry}
-          disabled={retryCount >= 3}
-          className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <RefreshCw size={20} className="inline mr-2" />
-          Check Status Again ({3 - retryCount} attempts left)
-        </button>
-        <button
-          onClick={handleGoHome}
-          className="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
-        >
-          <Home size={20} className="inline mr-2" />
-          Go Home
-        </button>
+        <div className="text-center space-y-3">
+          <button
+            onClick={handleRetry}
+            disabled={retryCount >= 3}
+            className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-4 rounded-xl font-semibold hover:from-cyan-700 hover:to-blue-700 transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
+          >
+            <RefreshCw size={20} className="mr-2" />
+            Check Status Again ({3 - retryCount} attempts left)
+          </button>
+          <button
+            onClick={handleGoHome}
+            className="w-full bg-white/80 text-gray-700 px-6 py-4 rounded-xl font-medium hover:bg-white transition-all border-2 border-gray-200 flex items-center justify-center"
+          >
+            <Home size={20} className="mr-2" />
+            Go Home
+          </button>
+        </div>
       </div>
     </motion.div>
   );
@@ -496,41 +531,47 @@ const PaymentStatus = () => {
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full mx-4"
+      className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 max-w-2xl w-full mx-4 border border-white/20 relative overflow-hidden"
     >
-      <div className="text-center mb-8">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6"
-        >
-          <AlertCircle size={40} className="text-gray-500" />
-        </motion.div>
-        <h1 className="text-3xl font-bold text-gray-700 mb-2">Unknown Payment Status</h1>
-        <p className="text-gray-600 mb-4">We couldn't determine the payment status. Please try again or contact support.</p>
-      </div>
-      <div className="text-center space-y-3">
-        <button
-          onClick={handleRetry}
-          className="w-full bg-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-pink-700 transition-colors"
-        >
-          <RefreshCw size={20} className="inline mr-2" />
-          Try Again
-        </button>
-        <button
-          onClick={handleGoHome}
-          className="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
-        >
-          <Home size={20} className="inline mr-2" />
-          Go Home
-        </button>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-gray-200/30 to-slate-200/30 rounded-full -mr-32 -mt-32"></div>
+      <div className="relative z-10">
+        <div className="text-center mb-8">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="w-24 h-24 bg-gradient-to-br from-gray-400 to-slate-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg ring-4 ring-gray-100"
+          >
+            <AlertCircle size={48} className="text-white" />
+          </motion.div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-600 to-slate-600 bg-clip-text text-transparent mb-3">Unknown Payment Status</h1>
+          <p className="text-gray-700 mb-4 text-lg">We couldn't determine the payment status. Please try again or contact support.</p>
+        </div>
+        <div className="text-center space-y-3">
+          <button
+            onClick={handleRetry}
+            className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-4 rounded-xl font-semibold hover:from-cyan-700 hover:to-blue-700 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center"
+          >
+            <RefreshCw size={20} className="mr-2" />
+            Try Again
+          </button>
+          <button
+            onClick={handleGoHome}
+            className="w-full bg-white/80 text-gray-700 px-6 py-4 rounded-xl font-medium hover:bg-white transition-all border-2 border-gray-200 flex items-center justify-center"
+          >
+            <Home size={20} className="mr-2" />
+            Go Home
+          </button>
+        </div>
       </div>
     </motion.div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-500 via-white to-pink-100 flex items-center justify-center p-4 relative">
+    <div className="min-h-screen bg-gradient-to-br from-cyan-500 via-blue-400 to-cyan-300 flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+      }}></div>
       <AnimatedBubbles />
       <AnimatePresence mode="wait">
         {status === 'success' && renderSuccessStatus()}
